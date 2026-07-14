@@ -1,6 +1,6 @@
-# Harmway Trip
+# HamweTrip
 
-Harmway Trip is a mobile-first group travel coordination concept designed for friends planning road trips and safaris across East Africa. It brings trip decisions, shared itineraries, expense tracking, payment coordination, and offline travel documents into one connected experience.
+HamweTrip is a mobile-first group travel coordination concept designed for friends planning road trips and safaris across East Africa. It brings trip decisions, shared itineraries, expense tracking, payment coordination, and offline travel documents into one connected experience.
 
 This repository contains the user research, design system, high-fidelity interface renders, and browser-based prototype screens produced for an African Leadership University Mobile Application Development project.
 
@@ -14,7 +14,7 @@ Group travel planning is commonly fragmented across WhatsApp conversations, mobi
 - important addresses, permits, and itineraries become inaccessible when connectivity drops;
 - last-minute changes produce confusion and decision fatigue.
 
-Harmway Trip is designed as a single, transparent coordination hub for both organizers and participants.
+HamweTrip is designed as a single, transparent coordination hub for both organizers and participants.
 
 ## Core experience
 
@@ -66,14 +66,14 @@ The supporting research includes interview transcripts, persona source material,
 
 | Member | Documented contribution |
 | --- | --- |
-| Rajveer Singh Jolly | Team design lead, frontend architecture, UI design, and research interviews |
-| Shakira | User research and interviews |
-| Kamanzi Gautier | User research and interviews |
-| Aime | User research and group interview facilitation |
+| Rajveer Singh Jolly | Frontend development, frontend architecture, and UI design |
+| Shakira | Frontend development and UI implementation |
+| Kamanzi Gautier | Backend development, integration, and testing |
+| Aime | Backend development, integration, and testing |
 
 ## Current status
 
-Harmway Trip is currently a researched product concept and high-fidelity prototype. This initial repository intentionally contains only this README. The next implementation phase is intended for a Flutter mobile application, beginning with the voting, shared-ledger, collaborative-itinerary, and offline-vault flows.
+HamweTrip is currently a researched product concept and high-fidelity prototype. This initial repository intentionally contains only this README. The next implementation phase is intended for a Flutter mobile application, beginning with the voting, shared-ledger, collaborative-itinerary, and offline-vault flows.
 
 ## Academic context
 
