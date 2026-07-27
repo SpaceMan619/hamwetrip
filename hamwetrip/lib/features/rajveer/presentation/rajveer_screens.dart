@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../app/app_routes.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/widgets/hamwe_bottom_navigation.dart';
 
 class ScreenExplorer extends StatelessWidget {
   const ScreenExplorer({super.key});
@@ -302,6 +303,10 @@ class TripDashboardScreen extends StatelessWidget {
     return _ScreenScaffold(
       title: 'Nyungwe Weekend',
       subtitle: 'Oct 12 - Oct 18  •  4 travelers',
+      showBackButton: false,
+      bottomNavigation: const HamweBottomNavigation(
+        selected: HamweDestination.trips,
+      ),
       child: Column(
         children: [
           const _HeroPanel(
@@ -552,6 +557,9 @@ class ActivityFeedScreen extends StatelessWidget {
       title: 'Trip activity',
       subtitle:
           'A clear history of what changed and what needs your attention.',
+      bottomNavigation: const HamweBottomNavigation(
+        selected: HamweDestination.trips,
+      ),
       child: Column(
         children: [
           for (final item in _items)
@@ -614,6 +622,10 @@ class ProfileScreen extends StatelessWidget {
     return _ScreenScaffold(
       title: 'Profile & settings',
       subtitle: 'Your travel identity, preferences and account controls.',
+      showBackButton: false,
+      bottomNavigation: const HamweBottomNavigation(
+        selected: HamweDestination.profile,
+      ),
       child: Column(
         children: [
           const CircleAvatar(
@@ -681,11 +693,15 @@ class _ScreenScaffold extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.child,
+    this.showBackButton = true,
+    this.bottomNavigation,
   });
 
   final String title;
   final String subtitle;
   final Widget child;
+  final bool showBackButton;
+  final Widget? bottomNavigation;
 
   @override
   Widget build(BuildContext context) {
@@ -693,7 +709,7 @@ class _ScreenScaffold extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.warmSand,
         surfaceTintColor: Colors.transparent,
-        leading: Navigator.of(context).canPop()
+        leading: showBackButton && Navigator.of(context).canPop()
             ? IconButton(
                 onPressed: () => Navigator.of(context).pop(),
                 icon: const Icon(Icons.arrow_back_rounded),
@@ -707,6 +723,7 @@ class _ScreenScaffold extends StatelessWidget {
           ),
         ),
       ),
+      bottomNavigationBar: bottomNavigation,
       body: SafeArea(
         top: false,
         child: SingleChildScrollView(

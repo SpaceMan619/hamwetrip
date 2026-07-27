@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../app/app_routes.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/widgets/hamwe_bottom_navigation.dart';
 import '../../../data/models/trip_summary.dart';
 import '../../rajveer/presentation/rajveer_screens.dart';
 
@@ -68,9 +69,8 @@ class HomeScreen extends StatelessWidget {
         shape: const CircleBorder(),
         child: const Icon(Icons.add, size: 30),
       ),
-      bottomNavigationBar: _MainNavigation(
-        onTripsTap: () => Navigator.of(context).pushNamed(AppRoutes.dashboard),
-        onProfileTap: () => Navigator.of(context).pushNamed(AppRoutes.profile),
+      bottomNavigationBar: const HamweBottomNavigation(
+        selected: HamweDestination.home,
       ),
     );
   }
@@ -386,91 +386,6 @@ class _DiscoveryCard extends StatelessWidget {
             style: TextStyle(color: Colors.white, fontSize: 14),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _MainNavigation extends StatelessWidget {
-  const _MainNavigation({required this.onTripsTap, required this.onProfileTap});
-
-  final VoidCallback onTripsTap;
-  final VoidCallback onProfileTap;
-
-  @override
-  Widget build(BuildContext context) {
-    const items = [
-      (Icons.home_rounded, 'Home', true),
-      (Icons.explore_outlined, 'Trips', false),
-      (Icons.account_balance_wallet_outlined, 'Ledger', false),
-      (Icons.lock_outline_rounded, 'Vault', false),
-      (Icons.person_outline_rounded, 'Profile', false),
-    ];
-    return SafeArea(
-      minimum: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-      child: Container(
-        height: 66,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(34),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x12000000),
-              blurRadius: 20,
-              offset: Offset(0, 6),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            for (final item in items)
-              _NavItem(
-                icon: item.$1,
-                label: item.$2,
-                selected: item.$3,
-                onTap: item.$2 == 'Trips'
-                    ? onTripsTap
-                    : item.$2 == 'Profile'
-                    ? onProfileTap
-                    : null,
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _NavItem extends StatelessWidget {
-  const _NavItem({
-    required this.icon,
-    required this.label,
-    required this.selected,
-    this.onTap,
-  });
-
-  final IconData icon;
-  final String label;
-  final bool selected;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(22),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 8),
-        decoration: BoxDecoration(
-          color: selected ? AppColors.forest : Colors.transparent,
-          borderRadius: BorderRadius.circular(22),
-        ),
-        child: Icon(
-          icon,
-          size: 22,
-          color: selected ? Colors.white : AppColors.ink,
-        ),
       ),
     );
   }
