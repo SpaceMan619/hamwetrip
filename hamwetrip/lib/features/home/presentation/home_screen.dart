@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../../app/app_routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/models/trip_summary.dart';
+import '../../rajveer/presentation/rajveer_screens.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key, this.trip = TripSummary.demo});
@@ -19,7 +21,13 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const _TopBar(),
+              _TopBar(
+                onMenuTap: () => showModalBottomSheet<void>(
+                  context: context,
+                  backgroundColor: Colors.transparent,
+                  builder: (_) => const ScreenExplorer(),
+                ),
+              ),
               const SizedBox(height: 14),
               Text('Hello, Malik!', style: textTheme.headlineLarge),
               const SizedBox(height: 4),
@@ -33,7 +41,11 @@ class HomeScreen extends StatelessWidget {
                 action: 'IN PROGRESS',
               ),
               const SizedBox(height: 12),
-              _ActiveTripCard(trip: trip),
+              _ActiveTripCard(
+                trip: trip,
+                onOpenItinerary: () =>
+                    Navigator.of(context).pushNamed(AppRoutes.dashboard),
+              ),
               const SizedBox(height: 28),
               const _SectionHeading(title: 'Upcoming Trips'),
               const SizedBox(height: 12),
@@ -56,13 +68,18 @@ class HomeScreen extends StatelessWidget {
         shape: const CircleBorder(),
         child: const Icon(Icons.add, size: 30),
       ),
-      bottomNavigationBar: const _MainNavigation(),
+      bottomNavigationBar: _MainNavigation(
+        onTripsTap: () => Navigator.of(context).pushNamed(AppRoutes.dashboard),
+        onProfileTap: () => Navigator.of(context).pushNamed(AppRoutes.profile),
+      ),
     );
   }
 }
 
 class _TopBar extends StatelessWidget {
-  const _TopBar();
+  const _TopBar({required this.onMenuTap});
+
+  final VoidCallback onMenuTap;
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +96,10 @@ class _TopBar extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        roundButton(Icons.menu_rounded),
+        GestureDetector(
+          onTap: onMenuTap,
+          child: roundButton(Icons.menu_rounded),
+        ),
         roundButton(Icons.notifications_none_rounded),
       ],
     );
@@ -124,9 +144,10 @@ class _SectionHeading extends StatelessWidget {
 }
 
 class _ActiveTripCard extends StatelessWidget {
-  const _ActiveTripCard({required this.trip});
+  const _ActiveTripCard({required this.trip, required this.onOpenItinerary});
 
   final TripSummary trip;
+  final VoidCallback onOpenItinerary;
 
   @override
   Widget build(BuildContext context) {
@@ -204,7 +225,7 @@ class _ActiveTripCard extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton(
-                    onPressed: () {},
+                    onPressed: onOpenItinerary,
                     style: FilledButton.styleFrom(
                       backgroundColor: AppColors.forest,
                       padding: const EdgeInsets.symmetric(vertical: 15),
@@ -371,7 +392,10 @@ class _DiscoveryCard extends StatelessWidget {
 }
 
 class _MainNavigation extends StatelessWidget {
-  const _MainNavigation();
+  const _MainNavigation({required this.onTripsTap, required this.onProfileTap});
+
+  final VoidCallback onTripsTap;
+  final VoidCallback onProfileTap;
 
   @override
   Widget build(BuildContext context) {
@@ -401,7 +425,16 @@ class _MainNavigation extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             for (final item in items)
-              _NavItem(icon: item.$1, label: item.$2, selected: item.$3),
+              _NavItem(
+                icon: item.$1,
+                label: item.$2,
+                selected: item.$3,
+                onTap: item.$2 == 'Trips'
+                    ? onTripsTap
+                    : item.$2 == 'Profile'
+                    ? onProfileTap
+                    : null,
+              ),
           ],
         ),
       ),
@@ -414,24 +447,30 @@ class _NavItem extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.selected,
+    this.onTap,
   });
 
   final IconData icon;
   final String label;
   final bool selected;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 8),
-      decoration: BoxDecoration(
-        color: selected ? AppColors.forest : Colors.transparent,
-        borderRadius: BorderRadius.circular(22),
-      ),
-      child: Icon(
-        icon,
-        size: 22,
-        color: selected ? Colors.white : AppColors.ink,
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(22),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 8),
+        decoration: BoxDecoration(
+          color: selected ? AppColors.forest : Colors.transparent,
+          borderRadius: BorderRadius.circular(22),
+        ),
+        child: Icon(
+          icon,
+          size: 22,
+          color: selected ? Colors.white : AppColors.ink,
+        ),
       ),
     );
   }
