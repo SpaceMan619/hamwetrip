@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Harmway Trip | Activity Feed</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+                  "surface-tint": "#3b6934",
+                  "on-error": "#ffffff",
+                  "primary-container": "#2d5a27",
+                  "primary-fixed": "#bcf0ae",
+                  "on-tertiary-container": "#483f22",
+                  "secondary": "#944a00",
+                  "inverse-on-surface": "#f3f0f0",
+                  "surface-bright": "#fcf9f8",
+                  "secondary-fixed": "#ffdcc5",
+                  "surface-container-low": "#f6f3f2",
+                  "on-primary-fixed": "#002201",
+                  "error": "#ba1a1a",
+                  "primary-fixed-dim": "#a1d494",
+                  "surface-variant": "#e4e2e1",
+                  "tertiary-fixed": "#f0e2ba",
+                  "on-surface-variant": "#42493e",
+                  "secondary-container": "#fc8f34",
+                  "tertiary-fixed-dim": "#d4c69f",
+                  "on-secondary-fixed": "#301400",
+                  "surface": "#fcf9f8",
+                  "on-primary": "#ffffff",
+                  "surface-container-lowest": "#ffffff",
+                  "outline-variant": "#c2c9bb",
+                  "surface-container": "#f0eded",
+                  "background": "#fcf9f8",
+                  "on-tertiary-fixed": "#221b03",
+                  "on-background": "#1b1c1c",
+                  "on-error-container": "#93000a",
+                  "on-primary-container": "#9dd090",
+                  "on-tertiary-fixed-variant": "#4f4629",
+                  "inverse-surface": "#303030",
+                  "surface-dim": "#dcd9d9",
+                  "error-container": "#ffdad6",
+                  "tertiary": "#685e3e",
+                  "secondary-fixed-dim": "#ffb783",
+                  "outline": "#72796e",
+                  "on-tertiary": "#ffffff",
+                  "primary": "#154212",
+                  "on-secondary": "#ffffff",
+                  "on-secondary-container": "#663100",
+                  "on-primary-fixed-variant": "#23501e",
+                  "tertiary-container": "#b7aa86",
+                  "inverse-primary": "#a1d494",
+                  "on-secondary-fixed-variant": "#713700",
+                  "surface-container-highest": "#e4e2e1",
+                  "surface-container-high": "#eae7e7",
+                  "on-surface": "#1b1c1c"
+          },
+          "borderRadius": {
+                  "DEFAULT": "0.25rem",
+                  "lg": "0.5rem",
+                  "xl": "0.75rem",
+                  "full": "9999px"
+          },
+          "spacing": {
+                  "container-margin-desktop": "auto",
+                  "gutter": "16px",
+                  "md": "16px",
+                  "base": "8px",
+                  "xs": "4px",
+                  "xxl": "48px",
+                  "lg": "24px",
+                  "xl": "32px",
+                  "sm": "8px",
+                  "container-margin-mobile": "16px"
+          },
+          "fontFamily": {
+                  "title-lg": ["Inter"],
+                  "headline-xl": ["Inter"],
+                  "body-sm": ["Inter"],
+                  "body-md": ["Inter"],
+                  "body-lg": ["Inter"],
+                  "headline-md": ["Inter"],
+                  "headline-lg": ["Inter"],
+                  "headline-lg-mobile": ["Inter"],
+                  "label-sm": ["Inter"],
+                  "label-md": ["Inter"]
+          },
+          "fontSize": {
+                  "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                  "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                  "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                  "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                  "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                  "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                  "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                  "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                  "label-sm": ["10px", {"lineHeight": "14px", "fontWeight": "500"}],
+                  "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .timeline-line {
+      position: absolute;
+      left: 27px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: repeating-linear-gradient(to bottom, #c2c9bb 0%, #c2c9bb 50%, transparent 50%, transparent 100%);
+      background-size: 2px 8px;
+    }
+    .activity-card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .activity-card:active {
+      transform: scale(0.98);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface font-body-md text-on-surface min-h-screen">
+<!-- Top Navigation Shell -->
+<header class="bg-surface/90 backdrop-blur-md text-on-surface rounded-full mx-4 mt-4 floating sticky top-4 z-50 shadow-md shadow-primary/10 border border-outline-variant/30 flex justify-between items-center px-6 py-2 w-[calc(100%-2rem)] max-w-7xl mx-auto">
+<div class="flex items-center gap-3">
+<button class="material-symbols-outlined text-primary hover:bg-surface-container-high transition-colors p-2 rounded-full active:scale-95 duration-200" data-icon="menu">menu</button>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Harmway Trip</h1>
+</div>
+<div class="flex items-center gap-4">
+<span class="hidden md:block font-title-lg text-title-lg text-primary font-bold">Activity</span>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-fixed">
+<img alt="User profile" data-alt="A professional close-up portrait of a cheerful African traveler with a warm smile, set against a blurred background of a lush, sun-drenched savannah. The lighting is soft and golden, characteristic of a late afternoon in Rwanda. The image reflects a high-end, reliable, and adventurous brand identity with a clean and natural aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYiMTiD7IYFYSLwqoryp-t5_OW8XE4hNT7GgDiTTzzRuKUvC__UvKjbnaaxJ6GJp711Dwy-B7OzygOutfWaaWLT8Q7kKm_yEGQKhXy7Xxhvr018x-k0d9zcjvkMyD-BezbMqH7RBOhM0hMll_KMoSVnkYystrFE5pbPnGVLuyQ58PtES3ijzhvbjfDiXi3D2cxN8j1jjbwvWByYu4keqSThTdrVupwqFbz9GBxuiy2mL20WEU27SVFg1aL71BDu5xEq9dHgrYOFlSm"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="max-w-xl mx-auto px-4 pt-8 pb-32 relative">
+<!-- Offline Indicator (Conditional UI) -->
+<div class="mb-6 bg-tertiary-container/30 border border-tertiary-fixed rounded-lg px-4 py-2 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-on-tertiary-fixed-variant" data-icon="cloud_off">cloud_off</span>
+<span class="font-label-md text-label-md text-on-tertiary-fixed-variant">Working Offline — Changes will sync later.</span>
+</div>
+<!-- Page Title (Mobile) -->
+<div class="md:hidden mb-6">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Trip Activity</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Real-time updates for Akagera Getaway</p>
+</div>
+<!-- Timeline Container -->
+<div class="relative space-y-6">
+<!-- Decorative Timeline Line -->
+<div class="timeline-line opacity-30"></div>
+<!-- Activity Item 1: Park Fees -->
+<div class="relative pl-14 activity-card">
+<!-- Icon Anchor -->
+<div class="absolute left-0 top-1 w-12 h-12 bg-primary-container rounded-full flex items-center justify-center z-10 shadow-sm border-2 border-surface">
+<span class="material-symbols-outlined text-on-primary-container" data-icon="payments">payments</span>
+</div>
+<!-- Card Content -->
+<div class="bg-surface-container-lowest p-4 rounded-xl shadow-md shadow-primary/5 border border-outline-variant/20">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-title-lg text-title-lg text-on-surface">Alex added Park Fees</h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant">10m ago</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-3">RWF 85,000</p>
+<div class="flex items-center justify-between">
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full bg-secondary-fixed border border-surface flex items-center justify-center text-[10px] font-bold text-on-secondary-fixed">AP</div>
+<div class="w-6 h-6 rounded-full bg-tertiary-fixed border border-surface flex items-center justify-center text-[10px] font-bold text-on-tertiary-fixed">SJ</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant/40 text-sm" data-icon="sync">sync</span>
+</div>
+</div>
+</div>
+<!-- Activity Item 2: Vote Result -->
+<div class="relative pl-14 activity-card">
+<div class="absolute left-0 top-1 w-12 h-12 bg-secondary-container rounded-full flex items-center justify-center z-10 shadow-sm border-2 border-surface">
+<span class="material-symbols-outlined text-on-secondary-container" data-icon="how_to_vote">how_to_vote</span>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-xl shadow-md shadow-primary/5 border border-outline-variant/20">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-title-lg text-title-lg text-on-surface">Vote Closed: Results In</h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant">2h ago</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-3 font-semibold text-secondary">Ruzizi Tented Lodge won!</p>
+<div class="bg-surface-container p-3 rounded-lg flex items-center gap-3">
+<div class="w-12 h-12 rounded bg-surface-dim overflow-hidden">
+<img alt="Ruzizi Lodge" data-alt="A luxury tented lodge overlooking a tranquil African lake during sunset. The architecture features rustic wooden decks and high-quality canvas tents that blend into the lush green surroundings. The warm sunset glow creates an inviting, upscale safari atmosphere with deep oranges and forest greens, perfectly capturing the essence of an African adventure." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXi4JmwwjdmZs3IRWHhI_JRP6Gv7ER2Olqh6euPJHKdmWaKXVMQlvN3QB8tPCp5kQNUTAGTkF2kKG7vticVnjQkUKjOEikrON3nAgiFcYXnri2kuxWOnZQzZtFT6Y27omkP_d4h3cY4vJp_PbVj90YEGkRVxezxARG_zsY_eOG5gQon4UDA-cH0rZItKSLsWJCa2-U4dlIcrw9lPcrjx3mpqQ06rH2WWbh__2tMVs66pqwBZV0aSMOKYC2UCYuMxZZinBZTP4EbUMm"/>
+</div>
+<div>
+<div class="font-label-md text-label-md text-primary">Winning Choice</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Confirmed by 4/5 members</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Activity Item 3: MoMo Settlement -->
+<div class="relative pl-14 activity-card">
+<div class="absolute left-0 top-1 w-12 h-12 bg-[#ff6b00]/20 rounded-full flex items-center justify-center z-10 shadow-sm border-2 border-surface">
+<span class="material-symbols-outlined text-secondary" data-icon="check_circle">check_circle</span>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-xl shadow-md shadow-primary/5 border border-outline-variant/20">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-title-lg text-title-lg text-on-surface">Sarah confirmed settlement</h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant">5h ago</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">Paid Alex RWF 15,000</p>
+<div class="mt-3 py-1 px-3 bg-secondary-fixed/30 rounded-full w-fit flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-label-sm text-label-sm text-on-secondary-fixed">MoMo Transfer Verified</span>
+</div>
+</div>
+</div>
+<!-- Activity Item 4: New Member -->
+<div class="relative pl-14 activity-card">
+<div class="absolute left-0 top-1 w-12 h-12 bg-tertiary-container rounded-full flex items-center justify-center z-10 shadow-sm border-2 border-surface">
+<span class="material-symbols-outlined text-on-tertiary-container" data-icon="person_add">person_add</span>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-xl shadow-md shadow-primary/5 border border-outline-variant/20">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-title-lg text-title-lg text-on-surface">Jean Paul joined the trip</h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Yesterday</span>
+</div>
+<div class="flex items-center gap-3 mt-2">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">JP</div>
+<div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Invited by Alex</p>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-primary" data-icon="verified" data-weight="fill" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="text-[10px] font-bold text-primary">TRUST LEVEL: HIGH</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Empty State / Footer hint -->
+<div class="mt-12 text-center pb-20">
+<div class="inline-block p-4 rounded-full bg-surface-container-high mb-4">
+<span class="material-symbols-outlined text-outline" data-icon="history">history</span>
+</div>
+<p class="font-label-md text-label-md text-on-surface-variant">That's all the activity for now</p>
+</div>
+</main>
+<!-- Bottom Navigation Shell -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-4 pt-2 bg-surface dark:bg-surface-container-lowest shadow-[0_-4px_10px_rgba(45,90,39,0.08)] rounded-t-xl">
+<!-- Activity Tab (Active) -->
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 active:scale-90 transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="explore" data-weight="fill" style="font-variation-settings: 'FILL' 1;">explore</span>
+<span class="font-label-md text-label-md">Activity</span>
+</a>
+<!-- Itinerary Tab -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant/70 px-4 py-1 hover:bg-surface-container-high transition-all active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="event_note">event_note</span>
+<span class="font-label-md text-label-md">Itinerary</span>
+</a>
+<!-- Expenses Tab -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant/70 px-4 py-1 hover:bg-surface-container-high transition-all active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-label-md text-label-md">Expenses</span>
+</a>
+<!-- Trips Tab -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant/70 px-4 py-1 hover:bg-surface-container-high transition-all active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span class="font-label-md text-label-md">Trips</span>
+</a>
+</nav>
+<!-- Quick Action FAB (Suppressed on details, but keeping for Home/Feed feel) -->
+<button class="fixed right-6 bottom-24 w-14 h-14 bg-primary text-on-primary rounded-xl shadow-lg flex items-center justify-center active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+<script>
+    // Micro-interactions: Fade in effect for timeline items
+    document.addEventListener('DOMContentLoaded', () => {
+      const cards = document.querySelectorAll('.activity-card');
+      cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+          card.style.transition = 'all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1)';
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, index * 100);
+      });
+    });
+  </script>
+</body></html>
