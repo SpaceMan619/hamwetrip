@@ -303,7 +303,6 @@ class TripDashboardScreen extends StatelessWidget {
     return _ScreenScaffold(
       title: 'Nyungwe Weekend',
       subtitle: 'Oct 12 - Oct 18  •  4 travelers',
-      showBackButton: false,
       bottomNavigation: const HamweBottomNavigation(
         selected: HamweDestination.trips,
       ),
@@ -374,6 +373,10 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
       title: 'Create a trip',
       subtitle:
           'Start with the essentials. Your group can shape the rest together.',
+      showBackButton: false,
+      bottomNavigation: const HamweBottomNavigation(
+        selected: HamweDestination.trips,
+      ),
       child: Form(
         key: _formKey,
         child: Column(
@@ -557,6 +560,7 @@ class ActivityFeedScreen extends StatelessWidget {
       title: 'Trip activity',
       subtitle:
           'A clear history of what changed and what needs your attention.',
+      showBackButton: false,
       bottomNavigation: const HamweBottomNavigation(
         selected: HamweDestination.trips,
       ),
@@ -622,7 +626,6 @@ class ProfileScreen extends StatelessWidget {
     return _ScreenScaffold(
       title: 'Profile & settings',
       subtitle: 'Your travel identity, preferences and account controls.',
-      showBackButton: false,
       bottomNavigation: const HamweBottomNavigation(
         selected: HamweDestination.profile,
       ),
@@ -709,9 +712,17 @@ class _ScreenScaffold extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.warmSand,
         surfaceTintColor: Colors.transparent,
-        leading: showBackButton && Navigator.of(context).canPop()
+        leading: showBackButton
             ? IconButton(
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () {
+                  if (Navigator.of(context).canPop()) {
+                    Navigator.of(context).pop();
+                  } else {
+                    Navigator.of(
+                      context,
+                    ).pushNamedAndRemoveUntil(AppRoutes.home, (route) => false);
+                  }
+                },
                 icon: const Icon(Icons.arrow_back_rounded),
               )
             : null,

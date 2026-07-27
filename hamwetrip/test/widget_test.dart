@@ -21,13 +21,16 @@ void main() {
     expect(find.text('Rajveer - screen explorer'), findsOneWidget);
   });
 
-  testWidgets('uses pill navigation only at the right hierarchy level', (
+  testWidgets('uses pill navigation only where the design requires it', (
     tester,
   ) async {
     await tester.pumpWidget(const MaterialApp(home: TripDashboardScreen()));
     expect(find.byType(HamweBottomNavigation), findsOneWidget);
 
     await tester.pumpWidget(const MaterialApp(home: CreateTripScreen()));
+    expect(find.byType(HamweBottomNavigation), findsOneWidget);
+
+    await tester.pumpWidget(const MaterialApp(home: InviteMembersScreen()));
     expect(find.byType(HamweBottomNavigation), findsNothing);
   });
 }
