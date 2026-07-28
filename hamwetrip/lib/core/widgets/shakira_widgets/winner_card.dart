@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import '../models/poll.dart';
+import '../../../../../core/theme/app_colors.dart';
+import '../../../../../data/models/poll.dart';
 
 class WinnerCard extends StatelessWidget {
   final Poll poll;
   final PollOption winner;
-
   const WinnerCard({super.key, required this.poll, required this.winner});
 
   double get _percentage =>
@@ -12,24 +12,18 @@ class WinnerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            colorScheme.primaryContainer.withOpacity(0.6),
-            colorScheme.primaryContainer.withOpacity(0.2),
-          ],
+          colors: [AppColors.paleMint, AppColors.paleMint.withOpacity(0.3)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: colorScheme.primary.withOpacity(0.2),
+          color: AppColors.forest.withOpacity(0.2),
           width: 1.5,
         ),
       ),
@@ -41,9 +35,9 @@ class WinnerCard extends StatelessWidget {
               color: Colors.white,
               shape: BoxShape.circle,
             ),
-            child: Icon(
+            child: const Icon(
               Icons.emoji_events_outlined,
-              color: colorScheme.primary,
+              color: AppColors.forest,
               size: 32,
             ),
           ),
@@ -51,13 +45,14 @@ class WinnerCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
-              color: colorScheme.primary,
+              color: AppColors.forest,
               borderRadius: BorderRadius.circular(20),
             ),
-            child: Text(
+            child: const Text(
               'WINNER',
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: colorScheme.onPrimary,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 12,
                 fontWeight: FontWeight.w800,
                 letterSpacing: 1.2,
               ),
@@ -75,9 +70,10 @@ class WinnerCard extends StatelessWidget {
                 child: Text(
                   winner.label,
                   textAlign: TextAlign.center,
-                  style: theme.textTheme.headlineSmall?.copyWith(
+                  style: const TextStyle(
+                    fontSize: 24,
                     fontWeight: FontWeight.w800,
-                    color: colorScheme.onSurface,
+                    color: AppColors.ink,
                   ),
                 ),
               ),
@@ -89,17 +85,16 @@ class WinnerCard extends StatelessWidget {
             children: [
               Text(
                 '${_percentage.toStringAsFixed(0)}%',
-                style: theme.textTheme.titleLarge?.copyWith(
-                  color: colorScheme.primary,
+                style: const TextStyle(
+                  fontSize: 22,
+                  color: AppColors.forest,
                   fontWeight: FontWeight.w800,
                 ),
               ),
               const SizedBox(width: 8),
               Text(
                 '(${winner.voteCount} of ${poll.totalVotes} votes)',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
+                style: const TextStyle(color: AppColors.muted, fontSize: 14),
               ),
             ],
           ),

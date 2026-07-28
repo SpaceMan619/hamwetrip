@@ -1,41 +1,35 @@
 import 'package:flutter/material.dart';
-import '../models/expense.dart';
+import '../../../../../core/theme/app_colors.dart';
+import '../../../../../data/models/expense.dart';
 
 class ExpenseCard extends StatelessWidget {
   final Expense expense;
   final VoidCallback? onTap;
-
   const ExpenseCard({super.key, required this.expense, this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Material(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(14),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(20),
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                color: colorScheme.outlineVariant.withOpacity(0.4),
-              ),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: AppColors.line),
             ),
             child: Row(
               children: [
-                // Category Icon
                 Container(
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    color: colorScheme.secondaryContainer.withOpacity(0.6),
+                    color: AppColors.sand,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   alignment: Alignment.center,
@@ -45,17 +39,16 @@ class ExpenseCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 14),
-
-                // Details
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         expense.description,
-                        style: theme.textTheme.bodyLarge?.copyWith(
+                        style: const TextStyle(
+                          fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: colorScheme.onSurface,
+                          color: AppColors.ink,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -65,15 +58,17 @@ class ExpenseCard extends StatelessWidget {
                         children: [
                           Text(
                             expense.paidByName,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: colorScheme.primary,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: AppColors.forest,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                           Text(
                             ' paid · Split ${expense.splitAmongInitials.length} ways',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: AppColors.muted,
                             ),
                           ),
                         ],
@@ -81,23 +76,23 @@ class ExpenseCard extends StatelessWidget {
                     ],
                   ),
                 ),
-
-                // Amount Column
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
                       '\$${expense.amount.toStringAsFixed(2)}',
-                      style: theme.textTheme.titleMedium?.copyWith(
+                      style: const TextStyle(
+                        fontSize: 18,
                         fontWeight: FontWeight.w700,
-                        color: colorScheme.onSurface,
+                        color: AppColors.ink,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       '\$${expense.splitAmount.toStringAsFixed(2)}/each',
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.muted,
                       ),
                     ),
                   ],

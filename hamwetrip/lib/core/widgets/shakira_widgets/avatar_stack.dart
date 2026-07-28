@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../core/theme/app_colors.dart';
 
 class AvatarStack extends StatelessWidget {
   final List<String> initials;
@@ -23,13 +24,12 @@ class AvatarStack extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     final displayCount = initials.length > maxVisible
         ? maxVisible
         : initials.length;
     final remaining = initials.length - displayCount;
     final totalItems = displayCount + (remaining > 0 ? 1 : 0);
-    final overlap = 6.0;
+    const overlap = 6.0;
     final totalWidth = size * totalItems - overlap * (totalItems - 1);
 
     return SizedBox(
@@ -47,9 +47,9 @@ class AvatarStack extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: isOverflow
-                    ? colorScheme.surfaceContainerHighest
+                    ? AppColors.sand
                     : _palette[index % _palette.length],
-                border: Border.all(color: colorScheme.surface, width: 2),
+                border: Border.all(color: Colors.white, width: 2),
               ),
               alignment: Alignment.center,
               child: isOverflow
@@ -58,13 +58,13 @@ class AvatarStack extends StatelessWidget {
                       style: TextStyle(
                         fontSize: size * 0.34,
                         fontWeight: FontWeight.w700,
-                        color: colorScheme.onSurfaceVariant,
+                        color: AppColors.muted,
                       ),
                     )
                   : Text(
                       initials[index],
-                      style: TextStyle(
-                        fontSize: size * 0.38,
+                      style: const TextStyle(
+                        fontSize: 13,
                         fontWeight: FontWeight.w600,
                         color: Colors.white,
                       ),

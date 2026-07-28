@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import '../models/poll.dart';
+import '../../../../../core/theme/app_colors.dart';
+import '../../../../../data/models/poll.dart';
 
 class ResultOptionBar extends StatelessWidget {
   final PollOption option;
   final int totalVotes;
   final bool isWinner;
   final bool animate;
-
   const ResultOptionBar({
     super.key,
     required this.option,
@@ -20,20 +20,14 @@ class ResultOptionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isWinner ? colorScheme.surface : colorScheme.surfaceContainerLow,
+        color: isWinner ? Colors.white : AppColors.warmSand,
         borderRadius: BorderRadius.circular(14),
         border: isWinner
-            ? Border.all(
-                color: colorScheme.primary.withOpacity(0.3),
-                width: 1.5,
-              )
+            ? Border.all(color: AppColors.forest.withOpacity(0.3), width: 1.5)
             : null,
       ),
       child: Column(
@@ -48,32 +42,32 @@ class ResultOptionBar extends StatelessWidget {
               Expanded(
                 child: Text(
                   option.label,
-                  style: theme.textTheme.titleSmall?.copyWith(
+                  style: TextStyle(
+                    fontSize: 16,
                     fontWeight: isWinner ? FontWeight.w700 : FontWeight.w600,
-                    color: colorScheme.onSurface,
+                    color: AppColors.ink,
                   ),
                 ),
               ),
               if (isWinner)
-                Padding(
-                  padding: const EdgeInsets.only(right: 8),
+                const Padding(
+                  padding: EdgeInsets.only(right: 8),
                   child: Icon(
                     Icons.check_circle,
-                    color: colorScheme.primary,
+                    color: AppColors.forest,
                     size: 20,
                   ),
                 ),
               Text(
                 '${option.voteCount} votes',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
+                style: const TextStyle(color: AppColors.muted, fontSize: 14),
               ),
               const SizedBox(width: 8),
               Text(
                 '${_percentage.toStringAsFixed(0)}%',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: isWinner ? colorScheme.primary : colorScheme.onSurface,
+                style: TextStyle(
+                  fontSize: 18,
+                  color: isWinner ? AppColors.forest : AppColors.ink,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -90,8 +84,7 @@ class ResultOptionBar extends StatelessWidget {
                     children: [
                       Container(
                         decoration: BoxDecoration(
-                          color: colorScheme.surfaceContainerHighest
-                              .withOpacity(0.5),
+                          color: AppColors.line.withOpacity(0.3),
                           borderRadius: BorderRadius.circular(6),
                         ),
                       ),
@@ -102,9 +95,7 @@ class ResultOptionBar extends StatelessWidget {
                             ? constraints.maxWidth * (_percentage / 100.0)
                             : 0,
                         decoration: BoxDecoration(
-                          color: isWinner
-                              ? colorScheme.primary
-                              : colorScheme.outlineVariant.withOpacity(0.8),
+                          color: isWinner ? AppColors.forest : AppColors.line,
                           borderRadius: BorderRadius.circular(6),
                         ),
                       ),

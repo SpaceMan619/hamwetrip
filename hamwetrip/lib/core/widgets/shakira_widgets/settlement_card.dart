@@ -1,28 +1,24 @@
 import 'package:flutter/material.dart';
-import '../models/expense.dart';
+import '../../../../../core/theme/app_colors.dart';
+import '../../../../../data/models/expense.dart';
 
 class SettlementCard extends StatelessWidget {
   final Balance balance;
   final VoidCallback? onSettleUp;
-
   const SettlementCard({super.key, required this.balance, this.onSettleUp});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: colorScheme.surface,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: colorScheme.outlineVariant.withOpacity(0.4)),
+        border: Border.all(color: AppColors.line),
       ),
       child: Row(
         children: [
-          // Debtor
           Expanded(
             child: Row(
               children: [
@@ -45,16 +41,16 @@ class SettlementCard extends StatelessWidget {
                     children: [
                       Text(
                         balance.fromName,
-                        style: theme.textTheme.bodyMedium?.copyWith(
+                        style: const TextStyle(
+                          fontSize: 16,
                           fontWeight: FontWeight.w600,
+                          color: AppColors.ink,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
-                      Text(
+                      const Text(
                         'owes',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
+                        style: TextStyle(color: AppColors.muted, fontSize: 14),
                       ),
                     ],
                   ),
@@ -62,29 +58,26 @@ class SettlementCard extends StatelessWidget {
               ],
             ),
           ),
-
-          // Amount & Arrow
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Column(
               children: [
                 Text(
                   '\$${balance.amount.toStringAsFixed(2)}',
-                  style: theme.textTheme.titleSmall?.copyWith(
+                  style: const TextStyle(
+                    fontSize: 18,
                     fontWeight: FontWeight.w800,
-                    color: colorScheme.error,
+                    color: AppColors.sunset,
                   ),
                 ),
-                Icon(
+                const Icon(
                   Icons.arrow_forward,
                   size: 16,
-                  color: colorScheme.onSurfaceVariant.withOpacity(0.5),
+                  color: AppColors.line,
                 ),
               ],
             ),
           ),
-
-          // Creditor
           Expanded(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -95,11 +88,13 @@ class SettlementCard extends StatelessWidget {
                     children: [
                       Text(
                         balance.toName,
-                        style: theme.textTheme.bodyMedium?.copyWith(
+                        textAlign: TextAlign.right,
+                        style: const TextStyle(
+                          fontSize: 16,
                           fontWeight: FontWeight.w600,
+                          color: AppColors.ink,
                         ),
                         overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.right,
                       ),
                       const SizedBox(height: 2),
                     ],

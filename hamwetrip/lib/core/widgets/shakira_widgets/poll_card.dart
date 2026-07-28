@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../models/poll.dart';
+import '../../../../../core/theme/app_colors.dart';
+import '../../../../../data/models/poll.dart';
 import 'avatar_stack.dart';
 import 'poll_option_tile.dart';
 
@@ -10,7 +11,7 @@ class PollCard extends StatelessWidget {
   final VoidCallback? onVote;
   final ValueChanged<String>? onOptionTap;
   final VoidCallback? onClosePoll;
-  final VoidCallback? onTap; // Added to handle navigation
+  final VoidCallback? onTap;
 
   const PollCard({
     super.key,
@@ -33,15 +34,11 @@ class PollCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    // The actual UI of the card
     Widget cardUI = Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
@@ -63,9 +60,10 @@ class PollCard extends StatelessWidget {
             const SizedBox(height: 14),
             Text(
               poll.question,
-              style: theme.textTheme.titleMedium?.copyWith(
+              style: const TextStyle(
+                fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: colorScheme.onSurface,
+                color: AppColors.ink,
                 height: 1.3,
               ),
             ),
@@ -97,28 +95,24 @@ class PollCard extends StatelessWidget {
       ),
     );
 
-    // If an onTap is provided (meaning user voted or poll is closed), make it tappable
     if (onTap != null) {
       return Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           child: cardUI,
         ),
       );
     }
-
     return cardUI;
   }
 }
 
-// --- Header Row ---
 class _HeaderRow extends StatelessWidget {
   final Poll poll;
   final String Function(DateTime) formatDeadline;
   final VoidCallback? onClosePoll;
-
   const _HeaderRow({
     required this.poll,
     required this.formatDeadline,
@@ -127,15 +121,12 @@ class _HeaderRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
     return Row(
       children: [
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
-            color: colorScheme.secondaryContainer.withOpacity(0.55),
+            color: AppColors.sand,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Row(
@@ -145,8 +136,9 @@ class _HeaderRow extends StatelessWidget {
               const SizedBox(width: 5),
               Text(
                 poll.category,
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: colorScheme.onSecondaryContainer,
+                style: const TextStyle(
+                  color: AppColors.ink,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -155,29 +147,14 @@ class _HeaderRow extends StatelessWidget {
         ),
         const Spacer(),
         if (poll.deadline != null && poll.isActive)
-          _DeadlineBadge(
-            label: formatDeadline(poll.deadline!),
-            icon: Icons.schedule,
-            colorScheme: colorScheme,
-            theme: theme,
-          )
+          _DeadlineBadge(label: formatDeadline(poll.deadline!), isClosed: false)
         else if (!poll.isActive)
-          _DeadlineBadge(
-            label: 'Closed',
-            icon: Icons.lock_clock,
-            colorScheme: colorScheme,
-            theme: theme,
-            isClosed: true,
-          ),
+          const _DeadlineBadge(label: 'Closed', isClosed: true),
         const SizedBox(width: 4),
         PopupMenuButton<int>(
           padding: EdgeInsets.zero,
           splashRadius: 18,
-          icon: Icon(
-            Icons.more_vert,
-            size: 20,
-            color: colorScheme.onSurfaceVariant,
-          ),
+          icon: const Icon(Icons.more_vert, size: 20, color: AppColors.muted),
           onSelected: (value) {
             if (value == 0) onClosePoll?.call();
           },
@@ -212,46 +189,31 @@ class _HeaderRow extends StatelessWidget {
 
 class _DeadlineBadge extends StatelessWidget {
   final String label;
-  final IconData icon;
-  final ColorScheme colorScheme;
-  final ThemeData theme;
   final bool isClosed;
-
-  const _DeadlineBadge({
-    required this.label,
-    required this.icon,
-    required this.colorScheme,
-    required this.theme,
-    this.isClosed = false,
-  });
+  const _DeadlineBadge({required this.label, required this.isClosed});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       decoration: BoxDecoration(
-        color: isClosed
-            ? colorScheme.surfaceContainerHighest.withOpacity(0.5)
-            : colorScheme.errorContainer.withOpacity(0.45),
+        color: isClosed ? AppColors.sand : AppColors.paleSunset,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            icon,
+            isClosed ? Icons.lock_clock : Icons.schedule,
             size: 13,
-            color: isClosed
-                ? colorScheme.onSurfaceVariant
-                : colorScheme.onErrorContainer,
+            color: isClosed ? AppColors.muted : AppColors.sunset,
           ),
           const SizedBox(width: 4),
           Text(
             label,
-            style: theme.textTheme.labelMedium?.copyWith(
-              color: isClosed
-                  ? colorScheme.onSurfaceVariant
-                  : colorScheme.onErrorContainer,
+            style: TextStyle(
+              color: isClosed ? AppColors.muted : AppColors.sunset,
+              fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -261,13 +223,11 @@ class _DeadlineBadge extends StatelessWidget {
   }
 }
 
-// --- Footer Row ---
 class _FooterRow extends StatelessWidget {
   final Poll poll;
   final bool hasVoted;
   final bool canVote;
   final VoidCallback? onVote;
-
   const _FooterRow({
     required this.poll,
     required this.hasVoted,
@@ -277,18 +237,13 @@ class _FooterRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
     return Row(
       children: [
         AvatarStack(initials: poll.voterInitials),
         const SizedBox(width: 10),
         Text(
           '${poll.totalVotes}/${poll.totalMembers} voted',
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: colorScheme.onSurfaceVariant,
-          ),
+          style: const TextStyle(color: AppColors.muted, fontSize: 14),
         ),
         const Spacer(),
         if (canVote)
@@ -299,25 +254,25 @@ class _FooterRow extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
-              textStyle: theme.textTheme.labelLarge?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
             ),
-            child: const Text('Vote'),
+            child: const Text(
+              'Vote',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
           )
         else if (hasVoted)
           _StatusPill(
             icon: Icons.check_circle,
             label: 'Voted',
-            color: colorScheme.primary,
-            bgColor: colorScheme.primaryContainer.withOpacity(0.5),
+            color: AppColors.forest,
+            bgColor: AppColors.paleMint,
           )
         else if (!poll.isActive)
-          _StatusPill(
+          const _StatusPill(
             icon: Icons.emoji_events_outlined,
             label: 'Ended',
-            color: colorScheme.onSurfaceVariant,
-            bgColor: colorScheme.surfaceContainerHighest.withOpacity(0.35),
+            color: AppColors.muted,
+            bgColor: AppColors.sand,
           ),
       ],
     );
@@ -329,7 +284,6 @@ class _StatusPill extends StatelessWidget {
   final String label;
   final Color color;
   final Color bgColor;
-
   const _StatusPill({
     required this.icon,
     required this.label,
@@ -352,8 +306,9 @@ class _StatusPill extends StatelessWidget {
           const SizedBox(width: 5),
           Text(
             label,
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+            style: TextStyle(
               color: color,
+              fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
           ),

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import '../models/momo_transaction.dart';
+import '../../../../../core/theme/app_colors.dart';
+import '../../../../../data/models/momo_transaction.dart';
 
 class MomoTransactionTile extends StatelessWidget {
   final MomoTransaction transaction;
   final VoidCallback? onAction;
-
   const MomoTransactionTile({
     super.key,
     required this.transaction,
@@ -13,8 +13,6 @@ class MomoTransactionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final isSend = transaction.type == MomoType.send;
     final isPending = transaction.status == MomoStatus.pending;
 
@@ -22,58 +20,52 @@ class MomoTransactionTile extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: colorScheme.surface,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: colorScheme.outlineVariant.withOpacity(isPending ? 0.6 : 0.2),
-          width: isPending ? 1.5 : 1.0,
-        ),
+        border: Border.all(color: AppColors.line, width: isPending ? 1.5 : 1.0),
       ),
       child: Row(
         children: [
-          // Avatar
           CircleAvatar(
             radius: 24,
-            backgroundColor: isSend
-                ? colorScheme.errorContainer.withOpacity(0.7)
-                : colorScheme.primaryContainer.withOpacity(0.7),
+            backgroundColor: isSend ? AppColors.paleSunset : AppColors.paleMint,
             child: Text(
               transaction.initials,
               style: TextStyle(
-                color: isSend ? colorScheme.error : colorScheme.primary,
+                color: isSend ? AppColors.sunset : AppColors.forest,
                 fontWeight: FontWeight.w700,
                 fontSize: 16,
               ),
             ),
           ),
           const SizedBox(width: 14),
-
-          // Details
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   transaction.name,
-                  style: theme.textTheme.bodyLarge?.copyWith(
+                  style: const TextStyle(
+                    fontSize: 16,
                     fontWeight: FontWeight.w600,
+                    color: AppColors.ink,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.phone_android_outlined,
                       size: 14,
-                      color: colorScheme.onSurfaceVariant,
+                      color: AppColors.muted,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       transaction.maskedPhone,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                        fontFamily:
-                            'monospace', // Makes phone numbers look better
+                      style: const TextStyle(
+                        color: AppColors.muted,
+                        fontSize: 14,
+                        fontFamily: 'monospace',
                       ),
                     ),
                   ],
@@ -81,8 +73,6 @@ class MomoTransactionTile extends StatelessWidget {
               ],
             ),
           ),
-
-          // Amount & Action
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -90,9 +80,10 @@ class MomoTransactionTile extends StatelessWidget {
                 isSend
                     ? '-\$${transaction.amount.toStringAsFixed(2)}'
                     : '+\$${transaction.amount.toStringAsFixed(2)}',
-                style: theme.textTheme.titleMedium?.copyWith(
+                style: TextStyle(
+                  fontSize: 18,
                   fontWeight: FontWeight.w700,
-                  color: isSend ? colorScheme.error : colorScheme.primary,
+                  color: isSend ? AppColors.sunset : AppColors.forest,
                 ),
               ),
               const SizedBox(height: 8),
@@ -103,11 +94,14 @@ class MomoTransactionTile extends StatelessWidget {
                     onPressed: onAction,
                     style: FilledButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
-                      textStyle: theme.textTheme.labelSmall?.copyWith(
+                    ),
+                    child: Text(
+                      isSend ? 'Pay Now' : 'Request',
+                      style: const TextStyle(
+                        fontSize: 12,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    child: Text(isSend ? 'Pay Now' : 'Request'),
                   ),
                 )
               else
@@ -117,22 +111,23 @@ class MomoTransactionTile extends StatelessWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                    color: AppColors.sand,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Row(
+                  child: const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
                         Icons.check_circle,
                         size: 14,
-                        color: colorScheme.outline,
+                        color: AppColors.muted,
                       ),
-                      const SizedBox(width: 4),
+                      SizedBox(width: 4),
                       Text(
                         'Done',
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: colorScheme.outline,
+                        style: TextStyle(
+                          color: AppColors.muted,
+                          fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
                       ),

@@ -1,37 +1,33 @@
 import 'package:flutter/material.dart';
-import '../models/itinerary.dart';
+import '../../../../../core/theme/app_colors.dart';
+import '../../../../../data/models/itinerary.dart';
 
 class ItineraryItemCard extends StatelessWidget {
   final ItineraryItem item;
   final VoidCallback? onTap;
-
   const ItineraryItemCard({super.key, required this.item, this.onTap});
 
-  Color _getTypeColor(ColorScheme colorScheme) {
+  Color get _typeColor {
     switch (item.type) {
       case 'transport':
-        return colorScheme.tertiary;
+        return AppColors.muted;
       case 'food':
         return Colors.orangeAccent;
       case 'rest':
-        return colorScheme.outline;
-      default: // activity
-        return colorScheme.primary;
+        return AppColors.line;
+      default:
+        return AppColors.forest;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final typeColor = _getTypeColor(colorScheme);
-
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: colorScheme.surface,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colorScheme.outlineVariant.withOpacity(0.4)),
+        border: Border.all(color: AppColors.line),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.03),
@@ -51,7 +47,6 @@ class ItineraryItemCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Top Row: Time & Type Badge
                 Row(
                   children: [
                     Container(
@@ -60,25 +55,21 @@ class ItineraryItemCard extends StatelessWidget {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: colorScheme.surfaceContainerHighest.withOpacity(
-                          0.6,
-                        ),
+                        color: AppColors.sand,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Row(
+                      child: const Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(
-                            Icons.schedule,
-                            size: 14,
-                            color: Colors.grey,
-                          ),
-                          const SizedBox(width: 4),
+                          Icon(Icons.schedule, size: 14, color: Colors.grey),
+                          SizedBox(width: 4),
+                          // Using a placeholder style as time will be passed by backend
                           Text(
-                            item.time,
-                            style: theme.textTheme.labelMedium?.copyWith(
+                            'Time',
+                            style: TextStyle(
                               fontWeight: FontWeight.w600,
-                              color: colorScheme.onSurfaceVariant,
+                              color: AppColors.muted,
+                              fontSize: 12,
                             ),
                           ),
                         ],
@@ -91,13 +82,14 @@ class ItineraryItemCard extends StatelessWidget {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: typeColor.withOpacity(0.12),
+                        color: _typeColor.withOpacity(0.12),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         item.type.toUpperCase(),
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: typeColor,
+                        style: TextStyle(
+                          color: _typeColor,
+                          fontSize: 12,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -105,8 +97,6 @@ class ItineraryItemCard extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 12),
-
-                // Title & Emoji
                 Row(
                   children: [
                     Text(item.emoji, style: const TextStyle(fontSize: 24)),
@@ -114,31 +104,30 @@ class ItineraryItemCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         item.title,
-                        style: theme.textTheme.titleMedium?.copyWith(
+                        style: const TextStyle(
+                          fontSize: 18,
                           fontWeight: FontWeight.w700,
-                          color: colorScheme.onSurface,
+                          color: AppColors.ink,
                         ),
                       ),
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 8),
-
-                // Location
                 Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.location_on_outlined,
                       size: 16,
-                      color: colorScheme.error.withOpacity(0.8),
+                      color: AppColors.sunset,
                     ),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
                         item.location,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colorScheme.error,
+                        style: const TextStyle(
+                          color: AppColors.sunset,
+                          fontSize: 14,
                           fontWeight: FontWeight.w500,
                         ),
                         maxLines: 1,
@@ -147,14 +136,13 @@ class ItineraryItemCard extends StatelessWidget {
                     ),
                   ],
                 ),
-
-                // Description (if not empty)
                 if (item.description.isNotEmpty) ...[
                   const SizedBox(height: 10),
                   Text(
                     item.description,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
+                    style: const TextStyle(
+                      color: AppColors.muted,
+                      fontSize: 14,
                       height: 1.4,
                     ),
                   ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../models/poll.dart';
+import '../../../../../core/theme/app_colors.dart';
+import '../../../../../data/models/poll.dart';
 
 class PollOptionTile extends StatelessWidget {
   final PollOption option;
@@ -24,36 +25,26 @@ class PollOptionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
     return GestureDetector(
       onTap: isEnabled ? onTap : null,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        curve: Curves.easeInOut,
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected
-              ? colorScheme.primaryContainer.withOpacity(0.45)
-              : colorScheme.surface,
+          color: isSelected ? AppColors.forest.withOpacity(0.08) : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected
-                ? colorScheme.primary
-                : colorScheme.outlineVariant.withOpacity(0.5),
+            color: isSelected ? AppColors.forest : AppColors.line,
             width: isSelected ? 1.5 : 1.0,
           ),
         ),
         child: Column(
           children: [
-            // Top row: indicator · emoji · label · badge/count
             Row(
               children: [
                 _SelectionIndicator(
                   isSelected: isSelected,
                   showResults: showResults,
-                  colorScheme: colorScheme,
                 ),
                 const SizedBox(width: 12),
                 if (option.emoji != null) ...[
@@ -63,29 +54,44 @@ class PollOptionTile extends StatelessWidget {
                 Expanded(
                   child: Text(
                     option.label,
-                    style: theme.textTheme.bodyLarge?.copyWith(
+                    style: TextStyle(
+                      fontSize: 16,
                       fontWeight: isSelected
                           ? FontWeight.w600
                           : FontWeight.w500,
-                      color: isSelected
-                          ? colorScheme.primary
-                          : colorScheme.onSurface,
+                      color: isSelected ? AppColors.forest : AppColors.ink,
                     ),
                   ),
                 ),
                 if (showResults && isSelected)
-                  _VoteBadge(colorScheme: colorScheme)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.forest,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: const Text(
+                      'Your Vote',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  )
                 else if (showResults)
                   Text(
                     '${option.voteCount}',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
+                    style: const TextStyle(
+                      color: AppColors.muted,
+                      fontSize: 14,
                     ),
                   ),
               ],
             ),
-
-            // Progress bar + percentage
             if (showResults) ...[
               const SizedBox(height: 10),
               LayoutBuilder(
@@ -96,26 +102,20 @@ class PollOptionTile extends StatelessWidget {
                       height: 6,
                       child: Stack(
                         children: [
-                          // Track
                           Container(
                             decoration: BoxDecoration(
-                              color: colorScheme.outlineVariant.withOpacity(
-                                0.18,
-                              ),
+                              color: AppColors.line.withOpacity(0.3),
                               borderRadius: BorderRadius.circular(3),
                             ),
                           ),
-                          // Fill
                           AnimatedContainer(
                             duration: const Duration(milliseconds: 600),
                             curve: Curves.easeOutCubic,
                             width: constraints.maxWidth * (_percentage / 100.0),
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? colorScheme.primary
-                                  : colorScheme.outlineVariant.withOpacity(
-                                      0.45,
-                                    ),
+                                  ? AppColors.forest
+                                  : AppColors.muted.withOpacity(0.5),
                               borderRadius: BorderRadius.circular(3),
                             ),
                           ),
@@ -130,8 +130,9 @@ class PollOptionTile extends StatelessWidget {
                 alignment: Alignment.centerRight,
                 child: Text(
                   '${_percentage.toStringAsFixed(0)}%',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
+                  style: const TextStyle(
+                    color: AppColors.muted,
+                    fontSize: 12,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -147,58 +148,29 @@ class PollOptionTile extends StatelessWidget {
 class _SelectionIndicator extends StatelessWidget {
   final bool isSelected;
   final bool showResults;
-  final ColorScheme colorScheme;
-
   const _SelectionIndicator({
     required this.isSelected,
     required this.showResults,
-    required this.colorScheme,
   });
 
   @override
   Widget build(BuildContext context) {
-    if (showResults && !isSelected) {
+    if (showResults && !isSelected)
       return const SizedBox(width: 20, height: 20);
-    }
     return Container(
       width: 20,
       height: 20,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: isSelected ? colorScheme.primary : Colors.transparent,
+        color: isSelected ? AppColors.forest : Colors.transparent,
         border: Border.all(
-          color: isSelected ? colorScheme.primary : colorScheme.outline,
+          color: isSelected ? AppColors.forest : AppColors.line,
           width: 2,
         ),
       ),
       child: isSelected
-          ? Icon(Icons.check, size: 14, color: colorScheme.onPrimary)
+          ? const Icon(Icons.check, size: 14, color: Colors.white)
           : null,
-    );
-  }
-}
-
-class _VoteBadge extends StatelessWidget {
-  final ColorScheme colorScheme;
-
-  const _VoteBadge({required this.colorScheme});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: colorScheme.primary,
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Text(
-        'Your Vote',
-        style: theme.textTheme.labelSmall?.copyWith(
-          color: colorScheme.onPrimary,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
     );
   }
 }
