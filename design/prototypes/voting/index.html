@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-container": "#b7aa86",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed": "#f0e2ba",
+                        "background": "#fcf9f8",
+                        "primary-fixed": "#bcf0ae",
+                        "surface-container-high": "#eae7e7",
+                        "primary-fixed-dim": "#a1d494",
+                        "error": "#ba1a1a",
+                        "secondary-fixed": "#ffdcc5",
+                        "surface-dim": "#dcd9d9",
+                        "surface-tint": "#3b6934",
+                        "on-surface-variant": "#42493e",
+                        "outline": "#72796e",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#ffb783",
+                        "on-tertiary-fixed": "#221b03",
+                        "surface-container-highest": "#e4e2e1",
+                        "on-surface": "#1b1c1c",
+                        "on-error": "#ffffff",
+                        "primary-container": "#2d5a27",
+                        "surface-bright": "#fcf9f8",
+                        "on-tertiary-fixed-variant": "#4f4629",
+                        "on-primary-fixed-variant": "#23501e",
+                        "outline-variant": "#c2c9bb",
+                        "on-secondary-container": "#663100",
+                        "tertiary": "#685e3e",
+                        "primary": "#154212",
+                        "on-background": "#1b1c1c",
+                        "tertiary-fixed-dim": "#d4c69f",
+                        "surface": "#fcf9f8",
+                        "on-primary-container": "#9dd090",
+                        "inverse-primary": "#a1d494",
+                        "inverse-on-surface": "#f3f0f0",
+                        "on-primary": "#ffffff",
+                        "surface-variant": "#e4e2e1",
+                        "inverse-surface": "#303030",
+                        "on-primary-fixed": "#002201",
+                        "secondary-container": "#fc8f34",
+                        "on-secondary-fixed-variant": "#713700",
+                        "on-tertiary-container": "#483f22",
+                        "on-secondary-fixed": "#301400",
+                        "error-container": "#ffdad6",
+                        "surface-container-low": "#f6f3f2",
+                        "surface-container": "#f0eded",
+                        "secondary": "#944a00",
+                        "on-error-container": "#93000a",
+                        "surface-container-lowest": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-margin-mobile": "16px",
+                        "gutter": "16px",
+                        "base": "8px",
+                        "sm": "8px",
+                        "xs": "4px",
+                        "container-margin-desktop": "auto",
+                        "xl": "32px",
+                        "lg": "24px",
+                        "xxl": "48px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-xl": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "label-sm": ["10px", {"lineHeight": "14px", "fontWeight": "500"}],
+                        "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .poll-progress {
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen font-body-md flex flex-col">
+<!-- Top Navigation Shell -->
+<header class="w-full sticky top-0 z-50 dark:bg-surface-dim flex items-center justify-between px-gutter h-16 bg-transparent">
+<button class="hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors active:scale-95 duration-150 p-2 rounded-full bg-surface-container-lowest shadow-md">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed">arrow_back</span>
+</button>
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed bg-surface-container-lowest px-4 py-1.5 rounded-full shadow-md">Nairobi Adventure</h1>
+<button class="hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors active:scale-95 duration-150 p-2 rounded-full bg-surface-container-lowest shadow-md">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed">notifications</span>
+</button>
+</header>
+<main class="flex-grow w-full max-w-[1200px] mx-auto px-gutter py-lg pb-40">
+<!-- Poll Title & Header Section -->
+<section class="mb-lg">
+<div class="flex items-center gap-2 mb-xs">
+<span class="bg-secondary-container text-on-secondary-fixed font-label-md text-label-md px-3 py-1 rounded-full uppercase tracking-wider">Active Poll</span>
+<span class="text-on-surface-variant font-label-md text-label-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+                    4h 12m left
+                </span>
+</div>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-on-surface mb-sm">Where should we stay?</h2>
+<p class="text-on-surface-variant font-body-md text-body-md">Finalizing our accommodation for the Maasai Mara leg of the trip. Cast your vote!</p>
+</section>
+<!-- Asymmetric Grid for Poll Options -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Option 1: Sopa Lodge (Primary focus style) -->
+<div class="md:col-span-7 group cursor-pointer active:scale-[0.98] transition-all duration-200">
+<div class="relative bg-surface-container-lowest rounded-[2rem] overflow-hidden shadow-[0_4px_12px_rgba(45,90,39,0.08)] h-full border-2 border-primary-container">
+<div class="h-56 relative overflow-hidden">
+<img alt="Sopa Lodge" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" data-alt="A luxurious safari lodge with high thatched roofs and golden stone walls, nestled in the green African savannah under a warm, late afternoon sun. The scene is bathed in golden hour light, reflecting a high-end, reliable, and adventurous travel aesthetic with warm earth tones and rich greens." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGy-7AF5nolMLrYwfjKp9Pg_dUaDnpkSOcsTFQteBmPVFTJ3oLaw9LncUTNH5pQWQ_ypSoacsSS1svSFug8gcZX2iCZfTWTjGFOAcXBsCwPWNX0MJ8_B9sEAvZtsa6Y0UTModnUFdUL5T5AJ9ww_x_eTCapI86SoNFyM876NPT1TzNEZftfAKbQ9mGEFHWgUbOpdBCDTj8TiWHKDwEwjdVDKLA-7tRGVg7ghhURVJNTb399TCKzToq9_RrTR8q5m4Y2yPFbWWWYWBa"/>
+<div class="absolute top-4 right-4 bg-primary-container text-on-primary-container px-3 py-1 rounded-full flex items-center gap-1 shadow-md">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-label-md text-label-md">Selected</span>
+</div>
+</div>
+<div class="p-md">
+<div class="flex justify-between items-start mb-sm">
+<div>
+<h3 class="font-title-lg text-title-lg text-primary">Ruzizi Tented Lodge</h3>
+<p class="text-on-surface-variant font-label-md text-label-md">Luxury Suite • Full Board</p>
+</div>
+<div class="text-right">
+<span class="font-headline-md text-headline-md text-primary">4</span>
+<span class="text-on-surface-variant font-label-md text-label-md block">Votes</span>
+</div>
+</div>
+<!-- Progress Bar -->
+<div class="w-full h-4 bg-surface-container rounded-full mb-md overflow-hidden">
+<div class="poll-progress h-full bg-primary-container w-[66%] rounded-full"></div>
+</div>
+<!-- Avatars -->
+<div class="flex items-center gap-2">
+<div class="flex -space-x-2">
+<img alt="User" class="w-8 h-8 rounded-full border-2 border-surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIF48GZ3IAvlLFR1Yg1AWSniD_Yh6-SMTazY63GyC1r8lRwvwu2K6bAPn7oUtFi6gUk2yCY21hoEPqnh7joeBaa0qWDQnkpI1_liBdwiBsdKlnVJDgXbkdtDHzVBgMsOXy1Qff6wiOzWzzCgZL0700UVj8KquZUiROCLyIKAizD_cs8BkTcHu_ETipoIpDBidVmLCTpZ1R4VpcTzvOn6CMo51El0aa5YIWxirolcBebUsXgv_tvQlfpxJ-OLs3yc3eEQqj2U0TRwtp"/>
+<img alt="User" class="w-8 h-8 rounded-full border-2 border-surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB49RFCRSbP1X9OvXt1y1G22FjqfwnyAbdRcsQt6FwriMw7MvRytEU-L_6pLN2NDO5YJxzl-gTA0EbCK4SxBM0eoCUDm4ke4cASVq9I0IAcnqD4Jo89tFEPL0UaNLPC2JSjImf4DOvHgjzzatL36d_Uu8qgztdbqY2b-dROgxxa9MXJWCYDA5farKal5SdEhsDU-fk6BSyzwap5nVW2qy_Cz3kDf3inVfM_-bt24xEHfbxIItRGeeinxMyfBqLeR563XCPFshQqBpl5"/>
+<img alt="User" class="w-8 h-8 rounded-full border-2 border-surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBf7cjz81Gmrs3D0T5H5qAOtKtltnL0evFuqjfWEeu_RjJXi55BXc1owndbHBbB7wH1FOkfOMmKS3GFMSPGcWfbJzM2x8I5IzQ_CwsBO8m-2pJ_9I5S51XQX0w4KQ-HgF0D9ymfLZgT8jFGaWLiI_LQkhOORPOhxU1bFG0hiLRSzDpt41GWhrQVoOmUECwYQaFtgBnI0anRycytr_-6q-AaBlg3EknwJ9eyC-UBWzkVh1rfI_ZRDYT2_Znd00PERYru4Cua4-RifL_s"/>
+<div class="w-8 h-8 rounded-full bg-tertiary-fixed border-2 border-surface flex items-center justify-center font-label-sm text-label-sm text-on-tertiary-fixed">
+                                    +1
+                                </div>
+</div>
+<span class="text-on-surface-variant font-body-sm text-body-sm italic">You voted for this</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Option 2: Bush Camp -->
+<div class="md:col-span-5 group cursor-pointer active:scale-[0.98] transition-all duration-200">
+<div class="bg-surface-container-lowest rounded-[2rem] overflow-hidden shadow-[0_4px_12px_rgba(45,90,39,0.08)] h-full border border-outline-variant hover:border-secondary transition-colors">
+<div class="h-56 relative overflow-hidden">
+<img alt="Bush Camp" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" data-alt="A cozy, high-quality canvas tent set on a wooden platform overlooking a river in Kenya. The lighting is soft and atmospheric, highlighting the warm wooden textures and the deep sunset orange of the sky. The mood is adventurous yet comfortable, aligned with a modern corporate meets tactile travel brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDj9mASK92gp0nhoVw0vshxSrz42YT7q6GapeaNDEQbyTJSm2yLqZYj6C1PAHehfK9Cn29CoNfzsnsdM4LsWNXf9auZ5JCYQ0yWiek_FIbfxX2-LQUqnIVFOc64c0cfzMVuu0SpcYJRlCmAyR_56AFepgsbkkelv7i7NALKY2mPN4dIjjReg3dMFGLukHUuIadpONyEUav8jFYpgcUdhu51XOQoJA2PmPfw_a4A08OBORM3gwzNhAlMpWySPLIaEpt64AbWJf6MGGu"/>
+</div>
+<div class="p-md">
+<div class="flex justify-between items-start mb-sm">
+<div>
+<h3 class="font-title-lg text-title-lg text-on-surface">Mutumba Campsite</h3>
+<p class="text-on-surface-variant font-label-md text-label-md">Eco-Tent • Half Board</p>
+</div>
+<div class="text-right">
+<span class="font-headline-md text-headline-md text-on-surface">2</span>
+<span class="text-on-surface-variant font-label-md text-label-md block">Votes</span>
+</div>
+</div>
+<!-- Progress Bar -->
+<div class="w-full h-4 bg-surface-container rounded-full mb-md overflow-hidden">
+<div class="poll-progress h-full bg-secondary-container w-[33%] rounded-full"></div>
+</div>
+<!-- Avatars -->
+<div class="flex items-center gap-2">
+<div class="flex -space-x-2">
+<img alt="User" class="w-8 h-8 rounded-full border-2 border-surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgwEoE9tAzNo0IcSFDAze2wcuEncTKK32wha9Whd2K6R9LHr5ZoXmHiAIN60dUAsmBw65y1TsYtttghSCzxoFKxqIweI8sfqtxDX4gVmlDmiO-bdBQ_XYv78HwMeybiAnCI6jXDzkWc0Fpdyz5KunrGS2iFsLxDqBnndiKMzg_LgNb2BB2rnekobIiwJkIm09gUm0VYSmPiv0pDJQF_44W2Zr0oAYSEuuCDw5oqCMNTwgMzYiILKLYPqyBhMTdX9HU6OOJiF6yJbW"/>
+<img alt="User" class="w-8 h-8 rounded-full border-2 border-surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_mURp_1lIQmrAzdNaH9yCtDfb5XjE4MbilrJlzwM80nZcUies6hDB_ucQZVwuYzQReernTC08D4el3MRT5sV0d1udpp1sBd7jwaHmj4zsN9il1fZTi1tV33XwBE2LXrBhXrLljMoP26SwVx6Ua-sYmiRlda2dcryVHIIuu6DpxG-8uSq_EzdsL3t724o9ZQNwQW0LSH0XN8yQBewzF9hDJ8BODjnU8veLvyFPhUpW1ufdsXf3p8H_fHJ-4z0yns_7yKEqj7ibeSlS"/>
+</div>
+<span class="text-on-surface-variant font-body-sm text-body-sm italic">Sarah &amp; 1 other</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Suggestion Card (Bento Style) -->
+<div class="md:col-span-12">
+<div class="glass-card rounded-[2rem] p-lg flex flex-col md:flex-row items-center gap-md border-dashed border-2 border-outline-variant">
+<div class="bg-tertiary-fixed w-16 h-16 rounded-full flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-tertiary-fixed text-xl">add_circle</span>
+</div>
+<div class="text-center md:text-left">
+<h4 class="font-title-lg text-title-lg text-on-tertiary-fixed-variant">Have another idea?</h4>
+<p class="text-on-surface-variant font-body-md text-body-md">You can still suggest a new place for the group to consider before voting closes.</p>
+</div>
+<button class="md:ml-auto w-full md:w-auto px-lg py-3 bg-primary text-on-primary rounded-full font-label-md text-label-md flex items-center justify-center gap-2 shadow-[0_2px_4px_rgba(45,90,39,0.2)] hover:shadow-none active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                        SUGGEST OPTION
+                    </button>
+</div>
+</div>
+</div>
+<!-- MoMo Quick Pay Drawer Preview (Embedded) -->
+<div class="mt-xl p-lg bg-surface-container-low rounded-[2rem] border-l-4 border-secondary shadow-sm">
+<div class="flex items-center gap-md mb-md">
+<div class="bg-secondary-container p-2 rounded-full">
+<span class="material-symbols-outlined text-white">payments</span>
+</div>
+<div>
+<h4 class="font-title-lg text-title-lg text-on-surface">Payment Required Soon</h4>
+<p class="text-on-surface-variant font-body-sm text-body-sm">Winning choice will require a deposit via Mobile Money.</p>
+</div>
+</div>
+<div class="flex justify-between items-center py-sm border-t border-outline-variant">
+<span class="text-on-surface font-body-md text-body-md">Est. Deposit</span>
+<span class="text-secondary font-headline-md text-headline-md">5,000 RWF</span>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Shell: Floating Pill Shape -->
+<div class="fixed bottom-6 left-4 right-4 z-50">
+<nav class="max-w-[500px] mx-auto bg-surface-container-lowest dark:bg-surface-container-low border border-outline-variant dark:border-outline shadow-[0_8px_32px_rgba(0,0,0,0.12)] rounded-full flex justify-around items-center h-20 px-4">
+<div class="flex flex-col items-center justify-center gap-1 text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed transition-all active:scale-90 duration-200 cursor-pointer p-2">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center gap-1 bg-primary-container text-on-primary-container rounded-full px-6 py-2 transition-all active:scale-90 duration-200 cursor-pointer shadow-sm">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">explore</span>
+<span class="font-label-sm text-label-sm">Trips</span>
+</div>
+<div class="flex flex-col items-center justify-center gap-1 text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed transition-all active:scale-90 duration-200 cursor-pointer p-2">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-label-sm text-label-sm">Ledger</span>
+</div>
+<div class="flex flex-col items-center justify-center gap-1 text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed transition-all active:scale-90 duration-200 cursor-pointer p-2">
+<span class="material-symbols-outlined">lock</span>
+<span class="font-label-sm text-label-sm">Vault</span>
+</div>
+<div class="flex flex-col items-center justify-center gap-1 text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed transition-all active:scale-90 duration-200 cursor-pointer p-2">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</div>
+</nav>
+</div>
+<!-- Mobile Money (MoMo) Floating Action Button -->
+<button class="fixed bottom-32 right-6 w-14 h-14 bg-secondary text-white rounded-full shadow-lg flex items-center justify-center z-40 active:scale-90 transition-transform">
+<span class="material-symbols-outlined">add</span>
+</button>
+<script>
+        // Simple micro-interaction for voting options
+        document.querySelectorAll('.cursor-pointer').forEach(option => {
+            option.addEventListener('click', function() {
+                // Visual feedback for selection
+                document.querySelectorAll('.cursor-pointer').forEach(o => {
+                    const inner = o.querySelector('.bg-surface-container-lowest');
+                    if (inner) {
+                        inner.classList.remove('border-primary-container');
+                        inner.classList.add('border-outline-variant');
+                    }
+                });
+                const inner = this.querySelector('.bg-surface-container-lowest');
+                if (inner) {
+                    inner.classList.remove('border-outline-variant');
+                    inner.classList.add('border-primary-container');
+                }
+            });
+        });
+
+        // Atmospheric effect: Pulse the "4h left" indicator
+        setInterval(() => {
+            const timer = document.querySelector('.material-symbols-outlined.text-\\[16px\\]');
+            if(timer) {
+                timer.style.opacity = timer.style.opacity === '0.5' ? '1' : '0.5';
+                timer.style.transition = 'opacity 1s ease-in-out';
+            }
+        }, 1000);
+    </script>
+</body></html>

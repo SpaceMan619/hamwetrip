@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Create New Trip - Harmway Trip</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary-fixed-variant": "#4f4629",
+                      "surface-bright": "#fcf9f8",
+                      "on-surface-variant": "#42493e",
+                      "primary-fixed": "#bcf0ae",
+                      "on-background": "#1b1c1c",
+                      "on-tertiary-container": "#483f22",
+                      "on-tertiary": "#ffffff",
+                      "on-primary-fixed": "#002201",
+                      "on-surface": "#1b1c1c",
+                      "on-error": "#ffffff",
+                      "secondary-container": "#fc8f34",
+                      "secondary-fixed": "#ffdcc5",
+                      "on-primary-fixed-variant": "#23501e",
+                      "error": "#ba1a1a",
+                      "tertiary-fixed": "#f0e2ba",
+                      "surface-container-highest": "#e4e2e1",
+                      "inverse-primary": "#a1d494",
+                      "error-container": "#ffdad6",
+                      "on-primary-container": "#9dd090",
+                      "primary-container": "#2d5a27",
+                      "background": "#fcf9f8",
+                      "on-tertiary-fixed": "#221b03",
+                      "inverse-surface": "#303030",
+                      "on-error-container": "#93000a",
+                      "on-primary": "#ffffff",
+                      "surface-container-high": "#eae7e7",
+                      "inverse-on-surface": "#f3f0f0",
+                      "tertiary-container": "#b7aa86",
+                      "outline": "#72796e",
+                      "on-secondary-fixed-variant": "#713700",
+                      "on-secondary-fixed": "#301400",
+                      "on-secondary": "#ffffff",
+                      "surface-container": "#f0eded",
+                      "tertiary-fixed-dim": "#d4c69f",
+                      "surface": "#fcf9f8",
+                      "surface-tint": "#3b6934",
+                      "secondary-fixed-dim": "#ffb783",
+                      "primary-fixed-dim": "#a1d494",
+                      "primary": "#154212",
+                      "on-secondary-container": "#663100",
+                      "surface-container-lowest": "#ffffff",
+                      "outline-variant": "#c2c9bb",
+                      "secondary": "#944a00",
+                      "tertiary": "#685e3e",
+                      "surface-variant": "#e4e2e1",
+                      "surface-dim": "#dcd9d9",
+                      "surface-container-low": "#f6f3f2"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "container-margin-desktop": "auto",
+                      "gutter": "16px",
+                      "container-margin-mobile": "16px",
+                      "xxl": "48px",
+                      "xl": "32px",
+                      "md": "16px",
+                      "sm": "8px",
+                      "lg": "24px",
+                      "base": "8px",
+                      "xs": "4px"
+              },
+              "fontFamily": {
+                      "headline-xl": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "label-md": ["Inter"],
+                      "title-lg": ["Inter"],
+                      "headline-lg-mobile": ["Inter"],
+                      "body-md": ["Inter"],
+                      "headline-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "label-sm": ["10px", {"lineHeight": "14px", "fontWeight": "500"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #fcf9f8;
+            font-family: 'Inter', sans-serif;
+        }
+        .bg-mesh {
+            background: radial-gradient(at 0% 0%, rgba(188, 240, 174, 0.15) 0px, transparent 50%),
+                        radial-gradient(at 100% 100%, rgba(252, 143, 52, 0.1) 0px, transparent 50%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen text-on-surface flex flex-col items-center">
+<!-- TopAppBar -->
+<header class="bg-surface-bright dark:bg-surface-dim shadow-sm w-full top-0 sticky flex justify-between items-center px-container-margin-mobile py-sm w-full z-40">
+<div class="flex items-center gap-md">
+<button class="text-primary dark:text-primary-fixed-dim hover:bg-surface-container-high dark:hover:bg-surface-container-highest rounded-full transition-all duration-200 active:scale-95 p-2">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="text-title-lg font-title-lg font-bold text-primary dark:text-primary-fixed-dim">Harmway Trip</h1>
+</div>
+<div class="h-10 w-10 rounded-full bg-surface-container-high overflow-hidden border-2 border-primary-container/20">
+<img alt="User profile avatar" class="w-full h-full object-cover" data-alt="A professional headshot of a smiling person with a warm, friendly expression, set against a soft blurred outdoor background. The lighting is natural and high-key, creating a clean and modern portrait. The style is professional yet approachable, fitting a high-end travel application aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvE8oGd2MAVtdj5DZ4lkOqzEiaAtdSMakfIG31_Eq5NlS1UXEbmDpR0hkjjTw0NOq17VybgYSmAaolUNOYDcYfH2uDHktGrREsTG-F2GRdf8gsJ8BIgwOGfhLoc6TjGsg33BH7fuTsBTXLYx3BbQrkgWDbHj_nBB3AKwsBhXXu3e2DiNyl2McQyZnGYRsnRGrsZRqoR8Jn8D1L1eEdCEPfi9AeszuhOvivaaCc5a-LIdPrcRXoLGBOH3QU8u2zqztSEPCl2thmwx6Q"/>
+</div>
+</header>
+<main class="w-full max-w-lg px-container-margin-mobile pt-lg pb-xxl flex-1 bg-mesh">
+<!-- Breadcrumb / Task Focus -->
+<div class="mb-lg">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary mb-xs">Start a New Adventure</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Fill in the details to coordinate your group trip seamlessly.</p>
+</div>
+<!-- Form Container -->
+<form class="space-y-lg">
+<!-- Trip Name Input -->
+<div class="space-y-xs">
+<label class="font-label-md text-label-md text-primary ml-md" for="trip-name">Trip Name</label>
+<div class="relative">
+<input class="w-full h-14 px-md bg-surface-container-low border-none rounded-full focus:ring-2 focus:ring-primary text-body-md font-body-md shadow-sm transition-all duration-200" id="trip-name" placeholder="e.g., Akagera Expedition" type="text"/>
+<span class="material-symbols-outlined absolute right-md top-1/2 -translate-y-1/2 text-outline">edit_note</span>
+</div>
+</div>
+<!-- Destination Search -->
+<div class="space-y-xs">
+<label class="font-label-md text-label-md text-primary ml-md" for="destination">Destination</label>
+<div class="relative">
+<input class="w-full h-14 px-md bg-surface-container-low border-none rounded-full focus:ring-2 focus:ring-primary text-body-md font-body-md shadow-sm transition-all duration-200" id="destination" placeholder="Search Rwandan locations..." type="text"/>
+<span class="material-symbols-outlined absolute right-md top-1/2 -translate-y-1/2 text-outline">location_on</span>
+</div>
+<!-- Mini Chips for quick selection -->
+<div class="flex flex-wrap gap-sm mt-sm px-sm">
+<button class="bg-primary-container/10 text-primary-container px-md py-xs rounded-full font-label-sm text-label-sm hover:bg-primary-container/20 transition-colors" type="button">Kigali</button>
+<button class="bg-primary-container/10 text-primary-container px-md py-xs rounded-full font-label-sm text-label-sm hover:bg-primary-container/20 transition-colors" type="button">Musanze</button>
+<button class="bg-primary-container/10 text-primary-container px-md py-xs rounded-full font-label-sm text-label-sm hover:bg-primary-container/20 transition-colors" type="button">Rubavu</button>
+<button class="bg-primary-container/10 text-primary-container px-md py-xs rounded-full font-label-sm text-label-sm hover:bg-primary-container/20 transition-colors" type="button">Nyungwe</button>
+</div>
+</div>
+<!-- Dates Range -->
+<div class="space-y-xs">
+<label class="font-label-md text-label-md text-primary ml-md" for="dates">Dates</label>
+<div class="relative">
+<input class="w-full h-14 px-md bg-surface-container-low border-none rounded-full focus:ring-2 focus:ring-primary text-body-md font-body-md shadow-sm transition-all duration-200" id="dates" placeholder="Select date range" type="text"/>
+<span class="material-symbols-outlined absolute right-md top-1/2 -translate-y-1/2 text-outline">calendar_today</span>
+</div>
+</div>
+<!-- Budget Input -->
+<div class="space-y-xs">
+<label class="font-label-md text-label-md text-primary ml-md" for="budget">Trip Budget (RWF)</label>
+<div class="relative">
+<input class="w-full h-14 px-md bg-surface-container-low border-none rounded-full focus:ring-2 focus:ring-primary text-body-md font-body-md shadow-sm transition-all duration-200" id="budget" placeholder="0" type="number"/>
+<div class="absolute right-md top-1/2 -translate-y-1/2 flex items-center gap-xs">
+<span class="font-label-md text-label-md text-outline">RWF</span>
+<span class="material-symbols-outlined text-outline">payments</span>
+</div>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant ml-md">Approximate cost per person for coordination</p>
+</div>
+<!-- CTA -->
+<div class="pt-lg">
+<button class="w-full bg-primary text-on-primary h-14 rounded-full font-title-lg text-title-lg font-bold shadow-lg active:scale-[0.98] transition-all flex justify-center items-center gap-md" type="submit">
+                    Next: Invite Friends
+                    <span class="material-symbols-outlined">group_add</span>
+</button>
+</div>
+</form>
+<!-- Visual Anchor: Asymmetric Layout Card -->
+<div class="mt-xl relative overflow-hidden bg-secondary-container rounded-xl p-lg text-on-secondary-container flex flex-col md:flex-row items-center gap-md">
+<div class="z-10 relative">
+<h3 class="font-headline-md text-headline-md leading-tight mb-sm">Why travel with Harmway Trip?</h3>
+<p class="font-body-sm text-body-sm opacity-90">Experience seamless Mobile Money (MoMo) split payments and offline-first coordination in the heart of Rwanda.</p>
+</div>
+<div class="w-full md:w-48 h-32 md:h-full rounded-lg overflow-hidden shrink-0">
+<img alt="Rwanda landscape" class="w-full h-full object-cover" data-alt="A breathtaking panoramic view of the rolling green hills of Rwanda under a soft golden hour sun. The landscape is lush and vibrant, showing layers of mist between the valleys. The lighting is warm and organic, perfectly capturing the adventurous and reliable spirit of the Harmway Trip brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHmYhzt6bb8RyLHwPaig2dcx0_2A53iRfnCU1wUmQDUWcetThFcTKRKSx7UPUKVadv7tJJPEwmq3HJA_wDl-H2OyLFVL9tpfv2YSwTTiKCCZUiNTebKtajhmTO9XhM9kUL7aWwMHIMaxxiThYcEEIBGBkB27_ONbHGft7tBwqQxe-PXRbNP7jiL2tRITouNe7EXJk_u6sbUej2B4WVrBkvLoMU7E9j_uXq_0xXbcOyO-VYSH1jcDlBJ3DRkOmsS4uL0OwkQH4TidPk"/>
+</div>
+<!-- Decorative circle -->
+<div class="absolute -bottom-8 -right-8 w-32 h-32 bg-primary-container/20 rounded-full blur-2xl"></div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-4 pt-2 bg-surface-container dark:bg-surface-container-low shadow-[0_-2px_10px_rgba(45,90,39,0.08)]">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-md text-label-md">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">explore</span>
+<span class="font-label-md text-label-md">Trips</span>
+</a>
+<!-- Active Tab: Vote (Simulating active intent for coordination) -->
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">how_to_vote</span>
+<span class="font-label-md text-label-md">Vote</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-label-md text-label-md">Ledger</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">folder_shared</span>
+<span class="font-label-md text-label-md">Vault</span>
+</a>
+</nav>
+<!-- Navigation Drawer (Hidden by default) -->
+<div class="fixed inset-y-0 left-0 z-[60] flex flex-col h-full w-80 rounded-r-xl bg-surface dark:bg-surface-dim shadow-xl transition-transform -translate-x-full" id="drawer">
+<div class="p-lg bg-surface-container-high">
+<div class="flex items-center gap-md mb-md">
+<img alt="User profile" class="h-16 w-16 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCitfIL1gdwqsVf2mO9d5ThycdHoUmIaQdVbClojm_jMix5gdDp4h3PvvQsb2t28qBLgzCZoyDHMJ3ZOy8fOfbt7VJRH-MvbUwEE_4PwZe7YBscFwdD7S8fayXwY5h1T4idSLSxA1u_Ys0phXGCqbBEWqrp4kBRtR04hc0Fh-W3rHbYkH1O-Zp0Bhe6TXiA1sWlnsLteVKIs72zIOvxidvi-qczOHCpfag9aq2UP0StcSG9gA7664ShzbQ9VYKfAaTnYGk41liZHSVe"/>
+<div>
+<h3 class="font-title-lg text-title-lg text-primary">Traveler Name</h3>
+<p class="font-label-md text-label-md text-on-surface-variant">Harmway Trip Explorer</p>
+</div>
+</div>
+<p class="font-label-sm text-label-sm text-primary">Active in 3 trips</p>
+</div>
+<div class="flex-1 py-md overflow-y-auto">
+<div class="px-4 py-3 text-on-surface-variant flex items-center gap-md hover:bg-surface-variant rounded-full mx-2 transition-all duration-200 cursor-pointer">
+<span class="material-symbols-outlined">person</span>
+<span class="font-body-md text-body-md">My Profile</span>
+</div>
+<div class="px-4 py-3 text-on-surface-variant flex items-center gap-md hover:bg-surface-variant rounded-full mx-2 transition-all duration-200 cursor-pointer">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md text-body-md">Group Settings</span>
+</div>
+<div class="px-4 py-3 text-on-surface-variant flex items-center gap-md hover:bg-surface-variant rounded-full mx-2 transition-all duration-200 cursor-pointer">
+<span class="material-symbols-outlined">sync</span>
+<span class="font-body-md text-body-md">Sync Status</span>
+</div>
+<div class="px-4 py-3 text-on-surface-variant flex items-center gap-md hover:bg-surface-variant rounded-full mx-2 transition-all duration-200 cursor-pointer">
+<span class="material-symbols-outlined">help</span>
+<span class="font-body-md text-body-md">Support</span>
+</div>
+</div>
+</div>
+<!-- Overlay for drawer -->
+<div class="fixed inset-0 bg-black/50 z-[55] hidden transition-opacity opacity-0" id="drawer-overlay"></div>
+<script>
+        // Simple Micro-interactions
+        const menuBtn = document.querySelector('header button');
+        const drawer = document.getElementById('drawer');
+        const overlay = document.getElementById('drawer-overlay');
+
+        function toggleDrawer() {
+            const isOpen = drawer.classList.contains('translate-x-0');
+            if (isOpen) {
+                drawer.classList.remove('translate-x-0');
+                drawer.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+                overlay.classList.remove('opacity-100');
+            } else {
+                drawer.classList.remove('-translate-x-full');
+                drawer.classList.add('translate-x-0');
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.add('opacity-100'), 10);
+            }
+        }
+
+        menuBtn.addEventListener('click', toggleDrawer);
+        overlay.addEventListener('click', toggleDrawer);
+
+        // Budget formatting logic
+        const budgetInput = document.getElementById('budget');
+        budgetInput.addEventListener('input', (e) => {
+            if (e.target.value < 0) e.target.value = 0;
+        });
+    </script>
+</body></html>

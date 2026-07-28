@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Poll Results - Harmway Trip</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+                  "on-tertiary-fixed-variant": "#4f4629",
+                  "surface-bright": "#fcf9f8",
+                  "on-surface-variant": "#42493e",
+                  "primary-fixed": "#bcf0ae",
+                  "on-background": "#1b1c1c",
+                  "on-tertiary-container": "#483f22",
+                  "on-tertiary": "#ffffff",
+                  "on-primary-fixed": "#002201",
+                  "on-surface": "#1b1c1c",
+                  "on-error": "#ffffff",
+                  "secondary-container": "#fc8f34",
+                  "secondary-fixed": "#ffdcc5",
+                  "on-primary-fixed-variant": "#23501e",
+                  "error": "#ba1a1a",
+                  "tertiary-fixed": "#f0e2ba",
+                  "surface-container-highest": "#e4e2e1",
+                  "inverse-primary": "#a1d494",
+                  "error-container": "#ffdad6",
+                  "on-primary-container": "#9dd090",
+                  "primary-container": "#2d5a27",
+                  "background": "#fcf9f8",
+                  "on-tertiary-fixed": "#221b03",
+                  "inverse-surface": "#303030",
+                  "on-error-container": "#93000a",
+                  "on-primary": "#ffffff",
+                  "surface-container-high": "#eae7e7",
+                  "inverse-on-surface": "#f3f0f0",
+                  "tertiary-container": "#b7aa86",
+                  "outline": "#72796e",
+                  "on-secondary-fixed-variant": "#713700",
+                  "on-secondary-fixed": "#301400",
+                  "on-secondary": "#ffffff",
+                  "surface-container": "#f0eded",
+                  "tertiary-fixed-dim": "#d4c69f",
+                  "surface": "#fcf9f8",
+                  "surface-tint": "#3b6934",
+                  "secondary-fixed-dim": "#ffb783",
+                  "primary-fixed-dim": "#a1d494",
+                  "primary": "#154212",
+                  "on-secondary-container": "#663100",
+                  "surface-container-lowest": "#ffffff",
+                  "outline-variant": "#c2c9bb",
+                  "secondary": "#944a00",
+                  "tertiary": "#685e3e",
+                  "surface-variant": "#e4e2e1",
+                  "surface-dim": "#dcd9d9",
+                  "surface-container-low": "#f6f3f2"
+          },
+          "borderRadius": {
+                  "DEFAULT": "0.25rem",
+                  "lg": "0.5rem",
+                  "xl": "0.75rem",
+                  "full": "9999px"
+          },
+          "spacing": {
+                  "container-margin-desktop": "auto",
+                  "gutter": "16px",
+                  "container-margin-mobile": "16px",
+                  "xxl": "48px",
+                  "xl": "32px",
+                  "md": "16px",
+                  "sm": "8px",
+                  "lg": "24px",
+                  "base": "8px",
+                  "xs": "4px"
+          },
+          "fontFamily": {
+                  "headline-xl": ["Inter"],
+                  "headline-md": ["Inter"],
+                  "body-sm": ["Inter"],
+                  "body-lg": ["Inter"],
+                  "label-sm": ["Inter"],
+                  "label-md": ["Inter"],
+                  "title-lg": ["Inter"],
+                  "headline-lg-mobile": ["Inter"],
+                  "body-md": ["Inter"],
+                  "headline-lg": ["Inter"]
+          },
+          "fontSize": {
+                  "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                  "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                  "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                  "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                  "label-sm": ["10px", {"lineHeight": "14px", "fontWeight": "500"}],
+                  "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                  "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                  "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                  "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                  "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body { font-family: 'Inter', sans-serif; }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      line-height: 1;
+    }
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #c2c9bb; border-radius: 10px; }
+    .confetti {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: #fc8f34;
+      border-radius: 50%;
+      animation: fall linear infinite;
+    }
+    @keyframes fall {
+      to { transform: translateY(100vh) rotate(360deg); }
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen pb-32">
+<!-- Top App Bar -->
+<header class="w-full top-0 sticky z-50 bg-surface-bright shadow-sm flex justify-between items-center px-4 py-4">
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-primary hover:bg-surface-container-high rounded-full p-2 transition-all active:scale-95">menu</button>
+<h1 class="text-title-lg font-title-lg font-bold text-primary">Harmway Trip</h1>
+</div>
+<div class="flex items-center gap-3">
+<div class="hidden md:flex gap-4 mr-6">
+<span class="text-on-surface-variant font-label-md text-label-md hover:text-primary cursor-pointer">Home</span>
+<span class="text-on-surface-variant font-label-md text-label-md hover:text-primary cursor-pointer">Trips</span>
+<span class="text-primary font-label-md text-label-md underline decoration-2 underline-offset-4 cursor-pointer">Vote</span>
+</div>
+<img alt="User profile avatar" class="w-10 h-10 rounded-full border-2 border-primary-fixed" data-alt="A professional headshot of a young East African man with a warm smile, wearing a stylish linen shirt. The background is a soft-focus office interior with warm wooden textures and indoor plants, conveying a reliable yet adventurous traveler identity. The lighting is soft and natural, emphasizing a clean and high-end aesthetic consistent with a modern travel application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCeEFl5vcDKuC2FR8fnLYoUB_OvtcsROYp4DPMPChS0A3JOnlCTymq1-36iSVayje6KX-1Tx_LbnWzMi39o2ATozh9TGWaQsuc_MjvXYIK3emv57l7JJe4dCrF_DhmEnOC9j0mNjjbJ3VGTJKGoLhzeMA1cxw8x2MIcKlCzrHSWSqtc-xarhLr8HfxYtwjTAvch4RdoKuyx5RWEoW4ookWAT8rnBt-Vj3uunSndYofUfdHEeO6MuYdPMZTQXZx52SI9BBQ5N8_Kg0vg"/>
+</div>
+</header>
+<main class="max-w-[1200px] mx-auto px-4 mt-8 md:mt-12">
+<!-- Celebratory Header Section -->
+<section class="relative overflow-hidden rounded-xl mb-8 bg-primary-container p-8 md:p-12 text-on-primary-container flex flex-col md:flex-row items-center gap-8 shadow-lg">
+<!-- Animated Confetti (Handled by JS below) -->
+<div class="absolute inset-0 pointer-events-none opacity-40" id="confetti-container"></div>
+<div class="flex-1 z-10 text-center md:text-left">
+<span class="inline-block bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full font-label-md text-label-md mb-4 uppercase tracking-wider">Poll Winner</span>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg mb-2">We're going to Akagera!</h2>
+<p class="font-body-md text-body-md opacity-90 max-w-md">The group has spoken. Prepare for a majestic safari experience at the Akagera Game Lodge.</p>
+<div class="mt-6 flex flex-col sm:flex-row gap-4 items-center">
+<div class="flex items-baseline gap-1">
+<span class="font-headline-md text-headline-md">75%</span>
+<span class="font-label-md text-label-md opacity-80 uppercase">Majority</span>
+</div>
+<div class="h-10 w-[1px] bg-on-primary-container opacity-30 hidden sm:block"></div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm opacity-70">Estimated Cost</span>
+<span class="font-title-lg text-title-lg font-bold">125,000 RWF</span>
+</div>
+</div>
+</div>
+<div class="w-full md:w-1/3 aspect-video md:aspect-square rounded-xl overflow-hidden shadow-xl z-10">
+<img alt="Akagera Game Lodge" class="w-full h-full object-cover transform hover:scale-110 transition-transform duration-700" data-alt="A breathtaking view of a luxury safari lodge overlooking the sprawling savannas and lakes of Akagera National Park in Rwanda. The golden hour sunlight bathes the landscape in a warm, orange glow, highlighting the thatched roofs of the lodge and a nearby swimming pool reflecting the sky. In the distance, silhouetted acacia trees stand against a hazy blue and purple horizon. The atmosphere is one of serene luxury and adventurous excitement." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxXOEcSGhWO-4xNZdoPowO-GZHUnuCI0d1OUy8T1PMApAg7wxsnZW9E3zGdJv38GxMxr4wDrOX0lQ88UffB3upujtbQvODaVH4a39bQIWvPipdDdzrin3UEX5EFPf7FwqJeOsAqeD2EaTlyM0DuKY7RHYybeRyGStr1jFTb46j_eW8TCugGLa_utq-rIYi8gnkKKhRHv-psmxgqOYd491ta_ZkEa3YLZFrBEZZ7YO9wgL2_rW46-rpgxpD2ubtCsBWaERabffUIJdi"/>
+</div>
+</section>
+<!-- Results Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Vote Distribution Card -->
+<div class="md:col-span-2 bg-white rounded-xl p-6 shadow-sm border border-outline-variant">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-title-lg text-title-lg text-primary flex items-center gap-2">
+<span class="material-symbols-outlined">analytics</span>
+            Poll Breakdown
+          </h3>
+<span class="text-label-md font-label-md text-on-surface-variant">12 Total Votes</span>
+</div>
+<div class="space-y-6">
+<!-- Winner Row -->
+<div class="space-y-2">
+<div class="flex justify-between items-end">
+<div>
+<p class="font-body-md text-body-md font-bold text-primary">Akagera Game Lodge</p>
+<p class="text-label-sm text-label-sm text-on-surface-variant">9 votes • 125,000 RWF/p</p>
+</div>
+<span class="font-headline-md text-headline-md text-primary">75%</span>
+</div>
+<div class="w-full h-4 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary transition-all duration-1000 ease-out" style="width: 75%"></div>
+</div>
+</div>
+<!-- Runner Up 1 -->
+<div class="space-y-2">
+<div class="flex justify-between items-end">
+<div>
+<p class="font-body-md text-body-md font-semibold text-on-surface">Volcanoes Hiking</p>
+<p class="text-label-sm text-label-sm text-on-surface-variant">2 votes • 210,000 RWF/p</p>
+</div>
+<span class="font-title-lg text-title-lg text-on-surface-variant">17%</span>
+</div>
+<div class="w-full h-3 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-tertiary-container transition-all duration-1000 ease-out" style="width: 17%"></div>
+</div>
+</div>
+<!-- Runner Up 2 -->
+<div class="space-y-2">
+<div class="flex justify-between items-end">
+<div>
+<p class="font-body-md text-body-md font-semibold text-on-surface">Lake Kivu Retreat</p>
+<p class="text-label-sm text-label-sm text-on-surface-variant">1 vote • 85,000 RWF/p</p>
+</div>
+<span class="font-title-lg text-title-lg text-on-surface-variant">8%</span>
+</div>
+<div class="w-full h-3 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-tertiary-container transition-all duration-1000 ease-out" style="width: 8%"></div>
+</div>
+</div>
+</div>
+<!-- Add to Itinerary Action -->
+<div class="mt-8 pt-6 border-t border-outline-variant flex flex-col sm:flex-row items-center justify-between gap-4">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">sync</span>
+<span class="font-label-md text-label-md">Automatically syncs to Ledger</span>
+</div>
+<button class="bg-primary text-white px-8 py-4 rounded-full font-title-lg text-title-lg flex items-center gap-2 hover:bg-primary-container hover:text-on-primary-container transition-all shadow-md active:scale-95 group">
+            Add to Itinerary
+            <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Voters Sidebar -->
+<div class="bg-surface-container-low rounded-xl p-6 shadow-sm flex flex-col h-full">
+<h3 class="font-title-lg text-title-lg text-on-surface-variant mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined">group</span>
+          Who voted
+        </h3>
+<div class="space-y-4 flex-1 custom-scrollbar overflow-y-auto max-h-[400px] pr-2">
+<!-- Voter Item -->
+<div class="flex items-center justify-between p-3 bg-surface-bright rounded-lg border border-outline-variant/30">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold text-xs">KN</div>
+<span class="font-body-md text-body-md">Kelia N.</span>
+</div>
+<span class="text-[10px] bg-primary-container/20 text-primary px-2 py-0.5 rounded-full font-bold uppercase">Akagera</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-bright rounded-lg border border-outline-variant/30">
+<div class="flex items-center gap-3">
+<img class="w-8 h-8 rounded-full object-cover" data-alt="A portrait of a young woman with braided hair, smiling brightly against a soft yellow background. She wears a modern patterned top. The image is warm and high-key." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjYQ0xSpiwDeX_SfXDTElxLl_th6YEMv5Yn6l2pn7JzgvjlhX-H-egl3pCIXnD3LOwun_6s4b3Rqn60C8iW4-n-rmbUqz2MsX1USQ2T0XfK1eoVKvBgK73A9n5WDbZ7T89d58232Btri7FX_RdSs-ki-f9v7egE764BmQtf9Q5NdOhHROFj48x8szerLfRMqU37rNjXwfQNT6d4OmTxJg3wgqtuzpfDFXhPclOLLZoZKwir712I2a2ryNcYsfUFiSdf0grMcuC5QSI"/>
+<span class="font-body-md text-body-md">Sonia R.</span>
+</div>
+<span class="text-[10px] bg-primary-container/20 text-primary px-2 py-0.5 rounded-full font-bold uppercase">Akagera</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-bright rounded-lg border border-outline-variant/30">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-tertiary flex items-center justify-center text-white font-bold text-xs">DM</div>
+<span class="font-body-md text-body-md">David M.</span>
+</div>
+<span class="text-[10px] bg-primary-container/20 text-primary px-2 py-0.5 rounded-full font-bold uppercase">Akagera</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-bright rounded-lg border border-outline-variant/30 opacity-70">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-outline flex items-center justify-center text-white font-bold text-xs">BT</div>
+<span class="font-body-md text-body-md">Bella T.</span>
+</div>
+<span class="text-[10px] bg-surface-container-highest text-on-surface-variant px-2 py-0.5 rounded-full font-bold uppercase">Volcanoes</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-bright rounded-lg border border-outline-variant/30">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-white font-bold text-xs">JP</div>
+<span class="font-body-md text-body-md">Jean P.</span>
+</div>
+<span class="text-[10px] bg-primary-container/20 text-primary px-2 py-0.5 rounded-full font-bold uppercase">Akagera</span>
+</div>
+<!-- More items would go here -->
+</div>
+<button class="mt-6 w-full py-3 text-primary font-label-md text-label-md flex items-center justify-center gap-2 hover:bg-surface-container transition-colors rounded-lg">
+          View all 12 voters
+          <span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+</div>
+</div>
+</main>
+<!-- Bottom Nav Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-4 pt-2 bg-surface-container shadow-[0_-2px_10px_rgba(45,90,39,0.08)] md:hidden rounded-t-xl">
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors active:scale-90 transition-transform duration-150">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-md text-label-md">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors active:scale-90 transition-transform duration-150">
+<span class="material-symbols-outlined">explore</span>
+<span class="font-label-md text-label-md">Trips</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 active:scale-90 transition-transform duration-150">
+<span class="material-symbols-outlined">how_to_vote</span>
+<span class="font-label-md text-label-md">Vote</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors active:scale-90 transition-transform duration-150">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-label-md text-label-md">Ledger</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors active:scale-90 transition-transform duration-150">
+<span class="material-symbols-outlined">folder_shared</span>
+<span class="font-label-md text-label-md">Vault</span>
+</div>
+</nav>
+<!-- Offline Status Bar (Style Guidance) -->
+<div class="hidden fixed top-0 left-0 w-full bg-tertiary text-on-tertiary py-1 px-4 text-center z-[100] shadow-md animate-pulse" id="offline-bar">
+<p class="font-label-md text-label-md">Working Offline — Changes will sync later.</p>
+</div>
+<script>
+    // Confetti Effect
+    function createConfetti() {
+      const container = document.getElementById('confetti-container');
+      const colors = ['#fc8f34', '#bcf0ae', '#ffffff', '#ffdcc5'];
+      
+      for (let i = 0; i < 40; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + '%';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+        confetti.style.opacity = Math.random();
+        confetti.style.transform = `scale(${Math.random()})`;
+        container.appendChild(confetti);
+        
+        // Remove after animation
+        setTimeout(() => confetti.remove(), 5000);
+      }
+    }
+
+    // Trigger confetti on load
+    window.addEventListener('DOMContentLoaded', () => {
+      createConfetti();
+      setInterval(createConfetti, 6000);
+    });
+
+    // Simple Offline Toggle simulation
+    window.addEventListener('offline', () => {
+      document.getElementById('offline-bar').classList.remove('hidden');
+    });
+    window.addEventListener('online', () => {
+      document.getElementById('offline-bar').classList.add('hidden');
+    });
+
+    // Mock micro-interaction for button
+    document.querySelector('button.bg-primary').addEventListener('click', function() {
+      this.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> Adding...';
+      setTimeout(() => {
+        this.innerHTML = '<span class="material-symbols-outlined">check_circle</span> Added to Itinerary';
+        this.classList.replace('bg-primary', 'bg-tertiary-container');
+        this.classList.replace('text-white', 'text-on-tertiary-container');
+      }, 1500);
+    });
+  </script>
+</body></html>

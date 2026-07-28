@@ -73,7 +73,21 @@ The supporting research includes interview transcripts, persona source material,
 
 ## Current status
 
-HamweTrip is currently a researched product concept and high-fidelity prototype. This initial repository intentionally contains only this README. The next implementation phase is intended for a Flutter mobile application, beginning with the voting, shared-ledger, collaborative-itinerary, and offline-vault flows.
+The shared Flutter foundation lives in [`hamwetrip/`](hamwetrip). It is
+intentionally plain: its job is to give everyone one app to build in, not to
+lock in the final interface. The first implementation flows are voting, the
+shared ledger, collaborative itinerary, and offline vault.
+
+To run it locally:
+
+```bash
+cd hamwetrip
+flutter pub get
+flutter run
+```
+
+See [TEAM_WORKFLOW.md](TEAM_WORKFLOW.md) for the agreed branch, folder, and
+merge process.
 
 ## Academic context
 

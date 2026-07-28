@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    body { font-family: 'Inter', sans-serif; }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+  </style>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "tertiary-container": "#b7aa86",
+            "on-secondary": "#ffffff",
+            "tertiary-fixed": "#f0e2ba",
+            "background": "#fcf9f8",
+            "primary-fixed": "#bcf0ae",
+            "surface-container-high": "#eae7e7",
+            "primary-fixed-dim": "#a1d494",
+            "error": "#ba1a1a",
+            "secondary-fixed": "#ffdcc5",
+            "surface-dim": "#dcd9d9",
+            "surface-tint": "#3b6934",
+            "on-surface-variant": "#42493e",
+            "outline": "#72796e",
+            "on-tertiary": "#ffffff",
+            "secondary-fixed-dim": "#ffb783",
+            "on-tertiary-fixed": "#221b03",
+            "surface-container-highest": "#e4e2e1",
+            "on-surface": "#1b1c1c",
+            "on-error": "#ffffff",
+            "primary-container": "#2d5a27",
+            "surface-bright": "#fcf9f8",
+            "on-tertiary-fixed-variant": "#4f4629",
+            "on-primary-fixed-variant": "#23501e",
+            "outline-variant": "#c2c9bb",
+            "on-secondary-container": "#663100",
+            "tertiary": "#685e3e",
+            "primary": "#154212",
+            "on-background": "#1b1c1c",
+            "tertiary-fixed-dim": "#d4c69f",
+            "surface": "#fcf9f8",
+            "on-primary-container": "#9dd090",
+            "inverse-primary": "#a1d494",
+            "inverse-on-surface": "#f3f0f0",
+            "on-primary": "#ffffff",
+            "surface-variant": "#e4e2e1",
+            "inverse-surface": "#303030",
+            "on-primary-fixed": "#002201",
+            "secondary-container": "#fc8f34",
+            "on-secondary-fixed-variant": "#713700",
+            "on-tertiary-container": "#483f22",
+            "on-secondary-fixed": "#301400",
+            "error-container": "#ffdad6",
+            "surface-container-low": "#f6f3f2",
+            "surface-container": "#f0eded",
+            "secondary": "#944a00",
+            "on-error-container": "#93000a",
+            "surface-container-lowest": "#ffffff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "container-margin-mobile": "16px",
+            "gutter": "16px",
+            "base": "8px",
+            "sm": "8px",
+            "xs": "4px",
+            "container-margin-desktop": "auto",
+            "xl": "32px",
+            "lg": "24px",
+            "xxl": "48px",
+            "md": "16px"
+          },
+          "fontFamily": {
+            "body-lg": ["Inter"],
+            "body-sm": ["Inter"],
+            "headline-lg": ["Inter"],
+            "body-md": ["Inter"],
+            "headline-md": ["Inter"],
+            "title-lg": ["Inter"],
+            "label-sm": ["Inter"],
+            "headline-xl": ["Inter"],
+            "label-md": ["Inter"],
+            "headline-lg-mobile": ["Inter"]
+          },
+          "fontSize": {
+            "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+            "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+            "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+            "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+            "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+            "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+            "label-sm": ["10px", {"lineHeight": "14px", "fontWeight": "500"}],
+            "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+            "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+            "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- TopAppBar -->
+<header class="w-full sticky top-0 z-50 bg-transparent pointer-events-none">
+<div class="flex items-center justify-between px-gutter h-16 w-full pointer-events-auto">
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-primary dark:text-primary-fixed bg-surface-container-lowest shadow-sm hover:bg-surface-container-high transition-colors p-3 rounded-full active:scale-95 duration-150">arrow_back</button>
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed hidden">Profile</h1>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant dark:text-outline bg-surface-container-lowest shadow-sm hover:bg-surface-container-high transition-colors p-3 rounded-full active:scale-95 duration-150">notifications</button>
+</div>
+</header>
+<main class="max-w-xl mx-auto px-gutter pb-40 pt-8">
+<!-- User Profile Header -->
+<section class="flex flex-col items-center mb-10">
+<div class="relative group">
+<div class="w-24 h-24 rounded-full overflow-hidden border-4 border-primary-container/20 shadow-lg mb-4">
+<img alt="User Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAo01Prmwm8kAVNIxOFlKl76ATxDNn59RKvxGUI1C6gwWRELD0lc5sFt8XU7FY3adF2oto7zMGaRqygAj2IGodYpQ9tC38H9-snaN-nnFuKLTL7YPWQPLgLb5gvq73Wii95MrfYFINdjjKf4bSkIQiaHnRJwrHnpI1J1LOAKwHHkCQ1Iqfmhv5XkD3Tzhinup3rWNVV9uE7Ch52tN8RweGwW88DMG853IBeLpMk-lCDLfGlUH_HSf9jeutmPE653KnGivyLI1BoVGwO"/>
+</div>
+<button class="absolute bottom-4 -right-2 bg-primary text-on-primary px-3 py-1 rounded-full shadow-md border-2 border-background active:scale-90 transition-transform flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+<span class="text-[10px] font-bold uppercase tracking-wider">Edit</span>
+</button>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Kigali Explorer</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">kigali.traveler@harmwaytrip.com</p>
+</section>
+<!-- Settings Sections -->
+<div class="space-y-6">
+<!-- Account Settings -->
+<div class="bg-surface-container-lowest py-6 shadow-[0_2px_8px_rgba(45,90,39,0.05)] rounded-3xl px-6">
+<h3 class="font-label-md text-label-md text-primary mb-4 uppercase tracking-widest px-4">Account Settings</h3>
+<ul class="space-y-1">
+<li class="flex items-center justify-between p-3 hover:bg-surface-container-low rounded-full transition-colors cursor-pointer group px-4">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary">person</span>
+<span class="font-body-md text-body-md">Personal Information</span>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</li>
+<li class="flex items-center justify-between p-3 hover:bg-surface-container-low rounded-full transition-colors cursor-pointer group px-4">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary">security</span>
+<span class="font-body-md text-body-md">Security &amp; Password</span>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</li>
+<li class="flex items-center justify-between p-3 hover:bg-surface-container-low rounded-full transition-colors cursor-pointer group px-4">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary">payments</span>
+<span class="font-body-md text-body-md">Payment Methods</span>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</li>
+</ul>
+</div>
+<!-- Notification Preferences -->
+<div class="bg-surface-container-lowest py-6 shadow-[0_2px_8px_rgba(45,90,39,0.05)] rounded-3xl px-6">
+<h3 class="font-label-md text-label-md text-primary mb-4 uppercase tracking-widest px-4">Notification Preferences</h3>
+<ul class="space-y-4">
+<li class="flex items-center justify-between p-1 px-4">
+<div class="flex flex-col">
+<span class="font-body-md text-body-md">Push Notifications</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Real-time trip updates &amp; MoMo alerts</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</li>
+<li class="flex items-center justify-between p-1 px-4">
+<div class="flex flex-col">
+<span class="font-body-md text-body-md">Email Digests</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Weekly summaries of your group ledger</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</li>
+</ul>
+</div>
+<!-- Currency & Localization -->
+<div class="bg-surface-container-lowest py-6 shadow-[0_2px_8px_rgba(45,90,39,0.05)] rounded-3xl px-6">
+<h3 class="font-label-md text-label-md text-primary mb-4 uppercase tracking-widest px-4">Currency &amp; Localization</h3>
+<div class="space-y-4">
+<div class="flex flex-col gap-2 px-4">
+<label class="font-label-sm text-label-sm text-on-surface-variant ml-2">Primary Currency</label>
+<div class="relative">
+<select class="w-full bg-surface-container-low border-none focus:ring-2 focus:ring-primary-container outline-none py-3 px-6 font-body-md text-body-md appearance-none rounded-full transition-all" value="Rwandan Franc (RWF)"><option selected="">Rwandan Franc (RWF)</option><option>Kenyan Shilling (KES)</option><option>Ugandan Shilling (UGX)</option><option>US Dollar (USD)</option><option>Euro (EUR)</option></select>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-primary">arrow_drop_down</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-3 hover:bg-surface-container-low rounded-full transition-colors cursor-pointer group px-4">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary">language</span>
+<span class="font-body-md text-body-md">Language</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-body-sm text-body-sm text-on-surface-variant">English</span>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Log Out Button -->
+<button class="w-full py-4 rounded-full font-title-lg text-title-lg text-error hover:bg-error/5 transition-colors flex items-center justify-center gap-2 active:scale-95 duration-150">
+<span class="material-symbols-outlined">logout</span>
+        Log Out
+      </button>
+</div>
+</main>
+<!-- BottomNavBar - Floating Pill -->
+<div class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-lg z-50">
+<nav class="rounded-full bg-surface-container-lowest dark:bg-surface-container-low border border-outline-variant/30 dark:border-outline/30 shadow-[0_8px_24px_rgba(45,90,39,0.15)] px-2">
+<div class="flex justify-around items-center h-16 w-full">
+<a class="flex flex-col items-center justify-center gap-1 text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed transition-all active:scale-90 duration-200 px-3" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed transition-all active:scale-90 duration-200 px-3" href="#">
+<span class="material-symbols-outlined">explore</span>
+<span class="font-label-sm text-label-sm">Trips</span>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed transition-all active:scale-90 duration-200 px-3" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-label-sm text-label-sm">Ledger</span>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed transition-all active:scale-90 duration-200 px-3" href="#">
+<span class="material-symbols-outlined">lock</span>
+<span class="font-label-sm text-label-sm">Vault</span>
+</a>
+<!-- Active Tab: Profile -->
+<a class="flex flex-col items-center justify-center gap-0.5 bg-primary-container text-on-primary-container rounded-full px-4 py-1.5 transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" style='font-variation-settings: "FILL" 1;'>person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</a>
+</div>
+</nav>
+</div>
+<script>
+    // Simple micro-interaction for toggle switches
+    document.querySelectorAll('input[type="checkbox"]').forEach(toggle => {
+      toggle.addEventListener('change', function() {
+        const wrapper = this.nextElementSibling;
+        if (this.checked) {
+          wrapper.classList.add('bg-primary-container');
+        } else {
+          wrapper.classList.remove('bg-primary-container');
+        }
+      });
+    });
+
+    // Ripple effect simulation on list items
+    document.querySelectorAll('li, button, a').forEach(item => {
+      item.addEventListener('mousedown', function(e) {
+        this.style.transform = 'scale(0.96)';
+      });
+      item.addEventListener('mouseup', function() {
+        this.style.transform = '';
+      });
+      item.addEventListener('mouseleave', function() {
+        this.style.transform = '';
+      });
+    });
+  </script>
+</body></html>

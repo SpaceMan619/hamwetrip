@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Harmway Trip - Add Expense</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#4f4629",
+                        "surface-bright": "#fcf9f8",
+                        "on-surface-variant": "#42493e",
+                        "primary-fixed": "#bcf0ae",
+                        "on-background": "#1b1c1c",
+                        "on-tertiary-container": "#483f22",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed": "#002201",
+                        "on-surface": "#1b1c1c",
+                        "on-error": "#ffffff",
+                        "secondary-container": "#fc8f34",
+                        "secondary-fixed": "#ffdcc5",
+                        "on-primary-fixed-variant": "#23501e",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#f0e2ba",
+                        "surface-container-highest": "#e4e2e1",
+                        "inverse-primary": "#a1d494",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#9dd090",
+                        "primary-container": "#2d5a27",
+                        "background": "#fcf9f8",
+                        "on-tertiary-fixed": "#221b03",
+                        "inverse-surface": "#303030",
+                        "on-error-container": "#93000a",
+                        "on-primary": "#ffffff",
+                        "surface-container-high": "#eae7e7",
+                        "inverse-on-surface": "#f3f0f0",
+                        "tertiary-container": "#b7aa86",
+                        "outline": "#72796e",
+                        "on-secondary-fixed-variant": "#713700",
+                        "on-secondary-fixed": "#301400",
+                        "on-secondary": "#ffffff",
+                        "surface-container": "#f0eded",
+                        "tertiary-fixed-dim": "#d4c69f",
+                        "surface": "#fcf9f8",
+                        "surface-tint": "#3b6934",
+                        "secondary-fixed-dim": "#ffb783",
+                        "primary-fixed-dim": "#a1d494",
+                        "primary": "#154212",
+                        "on-secondary-container": "#663100",
+                        "surface-container-lowest": "#ffffff",
+                        "outline-variant": "#c2c9bb",
+                        "secondary": "#944a00",
+                        "tertiary": "#685e3e",
+                        "surface-variant": "#e4e2e1",
+                        "surface-dim": "#dcd9d9",
+                        "surface-container-low": "#f6f3f2"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-margin-desktop": "auto",
+                        "gutter": "16px",
+                        "container-margin-mobile": "16px",
+                        "xxl": "48px",
+                        "xl": "32px",
+                        "md": "16px",
+                        "sm": "8px",
+                        "lg": "24px",
+                        "base": "8px",
+                        "xs": "4px"
+                    },
+                    "fontFamily": {
+                        "headline-xl": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "label-sm": ["10px", {"lineHeight": "14px", "fontWeight": "500"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+        .bento-bg {
+            background-image: radial-gradient(circle at 2px 2px, rgba(45, 90, 39, 0.05) 1px, transparent 0);
+            background-size: 24px 24px;
+        }
+        .pill-shadow {
+            box-shadow: 0 4px 12px rgba(45, 90, 39, 0.08);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface-bright text-on-surface font-body-md min-h-screen bento-bg pb-24">
+<!-- Top App Bar (Suppressing global nav for focus task) -->
+<header class="w-full top-0 sticky z-50 bg-surface-bright dark:bg-surface-dim shadow-sm flex justify-between items-center px-container-margin-mobile py-sm">
+<button class="material-symbols-outlined text-primary p-2 hover:bg-surface-container-high rounded-full transition-all active:scale-95">arrow_back</button>
+<h1 class="text-title-lg font-title-lg font-bold text-primary">Add Expense</h1>
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center overflow-hidden border-2 border-primary-container">
+<img alt="User" data-alt="A close-up portrait of a cheerful African traveler with a warm, radiant smile, set against a blurred background of a lush Rwandan hillside at sunset. The lighting is golden and soft, emphasizing the natural textures of the scene. The image quality is high-fidelity, reflecting a modern, adventurous corporate aesthetic with rich green and earthy orange tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmVTFZNKKnM7kSIq7yvvLLZbAEGvEyG5flIvklt_f92li8YUrjzlF8TIMMo2CrsvpcmRu0_u1feBmKH38HqME81QjVsJ8ke9o0YMTFiVyytiGD35dChYoB71gQ0IuT1lP7ZeIE_AtLF2scNi3B3XDnPRVmlzP0OjcVHD8Qp-CAEJG3LquLD0ip-aV91ELe-e-lU32SGoojTPBz8__9KrQ-WQHRbN_WuN0ABZ97k1cAJpAclSa7wkDKMz-n3M58qOpY7HAxBxaQCauP"/>
+</div>
+</header>
+<main class="px-container-margin-mobile pt-lg max-w-md mx-auto space-y-lg">
+<!-- Hero Input Section (Amount) -->
+<section class="space-y-md text-center">
+<div class="inline-block px-xl py-lg rounded-full bg-surface-container-lowest pill-shadow border border-outline-variant">
+<span class="block font-label-md text-on-surface-variant mb-xs">AMOUNT (RWF)</span>
+<input class="bg-transparent border-none text-center font-headline-xl text-headline-xl text-primary focus:ring-0 w-full placeholder:text-surface-variant" placeholder="0" type="number"/>
+</div>
+<div class="px-lg py-md rounded-full bg-surface-container-low border border-outline-variant flex items-center">
+<span class="material-symbols-outlined text-outline mr-sm">description</span>
+<input class="bg-transparent border-none text-body-md font-body-md text-on-surface focus:ring-0 w-full placeholder:text-outline" placeholder="What was it for?" type="text"/>
+</div>
+</section>
+<!-- Category Selector -->
+<section class="space-y-sm">
+<h2 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider px-sm">Category</h2>
+<div class="grid grid-cols-3 gap-md">
+<button class="category-btn flex flex-col items-center justify-center p-md rounded-xl bg-surface-container border border-outline-variant transition-all hover:bg-primary-container hover:text-on-primary-container group" onclick="selectCategory(this)">
+<span class="material-symbols-outlined text-[32px] mb-xs group-hover:active-icon">local_gas_station</span>
+<span class="font-label-md text-label-md">Fuel</span>
+</button>
+<button class="category-btn flex flex-col items-center justify-center p-md rounded-xl bg-surface-container border border-outline-variant transition-all hover:bg-primary-container hover:text-on-primary-container group" onclick="selectCategory(this)">
+<span class="material-symbols-outlined text-[32px] mb-xs group-hover:active-icon">restaurant</span>
+<span class="font-label-md text-label-md">Food</span>
+</button>
+<button class="category-btn flex flex-col items-center justify-center p-md rounded-xl bg-surface-container border border-outline-variant transition-all hover:bg-primary-container hover:text-on-primary-container group" onclick="selectCategory(this)">
+<span class="material-symbols-outlined text-[32px] mb-xs group-hover:active-icon">confirmation_number</span>
+<span class="font-label-md text-label-md">Entry Fees</span>
+</button>
+</div>
+</section>
+<!-- Split With Section -->
+<section class="space-y-md">
+<div class="flex justify-between items-center px-sm">
+<h2 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Split With...</h2>
+<span class="text-primary font-label-md text-label-md">Split Equally</span>
+</div>
+<!-- Friend Bubbles (Equatorial Hearth Layout) -->
+<div class="flex flex-wrap gap-md justify-center items-center py-md bg-surface-container-lowest rounded-xl border border-outline-variant pill-shadow">
+<div class="friend-toggle flex flex-col items-center cursor-pointer transition-all" onclick="toggleFriend(this)">
+<div class="relative">
+<img alt="Friend 1" class="w-14 h-14 rounded-full border-4 border-secondary-container grayscale transition-all" data-alt="A professional headshot of a young East African man in his late 20s, featuring a friendly expression and sharp, modern attire. The background is a warm, sun-drenched cafe with golden hour lighting that creates a welcoming and reliable vibe. The overall aesthetic is clean, minimalist, and high-quality, fitting a modern travel application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCe5B-7p55qbpZSNhAWfvOMGxs6XmfFYhaZGbHouAOu26czjRwknm7qbu-MYijyerGQXhqUuSi_BmvC76DsSa3xwoLBMqmIXggeo2x2HPJXKxP5FymBdzofyYN8qwvgwnE7hfvfoxPsuFfXpoCGBv3tMQQJ99twBZG8932PgpMjCNaz5ur_EwwbRhowV5iqvo3XOxn3NhjQBCipyxEFfgsaDX9DMMWUiA0vW8zkSldx_aBkUpyLhKGrO6mMIjB2Q3HkjR5C9clQ7-Y8"/>
+<div class="check-mark absolute -top-1 -right-1 bg-secondary-container text-white rounded-full w-5 h-5 flex items-center justify-center scale-0 transition-transform">
+<span class="material-symbols-outlined text-[14px]">check</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm mt-xs text-on-surface-variant">Kamanzi</span>
+</div>
+<div class="friend-toggle flex flex-col items-center cursor-pointer transition-all" onclick="toggleFriend(this)">
+<div class="relative">
+<img alt="Friend 2" class="w-14 h-14 rounded-full border-4 border-transparent grayscale transition-all" data-alt="A radiant portrait of a smiling woman with a vibrant headscarf, captured against a serene landscape of rolling green hills in East Africa. The lighting is soft and natural, emphasizing the warmth and adventurous spirit of the subject. The image maintains a professional, modern corporate aesthetic with a focus on human connection and trust." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBM7827QOnV4q5tOiq2CXNv6l9-5rBh-5m_xEUn-rP5o90StT133VAaEcbxVSXTACm2QY2PRkSdnr2GMgOH9do-tNCC_P66g1B_56zJGUdkZx4tG9A5-MJyknhvzSDlFVfX1Bg2AuNJ2p09y66NUOoaWfeumOg0v-dEw23FQYZ63VQeQknLm99eae2FIfbEKwEk4juEpOhkYGihsGdAQ8Bxqv8o203IFRPdJa24Z5o-Zeg6aGMVFTxFwt_fKLY7qMF99hUPTdSWfHP2"/>
+<div class="check-mark absolute -top-1 -right-1 bg-secondary-container text-white rounded-full w-5 h-5 flex items-center justify-center scale-0 transition-transform">
+<span class="material-symbols-outlined text-[14px]">check</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm mt-xs text-on-surface-variant">Umuhoza</span>
+</div>
+<div class="friend-toggle flex flex-col items-center cursor-pointer transition-all" onclick="toggleFriend(this)">
+<div class="relative">
+<img alt="Friend 3" class="w-14 h-14 rounded-full border-4 border-transparent grayscale transition-all" data-alt="A portrait of a confident young man looking off-camera, set against a blurred urban background with modern architecture and lush greenery. The lighting is bright and airy, conveying a sense of optimism and reliability. The style is polished and sophisticated, using the brand's primary deep forest green and sunset orange tones subtlely in the environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBw5xJhHiMK-1D3PgCnGit17tm0eq-HeGbOgHrxyTrM1EA5so3aGMgAc1sgq1kcXRLSz0G8NXMIGzrUUCXIBvtIoyrpjX6sLGkyzhnzPol2ym8CJrDx7Kc-37S4a4dU84LZJqKitiTAERUc8_3FVee-BRfRVocZAx8UCAcJ9kbBQeGPBpxmYALnikbhMbdWaIMMe-_W6ls6ssKTc1ddUpRvo67ATpOrd050LwYRFQsP0rbtRD0_2humRiDpMwlVeCmjJM5jhyorhCn0"/>
+<div class="check-mark absolute -top-1 -right-1 bg-secondary-container text-white rounded-full w-5 h-5 flex items-center justify-center scale-0 transition-transform">
+<span class="material-symbols-outlined text-[14px]">check</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm mt-xs text-on-surface-variant">Jean</span>
+</div>
+<div class="flex flex-col items-center cursor-pointer">
+<div class="w-14 h-14 rounded-full bg-surface-container-high flex items-center justify-center border-2 border-dashed border-outline text-outline hover:bg-surface-variant">
+<span class="material-symbols-outlined">add</span>
+</div>
+<span class="font-label-sm text-label-sm mt-xs text-outline">More</span>
+</div>
+</div>
+</section>
+<!-- Advanced Toggle (MoMo Integration Hint) -->
+<div class="flex items-center justify-between p-md bg-tertiary-fixed rounded-xl border border-tertiary-container">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-on-tertiary-fixed-variant">payments</span>
+<div>
+<p class="font-label-md text-label-md text-on-tertiary-fixed-variant">Pay via MoMo</p>
+<p class="text-[10px] text-on-tertiary-fixed-variant opacity-70">Direct settlement after adding</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-tertiary-container peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+</label>
+</div>
+</main>
+<!-- Fixed Action Button (Pill Button) -->
+<div class="fixed bottom-0 left-0 w-full px-container-margin-mobile pb-8 pt-4 bg-gradient-to-t from-surface-bright to-transparent pointer-events-none">
+<button class="pointer-events-auto w-full py-lg rounded-full bg-primary text-on-primary font-headline-md text-headline-md shadow-lg transition-all active:scale-95 hover:bg-primary-container hover:text-on-primary-container flex items-center justify-center gap-sm">
+<span class="material-symbols-outlined">book</span>
+            Add to Ledger
+        </button>
+</div>
+<!-- Ledger Tab Nav (Shared Component Mockup) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-4 pt-2 bg-surface-container dark:bg-surface-container-low shadow-lg rounded-t-xl">
+<button class="flex flex-col items-center justify-center text-on-surface-variant transition-transform active:scale-90">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-md text-label-md">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant transition-transform active:scale-90">
+<span class="material-symbols-outlined">explore</span>
+<span class="font-label-md text-label-md">Trips</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 transition-transform active:scale-90">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-label-md text-label-md">Ledger</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant transition-transform active:scale-90">
+<span class="material-symbols-outlined">folder_shared</span>
+<span class="font-label-md text-label-md">Vault</span>
+</button>
+</nav>
+<script>
+        function selectCategory(el) {
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('bg-primary-container', 'text-on-primary-container');
+                btn.classList.add('bg-surface-container');
+                btn.querySelector('span').classList.remove('active-icon');
+            });
+            el.classList.add('bg-primary-container', 'text-on-primary-container');
+            el.classList.remove('bg-surface-container');
+            el.querySelector('span').classList.add('active-icon');
+        }
+
+        function toggleFriend(el) {
+            const img = el.querySelector('img');
+            const check = el.querySelector('.check-mark');
+            const isActive = img.classList.contains('grayscale');
+            
+            if(isActive) {
+                img.classList.remove('grayscale');
+                img.classList.add('border-secondary-container');
+                check.classList.remove('scale-0');
+                check.classList.add('scale-100');
+            } else {
+                img.classList.add('grayscale');
+                img.classList.remove('border-secondary-container');
+                check.classList.add('scale-0');
+                check.classList.remove('scale-100');
+            }
+        }
+
+        // Initialize first category and first friend
+        window.onload = () => {
+            selectCategory(document.querySelectorAll('.category-btn')[1]);
+        };
+    </script>
+</body></html>

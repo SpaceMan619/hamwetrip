@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Invite Members - Harmway Trip</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#4f4629",
+                        "surface-bright": "#fcf9f8",
+                        "on-surface-variant": "#42493e",
+                        "primary-fixed": "#bcf0ae",
+                        "on-background": "#1b1c1c",
+                        "on-tertiary-container": "#483f22",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed": "#002201",
+                        "on-surface": "#1b1c1c",
+                        "on-error": "#ffffff",
+                        "secondary-container": "#fc8f34",
+                        "secondary-fixed": "#ffdcc5",
+                        "on-primary-fixed-variant": "#23501e",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#f0e2ba",
+                        "surface-container-highest": "#e4e2e1",
+                        "inverse-primary": "#a1d494",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#9dd090",
+                        "primary-container": "#2d5a27",
+                        "background": "#fcf9f8",
+                        "on-tertiary-fixed": "#221b03",
+                        "inverse-surface": "#303030",
+                        "on-error-container": "#93000a",
+                        "on-primary": "#ffffff",
+                        "surface-container-high": "#eae7e7",
+                        "inverse-on-surface": "#f3f0f0",
+                        "tertiary-container": "#b7aa86",
+                        "outline": "#72796e",
+                        "on-secondary-fixed-variant": "#713700",
+                        "on-secondary-fixed": "#301400",
+                        "on-secondary": "#ffffff",
+                        "surface-container": "#f0eded",
+                        "tertiary-fixed-dim": "#d4c69f",
+                        "surface": "#fcf9f8",
+                        "surface-tint": "#3b6934",
+                        "secondary-fixed-dim": "#ffb783",
+                        "primary-fixed-dim": "#a1d494",
+                        "primary": "#154212",
+                        "on-secondary-container": "#663100",
+                        "surface-container-lowest": "#ffffff",
+                        "outline-variant": "#c2c9bb",
+                        "secondary": "#944a00",
+                        "tertiary": "#685e3e",
+                        "surface-variant": "#e4e2e1",
+                        "surface-dim": "#dcd9d9",
+                        "surface-container-low": "#f6f3f2"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-margin-desktop": "auto",
+                        "gutter": "16px",
+                        "container-margin-mobile": "16px",
+                        "xxl": "48px",
+                        "xl": "32px",
+                        "md": "16px",
+                        "sm": "8px",
+                        "lg": "24px",
+                        "base": "8px",
+                        "xs": "4px"
+                    },
+                    "fontFamily": {
+                        "headline-xl": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "label-sm": ["10px", {"lineHeight": "14px", "fontWeight": "500"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md text-body-md min-h-screen flex flex-col">
+<!-- Top Navigation: Floating Bubble Top Bar -->
+<header class="fixed top-4 left-1/2 -translate-x-1/2 w-[calc(100%-32px)] max-w-lg z-50">
+<nav class="bg-surface-bright/90 backdrop-blur-md shadow-lg rounded-full flex justify-between items-center px-6 py-3 border border-outline-variant/30">
+<div class="flex items-center gap-3">
+<button class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container-high transition-all active:scale-90 text-primary">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+<span class="font-title-lg text-title-lg text-primary">Invite Members</span>
+</div>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-container">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A professional close-up portrait of a woman with a warm expression, set against a soft-focus background of a sun-drenched savannah at dusk. The lighting is golden and warm, consistent with an Equatorial Hearth aesthetic. The image is crisp, modern, and high-quality, reflecting a reliable and adventurous travel persona." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsolhBYL8OqRcwIm7pD91tl8SZ4-uUcdClETwhJBeO6LTbm_RTlDxo_8zzZ1naFBXzZ8mYNV7jIVJcc7Cj-PwROcEL1Zws6eYQ48vvxUDznjlNdTz1CvXQ9wPY4Y2xvh39YrFjuDy4Jdw16fqepVtcZopkue3cQ5Gl6XkPmGa8hi9Y77MRiVse6S0IOmSCOmWSTeLUW0k-FAWqwSOL6trvn5fL4DnAf4YUXwIfYDhxgP0P1hOj3QGVJrU_oxzKxOIAgQAngXwd3l5D"/>
+</div>
+</nav>
+</header>
+<main class="flex-grow pt-28 px-container-margin-mobile max-w-lg mx-auto w-full pb-32">
+<!-- Trip Link Section -->
+<section class="mb-xl">
+<h2 class="font-headline-md text-headline-md text-primary mb-sm">Share Trip Link</h2>
+<p class="text-on-surface-variant font-body-sm text-body-sm mb-md">Anyone with this link can view and request to join your Akagera expedition.</p>
+<div class="bg-surface-container-low rounded-xl p-md flex items-center justify-between border-2 border-dashed border-outline-variant/50">
+<span class="font-label-md text-label-md text-on-surface-variant select-all">harmwaytrip.app/akagera</span>
+<button class="bg-primary-container text-on-primary-container px-4 py-2 rounded-full font-label-md text-label-md flex items-center gap-2 hover:opacity-90 active:scale-95 transition-all shadow-sm" onclick="copyToClipboard()">
+<span class="material-symbols-outlined text-[18px]" data-icon="content_copy">content_copy</span>
+<span>Copy Link</span>
+</button>
+</div>
+</section>
+<!-- Contact List Section -->
+<section class="mb-xl">
+<div class="flex justify-between items-end mb-md">
+<div>
+<h2 class="font-headline-md text-headline-md text-primary">Recent Travel Partners</h2>
+<p class="text-on-surface-variant font-body-sm text-body-sm">People you've traveled with in the last 6 months.</p>
+</div>
+</div>
+<div class="space-y-sm">
+<!-- Contact Item 1 -->
+<label class="flex items-center justify-between p-md bg-surface-bright rounded-xl shadow-sm border border-transparent hover:border-primary/20 transition-all cursor-pointer group">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-tertiary-container/30">
+<img alt="Partner 1" class="w-full h-full object-cover" data-alt="A candid portrait of a young man smiling warmly, wearing travel-appropriate gear, with soft sunlight filtering through lush green foliage in the background. The aesthetic is tactile and organic, with high legibility and clear visual focus, echoing a modern corporate yet adventurous brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAav1nCxsOfou3R-K8KREUI7whgY3IrzA4UA0OyB8I2JegtJmb1WdUq5QBz2VTzH3v-8dVye5ok7BvLz3P4F7_UMEFGZ2kgGrPkBM-I0j6zohgciqVLUABAvJYo6SeFcvKR6eOjKc5Ue6Xd-gRJ4uyH_AtTrpvJZ-byBQwluOT1Ny2aAFjFt9uHoy0titu2TugqEeTh-ABTfUL-oqfG49RIygWw5imEV6OOytd7WGGdmV7kIvsXlbTpRyhqQmGiv0yNBNXdm4V__t0i"/>
+</div>
+<div>
+<p class="font-title-lg text-title-lg text-on-surface">Kigali Explorer</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Last trip: Lake Kivu</p>
+</div>
+</div>
+<div class="relative w-6 h-6">
+<input checked="" class="peer sr-only" type="checkbox"/>
+<div class="w-6 h-6 rounded-full border-2 border-outline peer-checked:bg-primary peer-checked:border-primary transition-all flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[16px] hidden peer-checked:block" data-icon="check" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+</div>
+</label>
+<!-- Contact Item 2 -->
+<label class="flex items-center justify-between p-md bg-surface-bright rounded-xl shadow-sm border border-transparent hover:border-primary/20 transition-all cursor-pointer">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-tertiary-container/30">
+<img alt="Partner 2" class="w-full h-full object-cover" data-alt="A portrait of a cheerful woman hiker in high-visibility outdoor wear, standing against a panoramic mountain view at sunrise. The lighting is dramatic and warm, with orange and golden hues. The style is clean, modern, and trustworthy, fitting for a reliable group travel coordination app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8ogGUSWQmOAhFgsWPnVq6QQy87E83F2jhXAy63TX-T7Tp9heKEvgwqgMe80NM5XI7JMUMdAqMSQOKxbQCvF93gtzSLi3fO_smaBd2bhgwpxLVTSvn97vMCIGz6opqXQnqVjhRTbAITGQrKfReS0DZLlsGc_-WuVty-fqhxQtzMo6twZGH2tyZ4CgeBCifRYH6T2Aqc-KuJZ8uUt5qNUU1zmQ5pqPkIGcigwURlDW4Y0aIyDdqBaXnjb7OAOTV35ZrO1kPcs6WGka5"/>
+</div>
+<div>
+<p class="font-title-lg text-title-lg text-on-surface">Nature Enthusiast</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Last trip: Volcanoes Park</p>
+</div>
+</div>
+<div class="relative w-6 h-6">
+<input class="peer sr-only" type="checkbox"/>
+<div class="w-6 h-6 rounded-full border-2 border-outline peer-checked:bg-primary peer-checked:border-primary transition-all flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[16px] hidden peer-checked:block" data-icon="check" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+</div>
+</label>
+<!-- Contact Item 3 -->
+<label class="flex items-center justify-between p-md bg-surface-bright rounded-xl shadow-sm border border-transparent hover:border-primary/20 transition-all cursor-pointer">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-tertiary-container/30">
+<img alt="Partner 3" class="w-full h-full object-cover" data-alt="A portrait of an adventurous traveler looking over a map in a sunlit wooden cabin. The environment is warm and tactile, with rich textures of wood and paper. The color palette is earthy and balanced, reflecting the reliable and adventurous Harmway Trip brand personality." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkXQFhmr4r6iq2fzxrK9FEeGjDiaakdwe8ZtmIoI0R7MXyk4rfbyTEV-Hl_7AEE5Ubl5A3bnF87169BL_WnLF9mEPKjM0ftNGzRfxOtYAuvAdgd2tSYaCjD3QYAyzvXaNLA7Dfh9L_5Y3ZsVJOqWIn1kd-W__hfRMDxMf_g6HihaBI6YxgChmiubjwkN_aGOqj6-cSilPto4HP8mPePhogbqVBVGOv6p4LvzRMYrCivcd75u7CLMzOOYbxbe2ONyH1ClBNoN0MmnnO"/>
+</div>
+<div>
+<p class="font-title-lg text-title-lg text-on-surface">Safari Pro</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Last trip: Akagera South</p>
+</div>
+</div>
+<div class="relative w-6 h-6">
+<input checked="" class="peer sr-only" type="checkbox"/>
+<div class="w-6 h-6 rounded-full border-2 border-outline peer-checked:bg-primary peer-checked:border-primary transition-all flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[16px] hidden peer-checked:block" data-icon="check" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+</div>
+</label>
+<!-- Search/Add New -->
+<div class="mt-md p-md bg-surface-container-highest/30 rounded-xl border border-dashed border-outline-variant flex items-center justify-center gap-2 text-primary hover:bg-surface-container-highest/50 transition-all cursor-pointer">
+<span class="material-symbols-outlined" data-icon="person_add">person_add</span>
+<span class="font-label-md text-label-md">Search for more partners</span>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Action Area -->
+<div class="fixed bottom-0 left-0 w-full bg-surface-bright/80 backdrop-blur-lg p-container-margin-mobile border-t border-outline-variant/10 flex justify-center z-40">
+<div class="w-full max-w-lg">
+<button class="w-full bg-primary text-on-primary font-headline-md text-headline-md py-4 rounded-full shadow-lg active:scale-[0.98] transition-all hover:bg-primary/90 flex items-center justify-center gap-3">
+<span>Send Invites</span>
+<span class="material-symbols-outlined" data-icon="send">send</span>
+</button>
+</div>
+</div>
+<!-- Toast Notification for Copy Link (hidden by default) -->
+<div class="fixed bottom-28 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface px-6 py-3 rounded-full font-label-md text-label-md shadow-xl transition-all duration-300 translate-y-20 opacity-0 z-[60] flex items-center gap-2" id="copy-toast">
+<span class="material-symbols-outlined text-[18px]" data-icon="check_circle">check_circle</span>
+        Link copied to clipboard!
+    </div>
+<script>
+        function copyToClipboard() {
+            const link = "harmwaytrip.app/akagera";
+            navigator.clipboard.writeText(link).then(() => {
+                const toast = document.getElementById('copy-toast');
+                toast.classList.remove('translate-y-20', 'opacity-0');
+                toast.classList.add('translate-y-0', 'opacity-100');
+                
+                setTimeout(() => {
+                    toast.classList.add('translate-y-20', 'opacity-0');
+                    toast.classList.remove('translate-y-0', 'opacity-100');
+                }, 2000);
+            });
+        }
+
+        // Simple checkbox visual interaction
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const parent = this.closest('label');
+                if (this.checked) {
+                    parent.classList.add('border-primary/40', 'bg-primary-container/5');
+                } else {
+                    parent.classList.remove('border-primary/40', 'bg-primary-container/5');
+                }
+            });
+        });
+    </script>
+</body></html>
