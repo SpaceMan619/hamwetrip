@@ -1,0 +1,24 @@
+# Real secrets — Admin SDK service accounts grant full access and bypass all
+# security rules. These must never reach the repository.
+**/serviceAccountKey.json
+**/*-firebase-adminsdk-*.json
+.env
+.env.*
+
+# Production Firebase config. Client config is not itself a secret — security
+# comes from the rules, not from key secrecy — but keeping prod out prevents a
+# teammate accidentally pointing a debug build at production data.
+**/google-services-prod.json
+**/firebase_options_prod.dart
+
+# Firebase CLI local state and emulator artifacts
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+*-debug.log
+emulator-data/
+
+# Rules test workspace
+functions/node_modules/
+test-rules/node_modules/
