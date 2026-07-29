@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../data/models/document.dart';
 import '../../../core/widgets/shakira_widgets/document_card.dart';
+import '../../../core/widgets/shakira_widgets/offline_status_bar.dart';
 
 class DocumentVaultScreen extends StatelessWidget {
   final List<TripDocument> documents;
@@ -11,6 +12,9 @@ class DocumentVaultScreen extends StatelessWidget {
   final void Function(TripDocument) onViewDocument;
   final void Function(TripDocument) onDocumentOptions;
   final VoidCallback onUploadDocument;
+  final VoidCallback onSearch;
+  final bool isOffline;
+  final Widget? bottomNavigation;
 
   const DocumentVaultScreen({
     super.key,
@@ -21,6 +25,9 @@ class DocumentVaultScreen extends StatelessWidget {
     required this.onViewDocument,
     required this.onDocumentOptions,
     required this.onUploadDocument,
+    required this.onSearch,
+    this.isOffline = true,
+    this.bottomNavigation,
   });
 
   @override
@@ -34,13 +41,17 @@ class DocumentVaultScreen extends StatelessWidget {
         title: const Text('Documents'),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: onSearch,
             icon: const Icon(Icons.search_outlined, color: AppColors.forest),
           ),
         ],
       ),
       body: Column(
         children: [
+          // NEW: Offline Status Bar
+          if (isOffline) const OfflineStatusBar(),
+
+          // Header Info & Upload Button
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -50,8 +61,8 @@ class DocumentVaultScreen extends StatelessWidget {
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
+                    children: const [
+                      Text(
                         'Offline Vault',
                         style: TextStyle(
                           fontSize: 18,
@@ -59,13 +70,24 @@ class DocumentVaultScreen extends StatelessWidget {
                           color: AppColors.ink,
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '${documents.length} files cached',
-                        style: const TextStyle(
-                          color: AppColors.muted,
-                          fontSize: 14,
-                        ),
+                      SizedBox(height: 4),
+                      // NEW: Storage Stats matching Figma
+                      Row(
+                        children: const [
+                          Icon(
+                            Icons.fingerprint,
+                            color: AppColors.forest,
+                            size: 16,
+                          ),
+                          SizedBox(width: 6),
+                          Text(
+                            '3 documents cached locally in Rwanda',
+                            style: TextStyle(
+                              color: AppColors.muted,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -80,7 +102,7 @@ class DocumentVaultScreen extends StatelessWidget {
                       vertical: 12,
                     ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
                   child: const Row(
@@ -88,13 +110,16 @@ class DocumentVaultScreen extends StatelessWidget {
                     children: [
                       Icon(Icons.upload_file_outlined, size: 18),
                       SizedBox(width: 8),
-                      Text('Upload'),
+                      Text('Add Document'),
                     ],
                   ),
                 ),
               ],
             ),
           ),
+          const Divider(height: 1, color: AppColors.line),
+
+          // Category Chips
           Container(
             color: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 12),
@@ -127,6 +152,8 @@ class DocumentVaultScreen extends StatelessWidget {
             ),
           ),
           const Divider(height: 1, color: AppColors.line),
+
+          // Document Grid (Updated mock data to match Figma exactly)
           Expanded(
             child: documents.isEmpty
                 ? const Center(
@@ -157,6 +184,7 @@ class DocumentVaultScreen extends StatelessWidget {
           ),
         ],
       ),
+      bottomNavigationBar: bottomNavigation,
     );
   }
 }

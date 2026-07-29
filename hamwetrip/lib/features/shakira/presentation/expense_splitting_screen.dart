@@ -14,6 +14,7 @@ class ExpenseSplittingScreen extends StatelessWidget {
   final void Function(Expense) onExpenseTap;
   final void Function(Balance) onSettleUp;
   final VoidCallback onRemindEveryone;
+  final Widget? bottomNavigation;
 
   const ExpenseSplittingScreen({
     super.key,
@@ -26,12 +27,13 @@ class ExpenseSplittingScreen extends StatelessWidget {
     required this.onExpenseTap,
     required this.onSettleUp,
     required this.onRemindEveryone,
+    this.bottomNavigation,
   });
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         backgroundColor: AppColors.warmSand,
         appBar: AppBar(
@@ -46,8 +48,9 @@ class ExpenseSplittingScreen extends StatelessWidget {
               color: AppColors.ink,
             ),
             unselectedLabelStyle: TextStyle(color: AppColors.muted),
-            tabs: [
-              Tab(text: 'Expenses'),
+            tabs: const [
+              Tab(text: 'History'),
+              Tab(text: 'Add Expense'),
               Tab(text: 'Settlements'),
             ],
           ),
@@ -62,21 +65,21 @@ class ExpenseSplittingScreen extends StatelessWidget {
                 children: [
                   _SummaryBox(
                     title: 'Total Spent',
-                    value: '\$${totalSpent.toStringAsFixed(2)}',
+                    value: 'RWF ${totalSpent.toStringAsFixed(0)}',
                     color: AppColors.sand,
                     textColor: AppColors.ink,
                   ),
                   const SizedBox(width: 12),
                   _SummaryBox(
                     title: 'You Owe',
-                    value: '\$${youOwe.toStringAsFixed(2)}',
+                    value: 'RWF ${youOwe.toStringAsFixed(0)}',
                     color: AppColors.paleSunset,
                     textColor: AppColors.sunset,
                   ),
                   const SizedBox(width: 12),
                   _SummaryBox(
                     title: 'You Are Owed',
-                    value: '\$${youAreOwed.toStringAsFixed(2)}',
+                    value: 'RWF ${youAreOwed.toStringAsFixed(0)}',
                     color: AppColors.paleMint,
                     textColor: AppColors.forest,
                   ),
@@ -86,8 +89,9 @@ class ExpenseSplittingScreen extends StatelessWidget {
             Expanded(
               child: TabBarView(
                 children: [
-                  // PASS DATA DIRECTLY TO THE TAB WIDGETS
+                  // SAFE INJECTION: Pass data directly via constructor
                   _ExpensesTab(expenses: expenses, onExpenseTap: onExpenseTap),
+                  _AddExpenseTab(onSubmit: onAddExpense),
                   _SettlementsTab(
                     balances: balances,
                     onSettleUp: onSettleUp,
@@ -98,6 +102,7 @@ class ExpenseSplittingScreen extends StatelessWidget {
             ),
           ],
         ),
+        bottomNavigationBar: bottomNavigation,
         floatingActionButton: FloatingActionButton.extended(
           onPressed: onAddExpense,
           backgroundColor: AppColors.forest,
@@ -154,7 +159,7 @@ class _SummaryBox extends StatelessWidget {
   }
 }
 
-// SAFE TAB 1: Receives data via constructor
+// --- Existing Tabs (Rewritten Safely) ---
 class _ExpensesTab extends StatelessWidget {
   final List<Expense> expenses;
   final void Function(Expense) onExpenseTap;
@@ -185,7 +190,6 @@ class _ExpensesTab extends StatelessWidget {
   }
 }
 
-// SAFE TAB 2: Receives data via constructor
 class _SettlementsTab extends StatelessWidget {
   final List<Balance> balances;
   final void Function(Balance) onSettleUp;
@@ -203,7 +207,7 @@ class _SettlementsTab extends StatelessWidget {
       return const Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
+          children: const [
             Icon(Icons.check_circle_outline, size: 64, color: AppColors.forest),
             SizedBox(height: 16),
             Text(
@@ -248,6 +252,264 @@ class _SettlementsTab extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+// --- NEW: Add Expense Tab (Matches Figma perfectly) ---
+class _AddExpenseTab extends StatefulWidget {
+  final VoidCallback onSubmit;
+  const _AddExpenseTab({required this.onSubmit});
+
+  @override
+  State<_AddExpenseTab> createState() => _AddExpenseTabState();
+}
+
+class _AddExpenseTabState extends State<_AddExpenseTab> {
+  final _amountController = TextEditingController();
+  final _purposeController = TextEditingController();
+  String _selectedCategory = 'Food';
+  bool _payViaMoMo = true;
+
+  final List<String> _categories = ['Fuel', 'Food', 'Entry Fees'];
+  final List<String> _splitWith = ['Kamanzi', 'Umuhozza', 'Jean', 'Malik'];
+
+  @override
+  void dispose() {
+    _amountController.dispose();
+    _purposeController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'AMOUNT (RWF)',
+            style: const TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.2,
+              color: AppColors.muted,
+            ),
+          ),
+          const SizedBox(height: 7),
+          TextField(
+            controller: _amountController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              hintText: '0.00',
+              filled: true,
+              fillColor: AppColors.warmSand,
+              border: const OutlineInputBorder(
+                borderRadius: BorderRadius.vertical(bottom: Radius.circular(8)),
+                borderSide: BorderSide(color: AppColors.line, width: 2),
+              ),
+              focusedBorder: const OutlineInputBorder(
+                borderRadius: BorderRadius.vertical(bottom: Radius.circular(8)),
+                borderSide: BorderSide(color: AppColors.forest, width: 2),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'What was it for?',
+            style: const TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.2,
+              color: AppColors.muted,
+            ),
+          ),
+          const SizedBox(height: 7),
+          TextField(
+            controller: _purposeController,
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: AppColors.warmSand,
+              border: const OutlineInputBorder(
+                borderRadius: BorderRadius.vertical(bottom: Radius.circular(8)),
+                borderSide: BorderSide(color: AppColors.line, width: 2),
+              ),
+              focusedBorder: const OutlineInputBorder(
+                borderRadius: BorderRadius.vertical(bottom: Radius.circular(8)),
+                borderSide: BorderSide(color: AppColors.forest, width: 2),
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'CATEGORY',
+            style: const TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.2,
+              color: AppColors.muted,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: _categories.map((cat) {
+              final icon = cat == 'Fuel'
+                  ? Icons.local_gas_station
+                  : cat == 'Food'
+                  ? Icons.restaurant
+                  : Icons.receipt_long;
+              return GestureDetector(
+                onTap: () => setState(() => _selectedCategory = cat),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: _selectedCategory == cat
+                        ? AppColors.forest.withOpacity(0.1)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(10),
+                    border: _selectedCategory == cat
+                        ? Border.all(color: AppColors.forest, width: 1.5)
+                        : null,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        icon,
+                        size: 18,
+                        color: _selectedCategory == cat
+                            ? AppColors.forest
+                            : AppColors.muted,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        cat,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: _selectedCategory == cat
+                              ? AppColors.forest
+                              : AppColors.ink,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'SPLIT WITH…',
+            style: const TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.2,
+              color: AppColors.muted,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: _splitWith
+                .map(
+                  (name) => Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.warmSand,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CircleAvatar(
+                          radius: 14,
+                          backgroundColor: AppColors.forest,
+                          child: Text(
+                            name[0],
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          name,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.ink,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+          const Spacer(),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              border: Border.all(color: AppColors.line, width: 1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Row(
+                  children: [
+                    Icon(Icons.phone_android_outlined, color: AppColors.forest),
+                    SizedBox(width: 8),
+                    Text(
+                      'Pay via MoMo',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.ink,
+                      ),
+                    ),
+                  ],
+                ),
+                Switch(
+                  value: _payViaMoMo,
+                  activeColor: AppColors.forest,
+                  onChanged: (val) => setState(() => _payViaMoMo = val),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 32),
+          // Submit Button (Primary Style)
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton(
+              onPressed: () {
+                debugPrint('Expense Submitted');
+                widget.onSubmit;
+              },
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.forest,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text('Save Expense'),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

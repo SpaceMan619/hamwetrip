@@ -7,12 +7,18 @@ class DetailedItineraryScreen extends StatelessWidget {
   final List<ItineraryDay> days;
   final void Function(ItineraryItem) onEditItem;
   final VoidCallback onAddItem;
+  final VoidCallback onEditCalendar;
+  final VoidCallback onShare;
+  final Widget? bottomNavigation;
 
   const DetailedItineraryScreen({
     super.key,
     required this.days,
     required this.onEditItem,
     required this.onAddItem,
+    required this.onEditCalendar,
+    required this.onShare,
+    this.bottomNavigation,
   });
 
   @override
@@ -26,14 +32,14 @@ class DetailedItineraryScreen extends StatelessWidget {
         title: const Text('Detailed Itinerary'),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: onEditCalendar,
             icon: const Icon(
               Icons.edit_calendar_outlined,
               color: AppColors.forest,
             ),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: onShare,
             icon: const Icon(Icons.share_outlined, color: AppColors.forest),
           ),
         ],
@@ -132,6 +138,7 @@ class DetailedItineraryScreen extends StatelessWidget {
                 );
               },
             ),
+      bottomNavigationBar: bottomNavigation,
       floatingActionButton: FloatingActionButton(
         onPressed: onAddItem,
         backgroundColor: AppColors.forest,

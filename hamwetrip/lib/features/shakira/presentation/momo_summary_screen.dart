@@ -12,6 +12,7 @@ class MomoSummaryScreen extends StatelessWidget {
   final void Function(MomoTransaction) onRequest;
   final String fabLabel;
   final VoidCallback onFabTap;
+  final Widget? bottomNavigation;
 
   const MomoSummaryScreen({
     super.key,
@@ -23,6 +24,7 @@ class MomoSummaryScreen extends StatelessWidget {
     required this.onRequest,
     required this.fabLabel,
     required this.onFabTap,
+    this.bottomNavigation,
   });
 
   @override
@@ -82,6 +84,7 @@ class MomoSummaryScreen extends StatelessWidget {
             ),
           ],
         ),
+        bottomNavigationBar: bottomNavigation,
         floatingActionButton: FloatingActionButton.extended(
           onPressed: onFabTap,
           backgroundColor: AppColors.forest,
@@ -125,7 +128,7 @@ class _SummaryPill extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              '\$${amount.toStringAsFixed(2)}',
+              'RWF ${amount.toStringAsFixed(0)}',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w800,
@@ -158,7 +161,7 @@ class _TransactionTab extends StatelessWidget {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       itemCount: transactions.length,
       itemBuilder: (context, index) {
         final tx = transactions[index];

@@ -11,6 +11,7 @@ class GroupVotingScreen extends StatelessWidget {
   final void Function(String) onClosePoll;
   final VoidCallback onCreatePoll;
   final void Function(Poll) onViewResults;
+  final Widget? bottomNavigation;
 
   const GroupVotingScreen({
     super.key,
@@ -21,6 +22,7 @@ class GroupVotingScreen extends StatelessWidget {
     required this.onClosePoll,
     required this.onCreatePoll,
     required this.onViewResults,
+    this.bottomNavigation,
   });
 
   @override
@@ -74,6 +76,7 @@ class GroupVotingScreen extends StatelessWidget {
             ),
           ],
         ),
+        bottomNavigationBar: bottomNavigation,
         floatingActionButton: FloatingActionButton(
           onPressed: onCreatePoll,
           backgroundColor: AppColors.forest,

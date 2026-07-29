@@ -7,4 +7,13 @@ abstract final class AppRoutes {
   static const inviteMembers = '/invite-members';
   static const activityFeed = '/activity-feed';
   static const profile = '/profile';
+
+  // --- New Shakira Feature Routes ---
+  static const detailedItinerary = '/detailed-itinerary';
+  static const documentVault = '/document-vault';
+  static const expenseSplitting = '/expense-splitting';
+  static const groupVoting = '/group-voting';
+  static const momoSummary = '/momo-summary';
+  static const pollResults = '/poll-results';
+  static const settlementConfirmation = '/settlement-confirmation';
 }

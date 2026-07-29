@@ -41,28 +41,64 @@ class PollOptionTile extends StatelessWidget {
         child: Column(
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _SelectionIndicator(
                   isSelected: isSelected,
                   showResults: showResults,
                 ),
                 const SizedBox(width: 12),
-                if (option.emoji != null) ...[
-                  Text(option.emoji!, style: const TextStyle(fontSize: 20)),
-                  const SizedBox(width: 8),
-                ],
-                Expanded(
-                  child: Text(
-                    option.label,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: isSelected
-                          ? FontWeight.w600
-                          : FontWeight.w500,
-                      color: isSelected ? AppColors.forest : AppColors.ink,
-                    ),
+
+                // NEW: Left-hand Image Placeholder (Instead of emoji)
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: AppColors.sand,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  alignment: Alignment.center,
+                  // The backend will pass a real NetworkImage later.
+                  // For now, we use a category icon as a placeholder to keep the layout stable.
+                  child: const Icon(
+                    Icons.hotel_outlined,
+                    size: 26,
+                    color: AppColors.forest,
                   ),
                 ),
+                const SizedBox(width: 12),
+
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        option.label,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: isSelected
+                              ? FontWeight.w600
+                              : FontWeight.w500,
+                          color: isSelected ? AppColors.forest : AppColors.ink,
+                        ),
+                      ),
+
+                      // NEW: Subtitle text (e.g., "Luxury Suite · Full Board")
+                      // Only show when actively voting, not in results view to avoid clutter
+                      if (!showResults) ...[
+                        const SizedBox(height: 2),
+                        const Text(
+                          'Category details here', // Backend will inject this text
+                          style: TextStyle(
+                            color: AppColors.muted,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+
                 if (showResults && isSelected)
                   Container(
                     padding: const EdgeInsets.symmetric(
@@ -92,6 +128,8 @@ class PollOptionTile extends StatelessWidget {
                   ),
               ],
             ),
+
+            // Progress Bar & Percentage (Unchanged)
             if (showResults) ...[
               const SizedBox(height: 10),
               LayoutBuilder(

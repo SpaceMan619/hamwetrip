@@ -1,0 +1,100 @@
+// lib/features/shakira/data/demo/mock_polls.dart
+import '../../../../../data/models/poll.dart';
+
+final List<Poll> mockPolls = [
+  Poll(
+    id: 'poll_1',
+    question: 'Which date works for the Kigali city tour?',
+    category: 'Logistics',
+    categoryEmoji: '📅',
+    options: [
+      PollOption(id: 'p1_o1', label: 'Friday morning', voteCount: 2),
+      PollOption(
+        id: 'p1_o2',
+        label: 'Friday afternoon',
+        voteCount: 3,
+        emoji: '🌤️',
+      ),
+      PollOption(id: 'p1_o3', label: 'Saturday morning', voteCount: 1),
+    ],
+    totalMembers: 6,
+    deadline: DateTime(2026, 7, 30, 23, 59),
+    isActive: true,
+    voterInitials: ['AM', 'BN', 'CU'],
+    createdBy: 'Alice Mugisha',
+  ),
+  Poll(
+    id: 'poll_2',
+    question: 'What activities should we add? (Select all that apply)',
+    category: 'Activities',
+    categoryEmoji: '🎯',
+    options: [
+      PollOption(
+        id: 'p2_o1',
+        label: 'Visit Kimironko Market',
+        voteCount: 4,
+        emoji: '🛒',
+      ),
+      PollOption(
+        id: 'p2_o2',
+        label: 'Lake Kivu boat ride',
+        voteCount: 5,
+        emoji: '🚤',
+      ),
+      PollOption(
+        id: 'p2_o3',
+        label: 'Gorilla trekking',
+        voteCount: 3,
+        emoji: '🦍',
+      ),
+      PollOption(
+        id: 'p2_o4',
+        label: 'Night life in Kiyovu',
+        voteCount: 2,
+        emoji: '🌙',
+      ),
+    ],
+    totalMembers: 6,
+    deadline: DateTime(2026, 8, 1, 12, 0),
+    isActive: true,
+    voterInitials: ['AM', 'BN', 'CU', 'EI'],
+    createdBy: 'Bob Niyonsaba',
+  ),
+  Poll(
+    id: 'poll_3',
+    question: 'Private van or public transport?',
+    category: 'Logistics',
+    categoryEmoji: '🚐',
+    options: [
+      PollOption(
+        id: 'p3_o1',
+        label: 'Private van (split cost)',
+        voteCount: 4,
+        emoji: '🚐',
+      ),
+      PollOption(id: 'p3_o2', label: 'Motor taxis', voteCount: 1, emoji: '🏍️'),
+      PollOption(id: 'p3_o3', label: 'Mix of both', voteCount: 1, emoji: '🔄'),
+    ],
+    totalMembers: 6,
+    deadline: DateTime(2026, 7, 26),
+    isActive: false,
+    voterInitials: ['AM', 'BN', 'CU', 'EI', 'FN'],
+    createdBy: 'Carol Uwimana',
+  ),
+  Poll(
+    id: 'poll_4',
+    question: 'Budget range per person for accommodation?',
+    category: 'Budget',
+    categoryEmoji: '💰',
+    options: [
+      PollOption(id: 'p4_o1', label: 'Under 15,000 RWF/night', voteCount: 2),
+      PollOption(id: 'p4_o2', label: '15,000 - 30,000 RWF/night', voteCount: 3),
+      PollOption(id: 'p4_o3', label: '30,000+ RWF/night', voteCount: 0),
+    ],
+    totalMembers: 6,
+    deadline: DateTime(2026, 7, 31, 18, 0),
+    isActive: true,
+    voterInitials: ['BN', 'CU', 'EI'],
+    createdBy: 'Alice Mugisha',
+  ),
+];
