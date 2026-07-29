@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "hamwetrip-dev",
+    "dev": "hamwetrip-dev"
+  }
+}

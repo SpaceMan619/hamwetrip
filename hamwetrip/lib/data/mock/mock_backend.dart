@@ -178,35 +178,30 @@ class MockBackend {
         );
   }
 
-  /// Writes a membership and the denormalized `memberIds` together.
+  /// Writes a membership.
   ///
-  /// The real implementation must do this in one transaction; routing every
-  /// mock membership change through here keeps the mock from drifting in a way
-  /// the real backend cannot.
+  /// The member document is the single source of truth — nothing is
+  /// denormalized onto the trip, so there is nothing here that can drift.
   void putMember(TripMember member) {
     members.putIfAbsent(
       member.tripId,
       () => <String, TripMember>{},
     )[member.uid] = member;
-    final trip = trips[member.tripId];
-    if (trip != null && !trip.memberIds.contains(member.uid)) {
-      trips[member.tripId] = trip.copyWith(
-        memberIds: <String>[...trip.memberIds, member.uid],
-      );
-    }
   }
 
-  /// Removes a membership and the denormalized `memberIds` entry together.
+  /// Removes a membership.
   void dropMember(String tripId, String uid) {
     members[tripId]?.remove(uid);
-    final trip = trips[tripId];
-    if (trip != null) {
-      trips[tripId] = trip.copyWith(
-        memberIds: trip.memberIds
-            .where((id) => id != uid)
-            .toList(growable: false),
-      );
-    }
+  }
+
+  /// Trip ids [uid] belongs to.
+  ///
+  /// Stands in for `collectionGroup('members').where('uid', isEqualTo: uid)`,
+  /// which is how the Firebase implementation answers the same question.
+  Iterable<String> tripIdsFor(String uid) {
+    return members.entries
+        .where((entry) => entry.value.containsKey(uid))
+        .map((entry) => entry.key);
   }
 
   void dispose() {
@@ -265,14 +260,13 @@ class MockBackend {
       ownerId: organizerId,
       currency: 'RWF',
       status: TripStatus.planning,
-      memberIds: const <String>[],
       startDate: DateTime.utc(now.year, 10, 12),
       endDate: DateTime.utc(now.year, 10, 18),
       createdAt: now.subtract(const Duration(days: 14)),
       updatedAt: now.subtract(const Duration(days: 2)),
     );
 
-    void join(String uid, TripRole role, int daysAgo) {
+    void join(String uid, TripRole role, int daysAgo, {String? withCode}) {
       backend.putMember(
         TripMember(
           uid: uid,
@@ -280,13 +274,15 @@ class MockBackend {
           role: role,
           displayName: backend.users[uid]!.displayName,
           joinedAt: now.subtract(Duration(days: daysAgo)),
+          joinedWithCode: withCode,
         ),
       );
     }
 
+    // The organizer created the trip, so redeemed no code.
     join(organizerId, TripRole.organizer, 14);
-    join(memberOneId, TripRole.member, 12);
-    join(memberTwoId, TripRole.member, 9);
+    join(memberOneId, TripRole.member, 12, withCode: 'HAMWE7');
+    join(memberTwoId, TripRole.member, 9, withCode: 'HAMWE7');
 
     // The removed member: joined, then was removed. Absent from `members`, but
     // still present in the audit trail — which is exactly the state the

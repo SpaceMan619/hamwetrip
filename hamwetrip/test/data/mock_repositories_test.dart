@@ -43,10 +43,17 @@ void main() {
       );
     });
 
-    test('memberIds stays consistent with the members subcollection', () {
-      final trip = backend.trips[tripId]!;
-      expect(trip.memberIds.toSet(), backend.members[tripId]!.keys.toSet());
-      expect(trip.memberCount, 3);
+    test('membership lives only in the members subcollection', () {
+      // Nothing is denormalized onto the trip, so there is no second copy that
+      // could drift out of sync.
+      expect(backend.tripIdsFor(organizerId), contains(tripId));
+      expect(backend.tripIdsFor('u_jean'), isEmpty);
+    });
+
+    test('joined members record the code they used', () {
+      expect(backend.memberOf(tripId, memberId)!.joinedWithCode, 'HAMWE7');
+      // The organizer created the trip, so redeemed no invite.
+      expect(backend.memberOf(tripId, organizerId)!.joinedWithCode, isNull);
     });
   });
 
@@ -106,7 +113,6 @@ void main() {
       );
 
       expect(trip.ownerId, organizerId);
-      expect(trip.memberIds, contains(organizerId));
       expect(backend.memberOf(trip.id, organizerId)!.role, TripRole.organizer);
       expect(backend.activity[trip.id], isNotEmpty);
     });
@@ -225,13 +231,13 @@ void main() {
       await trips.leaveTrip(tripId);
 
       expect(backend.memberOf(tripId, organizerId), isNull);
-      expect(backend.trips[tripId]!.memberIds, isNot(contains(organizerId)));
+      expect(backend.tripIdsFor(organizerId), isEmpty);
     });
 
-    test('removing a member clears memberIds in the same step', () async {
+    test('removing a member drops them from the trip listing', () async {
       await trips.removeMember(tripId: tripId, uid: memberId);
-      expect(backend.trips[tripId]!.memberIds, isNot(contains(memberId)));
       expect(backend.memberOf(tripId, memberId), isNull);
+      expect(backend.tripIdsFor(memberId), isEmpty);
     });
 
     test('a non-member cannot read the trip', () async {

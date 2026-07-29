@@ -31,6 +31,18 @@ enum TripStatus {
 /// All trip-owned data (members, polls, expenses, payments, itinerary,
 /// documents, activity) lives in subcollections beneath this document, which is
 /// what makes the security rules expressible and cleanup tractable.
+///
+/// ## Membership is not stored here
+///
+/// An earlier revision denormalized a `memberIds` array onto this document so
+/// `watchMyTrips()` could be a single `arrayContains` query. That does not
+/// survive without Cloud Functions: redeeming an invite would require someone
+/// who is *not yet a member* to update this document, and no security rule can
+/// safely permit that.
+///
+/// Membership now lives only in `trips/{tripId}/members/{uid}`, and
+/// `watchMyTrips()` runs `collectionGroup('members').where('uid', ...)`. One
+/// source of truth, and nothing to drift.
 @immutable
 class Trip {
   const Trip({
@@ -40,7 +52,6 @@ class Trip {
     required this.ownerId,
     required this.currency,
     required this.status,
-    required this.memberIds,
     this.startDate,
     this.endDate,
     this.createdAt,
@@ -61,17 +72,6 @@ class Trip {
 
   final TripStatus status;
 
-  /// Denormalized list of member uids, duplicating the `members` subcollection.
-  ///
-  /// This exists solely so `watchMyTrips()` can be a single
-  /// `where('memberIds', arrayContains: uid)` query — the nested schema cannot
-  /// answer "which trips am I in?" on its own.
-  ///
-  /// **It must be written in the same transaction or batch as any change to the
-  /// `members` subcollection.** If the two ever diverge, a member silently
-  /// loses access to a trip they can still be seen in, which is a P0.
-  final List<String> memberIds;
-
   /// Stored UTC. Convert to local only when rendering.
   final DateTime? startDate;
   final DateTime? endDate;
@@ -79,17 +79,12 @@ class Trip {
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  /// Derived rather than stored, so it cannot drift from [memberIds].
-  int get memberCount => memberIds.length;
-
   /// True until the server acknowledges the creating write.
   bool get isPending => createdAt == null;
 
   /// Whether the trip still accepts new polls, expenses and itinerary edits.
   bool get isEditable =>
       status == TripStatus.planning || status == TripStatus.active;
-
-  bool hasMember(String uid) => memberIds.contains(uid);
 
   factory Trip.fromMap(String id, Map<String, Object?> data) {
     return Trip(
@@ -104,7 +99,6 @@ class Trip {
         (status) => status.wire,
         TripStatus.unknown,
       ),
-      memberIds: parseStringList(data['memberIds']),
       startDate: parseDateTime(data['startDate']),
       endDate: parseDateTime(data['endDate']),
       createdAt: parseDateTime(data['createdAt']),
@@ -119,7 +113,6 @@ class Trip {
       'ownerId': ownerId,
       'currency': currency,
       'status': status.wire,
-      'memberIds': memberIds,
       'startDate': writeDateTime(startDate),
       'endDate': writeDateTime(endDate),
       'createdAt': writeDateTime(createdAt),
@@ -133,7 +126,6 @@ class Trip {
     String? ownerId,
     String? currency,
     TripStatus? status,
-    List<String>? memberIds,
     DateTime? startDate,
     DateTime? endDate,
     DateTime? createdAt,
@@ -146,7 +138,6 @@ class Trip {
       ownerId: ownerId ?? this.ownerId,
       currency: currency ?? this.currency,
       status: status ?? this.status,
-      memberIds: memberIds ?? this.memberIds,
       startDate: startDate ?? this.startDate,
       endDate: endDate ?? this.endDate,
       createdAt: createdAt ?? this.createdAt,
@@ -163,7 +154,6 @@ class Trip {
         other.ownerId == ownerId &&
         other.currency == currency &&
         other.status == status &&
-        listEquals(other.memberIds, memberIds) &&
         other.startDate == startDate &&
         other.endDate == endDate &&
         other.createdAt == createdAt &&
@@ -178,7 +168,6 @@ class Trip {
     ownerId,
     currency,
     status,
-    Object.hashAll(memberIds),
     startDate,
     endDate,
     createdAt,

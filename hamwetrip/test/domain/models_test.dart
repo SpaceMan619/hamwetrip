@@ -102,7 +102,6 @@ void main() {
         ownerId: 'u1',
         currency: 'RWF',
         status: TripStatus.planning,
-        memberIds: const ['u1', 'u2'],
         startDate: now,
         endDate: now.add(const Duration(days: 6)),
         createdAt: now,
@@ -165,7 +164,6 @@ void main() {
       expect(trip.name, '');
       expect(trip.currency, 'RWF');
       expect(trip.status, TripStatus.unknown);
-      expect(trip.memberIds, isEmpty);
       expect(trip.isPending, isTrue);
     });
 
@@ -178,22 +176,36 @@ void main() {
       expect(trip.createdAt, isNull);
     });
 
-    test('a malformed memberIds entry is dropped, not fatal', () {
-      final trip = Trip.fromMap('t1', <String, Object?>{
-        'memberIds': <Object?>['u1', 42, null, 'u2'],
-      });
-      expect(trip.memberIds, <String>['u1', 'u2']);
+    test('a malformed string list is filtered, not fatal', () {
+      // parseStringList backs several fields; one bad entry must not make a
+      // document unreadable.
+      expect(parseStringList(<Object?>['u1', 42, null, 'u2']), <String>[
+        'u1',
+        'u2',
+      ]);
+      expect(parseStringList('not a list'), isEmpty);
+    });
+
+    test('a member document round trips with its join code', () {
+      // joinedWithCode is what the security rule reads to verify a join, so it
+      // must survive serialization.
+      final member = TripMember(
+        uid: 'u1',
+        tripId: 't1',
+        role: TripRole.member,
+        displayName: 'Eric Habimana',
+        joinedAt: now,
+        joinedWithCode: 'HAMWE7',
+      );
+      final parsed = TripMember.fromMap('t1', 'u1', member.toMap());
+      expect(parsed, member);
+      // uid is duplicated into the body so the collection-group query can
+      // filter on it — a query cannot filter on document id.
+      expect(member.toMap()['uid'], 'u1');
     });
   });
 
   group('derived behaviour', () {
-    test('memberCount cannot drift from memberIds', () {
-      final trip = Trip.fromMap('t1', <String, Object?>{
-        'memberIds': <Object?>['u1', 'u2', 'u3'],
-      });
-      expect(trip.memberCount, 3);
-    });
-
     test('initials handle one word, two words, and empty names', () {
       expect(
         AppUser.fromMap('u', {'displayName': 'Aline Uwase'}).initials,

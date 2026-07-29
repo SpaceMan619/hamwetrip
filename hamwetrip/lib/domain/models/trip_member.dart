@@ -41,6 +41,9 @@ enum TripRole {
 /// The document id is the member's uid, which makes "one membership per person
 /// per trip" a property of the database rather than something the client has to
 /// enforce.
+///
+/// This document is the **only** record of membership — see [Trip] for why the
+/// denormalized array on the trip was removed.
 @immutable
 class TripMember {
   const TripMember({
@@ -51,9 +54,17 @@ class TripMember {
     this.photoUrl,
     this.joinedAt,
     this.balanceMinor,
+    this.joinedWithCode,
   });
 
   /// The member's uid, and the document id.
+  ///
+  /// Also written into the document body, which looks redundant but is load
+  /// bearing: `watchMyTrips()` runs
+  /// `collectionGroup('members').where('uid', isEqualTo: me)`, and a collection
+  /// group query can only filter on fields, never on document ids. The matching
+  /// security rule tests the same field, so the query constraint and the rule
+  /// are provably the same condition.
   final String uid;
 
   /// Owning trip. Not stored in the document — it is implied by the path — but
@@ -63,20 +74,32 @@ class TripMember {
   final TripRole role;
 
   /// Denormalized from `users/{uid}` so a member list renders in one read
-  /// instead of N. Refreshed by a Cloud Function when the profile changes;
-  /// treat it as display-only and never as the source of truth.
+  /// instead of N.
+  ///
+  /// This is also the *only* way anyone learns another person's name:
+  /// `users/{uid}` is owner-read-only, so trip-mates never read each other's
+  /// profile documents. Kept fresh by the client on profile edit.
   final String displayName;
   final String? photoUrl;
 
   final DateTime? joinedAt;
 
+  /// The invite code this membership was created with.
+  ///
+  /// Stored so the security rule can `get()` that invite and confirm it points
+  /// at this trip and is neither expired, revoked nor exhausted. Without Cloud
+  /// Functions the joining client writes its own membership document, so this
+  /// field is what makes that write verifiable rather than forgeable.
+  ///
+  /// Null for the organizer who created the trip, who joined no invite.
+  final String? joinedWithCode;
+
   /// Denormalized net position in minor units: positive means the trip owes
   /// this member, negative means they owe the trip.
   ///
-  /// The delivery guide lists `balanceSummary` on this document, but Phase 2
-  /// still owns the decision (P2-6) of whether balances are computed on the
-  /// client or maintained by a Cloud Function. Nullable so both outcomes are
-  /// representable: null means "never computed", not "settled to zero".
+  /// Phase 2 still owns the decision (P2-6) of how balances are computed.
+  /// Nullable so both outcomes are representable: null means "never computed",
+  /// not "settled to zero".
   /// **Do not read this for settlement truth until P2-6 is resolved.**
   final int? balanceMinor;
 
@@ -90,6 +113,8 @@ class TripMember {
     Map<String, Object?> data,
   ) {
     return TripMember(
+      // The document id wins over the stored field. They should always agree —
+      // the rule enforces it on write — but the path is authoritative.
       uid: uid,
       tripId: tripId,
       role: parseWireEnum(
@@ -102,16 +127,19 @@ class TripMember {
       photoUrl: parseOptionalString(data['photoUrl']),
       joinedAt: parseDateTime(data['joinedAt']),
       balanceMinor: parseOptionalInt(data['balanceMinor']),
+      joinedWithCode: parseOptionalString(data['joinedWithCode']),
     );
   }
 
   Map<String, Object?> toMap() {
     return <String, Object?>{
+      'uid': uid,
       'role': role.wire,
       'displayName': displayName,
       'photoUrl': photoUrl,
       'joinedAt': writeDateTime(joinedAt),
       'balanceMinor': balanceMinor,
+      'joinedWithCode': joinedWithCode,
     };
   }
 
@@ -121,6 +149,7 @@ class TripMember {
     String? photoUrl,
     DateTime? joinedAt,
     int? balanceMinor,
+    String? joinedWithCode,
     bool clearPhotoUrl = false,
     bool clearBalance = false,
   }) {
@@ -132,6 +161,7 @@ class TripMember {
       photoUrl: clearPhotoUrl ? null : (photoUrl ?? this.photoUrl),
       joinedAt: joinedAt ?? this.joinedAt,
       balanceMinor: clearBalance ? null : (balanceMinor ?? this.balanceMinor),
+      joinedWithCode: joinedWithCode ?? this.joinedWithCode,
     );
   }
 
@@ -144,7 +174,8 @@ class TripMember {
         other.displayName == displayName &&
         other.photoUrl == photoUrl &&
         other.joinedAt == joinedAt &&
-        other.balanceMinor == balanceMinor;
+        other.balanceMinor == balanceMinor &&
+        other.joinedWithCode == joinedWithCode;
   }
 
   @override
@@ -156,6 +187,7 @@ class TripMember {
     photoUrl,
     joinedAt,
     balanceMinor,
+    joinedWithCode,
   );
 
   @override

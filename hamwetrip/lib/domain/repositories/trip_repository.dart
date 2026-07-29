@@ -8,6 +8,11 @@ import '../models/trip_member.dart';
 abstract interface class TripRepository {
   /// Trips the signed-in user belongs to, newest first.
   ///
+  /// Answered by `collectionGroup('members').where('uid', isEqualTo: me)`
+  /// followed by a load of each matching trip. The trip document holds no
+  /// membership data, so there is no single-query shortcut and no denormalized
+  /// array that can fall out of sync.
+  ///
   /// Emits the current list immediately (from cache when offline), then live
   /// updates. Emits an empty list — not an error — when the user has no trips,
   /// so the home feed can show its empty state.
@@ -22,10 +27,9 @@ abstract interface class TripRepository {
 
   /// Creates a trip and makes the caller its organizer.
   ///
-  /// The trip document, the organizer's member document, the trip's `memberIds`
-  /// entry and the `trip_created` activity event must all be written
-  /// atomically. A trip that exists with no members is unreachable by anyone,
-  /// including its creator.
+  /// The trip document, the organizer's member document and the `trip_created`
+  /// activity event must all be written atomically. A trip that exists with no
+  /// members is unreachable by anyone, including its creator.
   ///
   /// [requestId] makes the call idempotent: repeating it with the same id
   /// returns the existing trip instead of creating a second one. Generate it
@@ -91,8 +95,8 @@ abstract interface class TripRepository {
 
   /// Organizer-only. Removes someone else from the trip.
   ///
-  /// Must clear both the member document and the trip's `memberIds` entry in
-  /// one write.
+  /// Deleting the member document is the whole operation — membership lives in
+  /// exactly one place.
   Future<void> removeMember({required String tripId, required String uid});
 
   /// The caller removes themselves.

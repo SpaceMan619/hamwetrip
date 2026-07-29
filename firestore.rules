@@ -1,0 +1,252 @@
+rules_version = '2';
+
+// HamweTrip Firestore security rules — Phase 1 scope.
+//
+// Covers users, trips, members, invites and activity. Polls, expenses,
+// payments, itinerary and documents are explicitly denied at the bottom until
+// Phases 2 and 3 write their own rules; deny-by-default is the only safe
+// placeholder.
+//
+// Deployed with no Cloud Functions available, so every invariant that would
+// normally be enforced by a trigger has to be enforced here instead.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------------------------------------------------------------------
+    // Helpers
+    // ---------------------------------------------------------------------
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function uid() {
+      return request.auth.uid;
+    }
+
+    function memberPath(tripId) {
+      return /databases/$(database)/documents/trips/$(tripId)/members/$(uid());
+    }
+
+    function isMember(tripId) {
+      return signedIn() && exists(memberPath(tripId));
+    }
+
+    function isOrganizer(tripId) {
+      return isMember(tripId) && get(memberPath(tripId)).data.role == 'organizer';
+    }
+
+    // Which keys a write is actually touching.
+    function changedKeys() {
+      return request.resource.data.diff(resource.data).affectedKeys();
+    }
+
+    // Validates an invite code well enough to let its bearer join.
+    //
+    // The authoritative accounting still happens in the client transaction that
+    // increments usedCount; this stops someone forging a membership out of an
+    // expired, revoked or exhausted code.
+    function inviteAllowsJoin(tripId, code) {
+      return code is string
+        && exists(/databases/$(database)/documents/invites/$(code))
+        && inviteData(code).tripId == tripId
+        && inviteData(code).revoked == false
+        && (inviteData(code).expiresAt == null
+            || inviteData(code).expiresAt > request.time)
+        && (inviteData(code).maxUses == -1
+            || inviteData(code).usedCount < inviteData(code).maxUses);
+    }
+
+    function inviteData(code) {
+      return get(/databases/$(database)/documents/invites/$(code)).data;
+    }
+
+    // ---------------------------------------------------------------------
+    // users/{uid}
+    //
+    // Owner-only reads. Other people's names and photos are read from the
+    // denormalized copies on member documents, which is why this can stay
+    // closed — it keeps phone numbers and emails out of reach of anyone who
+    // merely shares a trip with you.
+    // ---------------------------------------------------------------------
+
+    match /users/{userId} {
+      allow get: if signedIn() && uid() == userId;
+
+      // No listing: it would enumerate every account in the system.
+      allow list: if false;
+
+      allow create: if signedIn()
+        && uid() == userId
+        && request.resource.data.displayName is string
+        && request.resource.data.displayName.size() > 0
+        && request.resource.data.email is string;
+
+      // Email is owned by Firebase Auth; changing it here would let the profile
+      // disagree with the account.
+      allow update: if signedIn()
+        && uid() == userId
+        && request.resource.data.email == resource.data.email;
+
+      allow delete: if false;
+    }
+
+    // ---------------------------------------------------------------------
+    // invites/{code}
+    //
+    // Top-level rather than nested under the trip, because joinTrip(code) is
+    // called by someone who is not yet a member and does not know the trip id.
+    // ---------------------------------------------------------------------
+
+    match /invites/{code} {
+      // Any signed-in user may fetch one invite by its exact code — that is the
+      // whole point of a code. Listing stays forbidden, or this collection
+      // becomes an enumerable directory of every trip in the system.
+      allow get: if signedIn();
+      allow list: if false;
+
+      allow create: if signedIn()
+        && isOrganizer(request.resource.data.tripId)
+        && request.resource.data.createdBy == uid()
+        && request.resource.data.usedCount == 0
+        && request.resource.data.revoked == false;
+
+      allow update: if signedIn() && (
+        // Organizer revoking a leaked code.
+        (isOrganizer(resource.data.tripId)
+          && changedKeys().hasOnly(['revoked']))
+        ||
+        // A joiner claiming one use. Restricted to a single-field increment of
+        // exactly one, so a redeemer cannot reset the counter or extend the
+        // expiry while they are in there.
+        (changedKeys().hasOnly(['usedCount'])
+          && request.resource.data.usedCount == resource.data.usedCount + 1
+          && (resource.data.maxUses == -1
+              || resource.data.usedCount < resource.data.maxUses)
+          && resource.data.revoked == false
+          && (resource.data.expiresAt == null
+              || resource.data.expiresAt > request.time))
+      );
+
+      // Revoke instead — deleting would break the audit trail.
+      allow delete: if false;
+    }
+
+    // ---------------------------------------------------------------------
+    // Collection-group read of member documents.
+    //
+    // Backs watchMyTrips(): collectionGroup('members').where('uid','==',me).
+    // The rule matches on the `uid` field rather than the document id so the
+    // query's constraint and the rule's condition are the same expression —
+    // Firestore can only authorize a list query it can prove is safe.
+    //
+    // Requires the COLLECTION_GROUP index in firestore.indexes.json; Firestore
+    // auto-creates single-field indexes at collection scope only.
+    // ---------------------------------------------------------------------
+
+    match /{path=**}/members/{memberId} {
+      allow read: if signedIn() && resource.data.uid == uid();
+    }
+
+    // ---------------------------------------------------------------------
+    // trips/{tripId}
+    // ---------------------------------------------------------------------
+
+    match /trips/{tripId} {
+      allow get: if isMember(tripId);
+
+      // Trips are never listed directly; membership is discovered through the
+      // collection-group query above.
+      allow list: if false;
+
+      allow create: if signedIn()
+        && request.resource.data.ownerId == uid()
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.currency is string;
+
+      // Ownership and creation time are immutable. Transferring ownership is a
+      // deliberate feature, not an incidental field edit.
+      allow update: if isOrganizer(tripId)
+        && request.resource.data.ownerId == resource.data.ownerId
+        && request.resource.data.createdAt == resource.data.createdAt;
+
+      // Archive instead. Deleting a trip would orphan every subcollection
+      // beneath it, and without Functions nothing would clean them up.
+      allow delete: if false;
+
+      // -------------------------------------------------------------------
+      // trips/{tripId}/members/{memberId}
+      // -------------------------------------------------------------------
+
+      match /members/{memberId} {
+        allow read: if isMember(tripId);
+
+        allow create: if signedIn()
+          && memberId == uid()
+          && request.resource.data.uid == uid()
+          && (
+            // Bootstrapping a brand-new trip. The trip document is created in
+            // the same batch, so it does not exist yet from this rule's point
+            // of view — rules see the state from before the batch. Squatting a
+            // member doc under a trip id nobody has created yet is harmless.
+            (request.resource.data.role == 'organizer'
+              && !exists(/databases/$(database)/documents/trips/$(tripId)))
+            ||
+            // Redeeming an invite. The code the member joined with is stored on
+            // the document precisely so this rule can verify it.
+            (request.resource.data.role == 'member'
+              && inviteAllowsJoin(tripId, request.resource.data.joinedWithCode))
+          );
+
+        allow update: if signedIn() && (
+          // Organizer changing someone's role.
+          isOrganizer(tripId)
+          ||
+          // A member refreshing their own denormalized profile copy. Cannot
+          // touch their own role — that would be self-promotion.
+          (memberId == uid()
+            && changedKeys().hasOnly(['displayName', 'photoUrl']))
+        );
+
+        // Organizer removes someone, or a member leaves. The last-organizer
+        // rule cannot be expressed here — rules cannot count sibling documents
+        // — so it is enforced in the repository and must stay covered by tests.
+        allow delete: if isOrganizer(tripId) || memberId == uid();
+      }
+
+      // -------------------------------------------------------------------
+      // trips/{tripId}/activity/{eventId}
+      //
+      // Append-only. Without Cloud Functions these are written by clients, so
+      // the trail is not tamper-proof the way a server-written one would be —
+      // but an actor can only file events naming themselves, and nothing can
+      // edit or delete history after the fact.
+      // -------------------------------------------------------------------
+
+      match /activity/{eventId} {
+        allow read: if isMember(tripId);
+
+        allow create: if isMember(tripId)
+          && request.resource.data.actorId == uid()
+          && request.resource.data.type is string
+          && request.resource.data.summary is string;
+
+        allow update, delete: if false;
+      }
+
+      // -------------------------------------------------------------------
+      // Owned by later phases. Denied until their rules are written — an
+      // unmatched path is denied anyway, but saying so explicitly stops a
+      // future reader assuming the omission was an oversight.
+      // -------------------------------------------------------------------
+
+      match /polls/{document=**} { allow read, write: if false; }      // Phase 2
+      match /expenses/{document=**} { allow read, write: if false; }   // Phase 2
+      match /payments/{document=**} { allow read, write: if false; }   // Phase 2
+      match /itinerary/{document=**} { allow read, write: if false; }  // Phase 3
+      match /documents/{document=**} { allow read, write: if false; }  // Phase 3
+    }
+  }
+}

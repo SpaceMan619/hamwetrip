@@ -31,7 +31,15 @@ class MockTripRepository implements TripRepository {
     return _backend.watch('watchMyTrips', () {
       final uid = _backend.signedInUid;
       if (uid == null) return const <Trip>[];
-      return _backend.trips.values.where((trip) => trip.hasMember(uid)).toList()
+
+      // Mirrors the Firebase implementation: find the caller's member
+      // documents via a collection-group query, then load those trips. The
+      // trip document itself carries no membership information.
+      return _backend
+          .tripIdsFor(uid)
+          .map((tripId) => _backend.trips[tripId])
+          .whereType<Trip>()
+          .toList()
         ..sort(_byRecency);
     });
   }
@@ -44,7 +52,11 @@ class MockTripRepository implements TripRepository {
       // Emitting null rather than throwing once access is lost: the dashboard
       // treats that as "you were removed" and leaves, which is the documented
       // behaviour and is indistinguishable from deletion to the client.
-      if (trip == null || uid == null || !trip.hasMember(uid)) return null;
+      if (trip == null ||
+          uid == null ||
+          _backend.memberOf(tripId, uid) == null) {
+        return null;
+      }
       return trip;
     });
   }
@@ -85,9 +97,9 @@ class MockTripRepository implements TripRepository {
     final tripId = _backend.nextId('t');
     final creator = _backend.users[uid];
 
-    // Trip, organizer membership, memberIds and the activity event all land
-    // together — the real implementation must use a single transaction, because
-    // a trip with no members is unreachable by anyone including its creator.
+    // Trip, organizer membership and the activity event all land together —
+    // the real implementation must use a single batch, because a trip with no
+    // members is unreachable by anyone including its creator.
     _backend.trips[tripId] = Trip(
       id: tripId,
       name: name.trim(),
@@ -95,7 +107,6 @@ class MockTripRepository implements TripRepository {
       ownerId: uid,
       currency: currency,
       status: TripStatus.planning,
-      memberIds: const <String>[],
       startDate: startDate?.toUtc(),
       endDate: endDate?.toUtc(),
       createdAt: now,
@@ -286,7 +297,7 @@ class MockTripRepository implements TripRepository {
     if (trip == null) {
       throw const NotFoundError(message: 'That trip no longer exists.');
     }
-    if (trip.hasMember(uid)) {
+    if (_backend.memberOf(trip.id, uid) != null) {
       throw const AlreadyExistsError(
         message: "You're already a member of this trip.",
       );
@@ -304,6 +315,9 @@ class MockTripRepository implements TripRepository {
         displayName: user?.displayName ?? 'Traveller',
         photoUrl: user?.photoUrl,
         joinedAt: now,
+        // Recorded so the security rule can verify this join against the
+        // invite it claims to have used.
+        joinedWithCode: normalized,
       ),
     );
     _backend.invites[normalized] = invite.copyWith(
