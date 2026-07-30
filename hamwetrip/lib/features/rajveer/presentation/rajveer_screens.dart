@@ -1296,7 +1296,7 @@ class _ScreenScaffold extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.warmSand,
         surfaceTintColor: Colors.transparent,
-        leading: showBackButton
+        leading: showBackButton && bottomNavigation == null
             ? IconButton(
                 onPressed: () {
                   if (Navigator.of(context).canPop()) {

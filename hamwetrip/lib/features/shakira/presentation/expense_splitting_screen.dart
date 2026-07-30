@@ -42,6 +42,7 @@ class ExpenseSplittingScreen extends StatelessWidget {
           backgroundColor: Colors.white,
           surfaceTintColor: Colors.transparent,
           elevation: 0,
+          automaticallyImplyLeading: false,
           title: const Text('Expenses'),
           actions: [
             IconButton(

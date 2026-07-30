@@ -20,14 +20,14 @@ class ExpenseCard extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 12), // High-density 12px padding
       child: Material(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(8), // 0.5rem radius
+        borderRadius: BorderRadius.circular(16),
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(8),
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(16),
               border: Border.all(color: AppColors.line),
             ),
             // Stack allows us to overlay the sync icon in the top right
@@ -66,48 +66,58 @@ class ExpenseCard extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 4),
-                          Row(
-                            children: [
-                              Text(
-                                expense.paidByName,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: AppColors.forest,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                          Text.rich(
+                            TextSpan(
+                              text: expense.paidByName,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: AppColors.forest,
+                                fontWeight: FontWeight.w600,
                               ),
-                              Text(
-                                ' paid · Split ${expense.splitAmongInitials.length} ways',
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: AppColors.muted,
+                              children: [
+                                TextSpan(
+                                  text:
+                                      ' paid · Split ${expense.splitAmongInitials.length} ways',
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: AppColors.muted,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          '\$${expense.amount.toStringAsFixed(2)}',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.ink,
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 112),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            'RWF ${expense.amount.toStringAsFixed(0)}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.ink,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          '\$${expense.splitAmount.toStringAsFixed(2)}/each',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AppColors.muted,
+                          const SizedBox(height: 2),
+                          Text(
+                            'RWF ${expense.splitAmount.toStringAsFixed(0)} each',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: AppColors.muted,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ],
                 ),

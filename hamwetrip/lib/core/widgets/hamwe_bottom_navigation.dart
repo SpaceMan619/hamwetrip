@@ -36,33 +36,49 @@ class HamweBottomNavigation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      minimum: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+      minimum: const EdgeInsets.fromLTRB(16, 0, 16, 14),
       child: Container(
-        height: 68,
-        padding: const EdgeInsets.symmetric(horizontal: 6),
+        height: 64,
+        padding: const EdgeInsets.all(1),
         decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: AppColors.line.withValues(alpha: .45)),
-          borderRadius: BorderRadius.circular(36),
+          gradient: const LinearGradient(
+            colors: [Color(0xB8FFFFFF), Color(0x30FFFFFF), Color(0x80FFFFFF)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(999),
           boxShadow: const [
             BoxShadow(
-              color: Color(0x1F2D5A27),
-              blurRadius: 24,
-              offset: Offset(0, 8),
+              color: Color(0x2E222F30),
+              blurRadius: 28,
+              offset: Offset(0, 14),
+            ),
+            BoxShadow(
+              color: Color(0x18222F30),
+              blurRadius: 8,
+              offset: Offset(0, 3),
             ),
           ],
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            for (final item in _items)
-              _NavigationItem(
-                icon: item.$2,
-                label: item.$3,
-                selected: selected == item.$1,
-                onTap: () => _open(context, item.$1),
-              ),
-          ],
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6),
+          decoration: BoxDecoration(
+            color: const Color(0xDDF7F7F5),
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(color: Colors.white.withValues(alpha: .62)),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              for (final item in _items)
+                _NavigationItem(
+                  icon: item.$2,
+                  label: item.$3,
+                  selected: selected == item.$1,
+                  onTap: () => _open(context, item.$1),
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -93,29 +109,39 @@ class _NavigationItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 180),
-          padding: EdgeInsets.symmetric(
-            horizontal: selected ? 13 : 10,
-            vertical: 8,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 7),
           decoration: BoxDecoration(
-            color: selected ? AppColors.forestLight : Colors.transparent,
-            borderRadius: BorderRadius.circular(24),
+            color: selected
+                ? AppColors.charcoal.withValues(alpha: .09)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(999),
           ),
-          child: Column(
+          child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
                 icon,
                 size: 21,
-                color: selected ? AppColors.mint : AppColors.ink,
+                color: selected ? AppColors.accent : AppColors.charcoal,
               ),
-              const SizedBox(height: 2),
-              Text(
-                label,
-                style: TextStyle(
-                  color: selected ? Colors.white : AppColors.ink,
-                  fontSize: 9,
-                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+              AnimatedSize(
+                duration: const Duration(milliseconds: 180),
+                curve: Curves.easeOut,
+                child: SizedBox(
+                  width: selected ? 48 : 0,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 5),
+                    child: Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.clip,
+                      style: const TextStyle(
+                        color: AppColors.charcoal,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ],

@@ -78,8 +78,10 @@ class MomoTransactionTile extends StatelessWidget {
             children: [
               Text(
                 isSend
-                    ? '-\$${transaction.amount.toStringAsFixed(2)}'
-                    : '+\$${transaction.amount.toStringAsFixed(2)}',
+                    ? '-RWF ${transaction.amount.toStringAsFixed(0)}'
+                    : '+RWF ${transaction.amount.toStringAsFixed(0)}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
