@@ -1,19 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/app_routes.dart';
+import '../../../core/state/view_state.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/util/date_format.dart';
 import '../../../core/widgets/hamwe_bottom_navigation.dart';
 import '../../../data/models/trip_summary.dart';
 import '../../rajveer/presentation/rajveer_screens.dart';
+import '../home_providers.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key, this.trip = TripSummary.demo});
-
-  final TripSummary trip;
+class HomeScreen extends ConsumerWidget {
+  const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final textTheme = Theme.of(context).textTheme;
+
+    final profileState = ref.watch(currentUserProfileProvider);
+    final firstName = switch (profileState.view) {
+      ViewData(:final data) when data != null && data.displayName.trim().isNotEmpty =>
+        data.displayName.trim().split(RegExp(r'\s+')).first,
+      _ => 'Traveller',
+    };
+
+    final tripsState = ref.watch(myTripsControllerProvider);
+    final activeTrip = switch (tripsState.view) {
+      ViewData(:final data) when data.isNotEmpty => data.first,
+      _ => null,
+    };
+
+    final membersState = activeTrip == null
+        ? null
+        : ref.watch(tripMembersControllerProvider(activeTrip.id));
+    final travellerCount = switch (membersState?.view) {
+      ViewData(:final data) => data.length,
+      _ => 0,
+    };
 
     return Scaffold(
       body: SafeArea(
@@ -30,7 +53,7 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 14),
-              Text('Hello, Malik!', style: textTheme.headlineLarge),
+              Text('Hello, $firstName!', style: textTheme.headlineLarge),
               const SizedBox(height: 4),
               Text(
                 'Ready for your next adventure?',
@@ -42,11 +65,25 @@ class HomeScreen extends StatelessWidget {
                 action: 'IN PROGRESS',
               ),
               const SizedBox(height: 12),
-              _ActiveTripCard(
-                trip: trip,
-                onOpenItinerary: () =>
-                    Navigator.of(context).pushNamed(AppRoutes.dashboard),
-              ),
+              if (activeTrip == null)
+                const _NoActiveTripCard()
+              else
+                _ActiveTripCard(
+                  trip: TripSummary(
+                    name: activeTrip.name,
+                    location: activeTrip.destination,
+                    dateRange: formatDateRange(activeTrip.startDate, activeTrip.endDate),
+                    travellerCount: travellerCount,
+                    // The shared ledger balance is not yet computed anywhere
+                    // in Phase 2 (see TripMember.balanceMinor) — 0 is a
+                    // neutral placeholder, not a claim that the ledger is
+                    // settled.
+                    ledgerBalance: 0,
+                  ),
+                  onOpenItinerary: () => Navigator.of(
+                    context,
+                  ).pushNamed(AppRoutes.dashboard, arguments: activeTrip.id),
+                ),
               const SizedBox(height: 28),
               const _SectionHeading(title: 'Upcoming Trips'),
               const SizedBox(height: 12),
@@ -63,7 +100,7 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () => Navigator.of(context).pushNamed(AppRoutes.createTrip),
         backgroundColor: const Color(0xFF9B4B00),
         foregroundColor: Colors.white,
         shape: const CircleBorder(),
@@ -71,6 +108,36 @@ class HomeScreen extends StatelessWidget {
       ),
       bottomNavigationBar: const HamweBottomNavigation(
         selected: HamweDestination.home,
+      ),
+    );
+  }
+}
+
+class _NoActiveTripCard extends StatelessWidget {
+  const _NoActiveTripCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: AppColors.line),
+        borderRadius: BorderRadius.circular(22),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.explore_outlined, color: AppColors.forest),
+          const SizedBox(height: 10),
+          Text('No trip yet', style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(height: 4),
+          const Text(
+            "Tap the + button to plan your group's first trip.",
+            style: TextStyle(color: AppColors.muted),
+          ),
+        ],
       ),
     );
   }
