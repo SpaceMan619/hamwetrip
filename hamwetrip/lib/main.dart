@@ -15,5 +15,9 @@ Future<void> main() async {
     await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   }
 
+  // ProviderScope wraps the app root here rather than living inside
+  // HamweTripApp, so a widget test can supply its own ProviderScope with
+  // overrides (e.g. forcing mock repositories) around HamweTripApp instead of
+  // being stuck with whatever this one is configured with.
   runApp(const ProviderScope(child: HamweTripApp()));
 }
