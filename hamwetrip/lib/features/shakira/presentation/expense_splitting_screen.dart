@@ -76,21 +76,21 @@ class ExpenseSplittingScreen extends StatelessWidget {
                 children: [
                   _SummaryBox(
                     title: 'Total Spent',
-                    value: formatRwf(totalSpent),
+                    value: formatRwfCompact(totalSpent),
                     color: AppColors.sand,
                     textColor: AppColors.ink,
                   ),
                   const SizedBox(width: 12),
                   _SummaryBox(
                     title: 'You Owe',
-                    value: formatRwf(youOwe),
+                    value: formatRwfCompact(youOwe),
                     color: AppColors.paleSunset,
                     textColor: AppColors.sunset,
                   ),
                   const SizedBox(width: 12),
                   _SummaryBox(
                     title: 'You Are Owed',
-                    value: formatRwf(youAreOwed),
+                    value: formatRwfCompact(youAreOwed),
                     color: AppColors.paleMint,
                     textColor: AppColors.forest,
                   ),
@@ -115,7 +115,7 @@ class ExpenseSplittingScreen extends StatelessWidget {
         ),
         bottomNavigationBar: bottomNavigation,
         floatingActionButton: FloatingActionButton.extended(
-          onPressed: onAddExpense,
+          onPressed: () => DefaultTabController.of(context).animateTo(1),
           backgroundColor: AppColors.forest,
           icon: const Icon(Icons.add, color: Colors.white),
           label: const Text(
@@ -510,8 +510,7 @@ class _AddExpenseTabState extends State<_AddExpenseTab> {
             width: double.infinity,
             child: FilledButton(
               onPressed: () {
-                debugPrint('Expense Submitted');
-                widget.onSubmit;
+                widget.onSubmit();
               },
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.forest,

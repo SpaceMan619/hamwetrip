@@ -98,7 +98,7 @@ class ExpenseCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            formatRwf(expense.amount),
+                            formatRwfCompact(expense.amount),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
@@ -112,7 +112,7 @@ class ExpenseCard extends StatelessWidget {
                             children: [
                               Flexible(
                                 child: Text(
-                                  '${formatRwf(expense.splitAmount)} each',
+                                  '${formatRwfCompact(expense.splitAmount)} each',
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
