@@ -17,22 +17,25 @@ void main() {
       expect(controller.closedPollCount, 1);
     });
 
-    test('single-choice vote should update state correctly', () {
-      // poll_1 is single choice. "Friday afternoon" has 3 votes initially
-      controller.vote('poll_1', 'p1_o2');
+    test('single-choice selection is pending until submitted', () {
+      controller.selectOption('poll_1', 'p1_o2');
 
-      expect(controller.hasVoted('poll_1'), true);
+      expect(controller.hasVoted('poll_1'), false);
 
       final state = controller.polls.firstWhere((s) => s.poll.id == 'poll_1');
       expect(state.isOptionSelected('p1_o2'), true);
-      expect(state.voteCountFor('p1_o2'), 4); // 3 + 1
+      expect(state.voteCountFor('p1_o2'), 3);
+
+      expect(controller.submitVote('poll_1'), true);
+      expect(controller.hasVoted('poll_1'), true);
+      expect(controller.polls.first.voteCountFor('p1_o2'), 4);
     });
 
     test('single-choice re-vote should deselect previous option', () {
       // "Friday morning" has 2 votes initially
-      controller.vote('poll_1', 'p1_o1');
+      controller.selectOption('poll_1', 'p1_o1');
       // "Friday afternoon" has 3 votes initially
-      controller.vote('poll_1', 'p1_o2');
+      controller.selectOption('poll_1', 'p1_o2');
 
       final state = controller.polls.firstWhere((s) => s.poll.id == 'poll_1');
 
@@ -40,23 +43,23 @@ void main() {
       expect(state.isOptionSelected('p1_o1'), false);
       expect(state.voteCountFor('p1_o1'), 2);
 
-      // Afternoon should be selected and at 4
+      // Afternoon is selected, but no count changes before submission.
       expect(state.isOptionSelected('p1_o2'), true);
-      expect(state.voteCountFor('p1_o2'), 4);
+      expect(state.voteCountFor('p1_o2'), 3);
     });
 
     test('multi-choice should allow selecting multiple options', () {
       // poll_2 is multi-choice ("Select all that apply")
-      controller.vote('poll_2', 'p2_o1'); // Market (4 votes)
-      controller.vote('poll_2', 'p2_o3'); // Gorilla trekking (3 votes)
+      controller.selectOption('poll_2', 'p2_o1');
+      controller.selectOption('poll_2', 'p2_o3');
 
       final state = controller.polls.firstWhere((s) => s.poll.id == 'poll_2');
 
       expect(state.isOptionSelected('p2_o1'), true);
-      expect(state.voteCountFor('p2_o1'), 5); // 4 + 1
+      expect(state.voteCountFor('p2_o1'), 4);
 
       expect(state.isOptionSelected('p2_o3'), true);
-      expect(state.voteCountFor('p2_o3'), 4); // 3 + 1
+      expect(state.voteCountFor('p2_o3'), 3);
 
       // Night life should be untouched
       expect(state.isOptionSelected('p2_o4'), false);
@@ -64,8 +67,8 @@ void main() {
     });
 
     test('multi-choice toggle should deselect option', () {
-      controller.vote('poll_2', 'p2_o1');
-      controller.vote('poll_2', 'p2_o1'); // Toggle off
+      controller.selectOption('poll_2', 'p2_o1');
+      controller.selectOption('poll_2', 'p2_o1');
 
       final state = controller.polls.firstWhere((s) => s.poll.id == 'poll_2');
       expect(state.isOptionSelected('p2_o1'), false);
@@ -74,7 +77,7 @@ void main() {
 
     test('inactive poll (isActive: false) should reject votes', () {
       // poll_3 has isActive: false in mock data
-      controller.vote('poll_3', 'p3_o1');
+      controller.selectOption('poll_3', 'p3_o1');
 
       expect(controller.hasVoted('poll_3'), false);
       final state = controller.polls.firstWhere((s) => s.poll.id == 'poll_3');
@@ -113,10 +116,23 @@ void main() {
     });
 
     test('getVotePercentage should calculate correctly', () {
-      controller.vote('poll_1', 'p1_o2');
+      controller.selectOption('poll_1', 'p1_o2');
+      controller.submitVote('poll_1');
       // Total votes: 2 + 4 + 1 = 7. p1_o2 has 4. (4 / 7) * 100 = 57.14%
       final pct = controller.getVotePercentage('poll_1', 'p1_o2');
       expect(pct, closeTo(57.14, 0.01));
+    });
+
+    test('submitted votes cannot be changed or submitted twice', () {
+      controller.selectOption('poll_1', 'p1_o1');
+      expect(controller.submitVote('poll_1'), true);
+
+      controller.selectOption('poll_1', 'p1_o2');
+      expect(controller.submitVote('poll_1'), false);
+
+      final state = controller.polls.firstWhere((s) => s.poll.id == 'poll_1');
+      expect(state.isOptionSelected('p1_o1'), true);
+      expect(state.isOptionSelected('p1_o2'), false);
     });
   });
 }

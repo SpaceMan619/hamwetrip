@@ -8,7 +8,7 @@ class OfflineStatusBar extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 6),
-      color: const Color(0xFFE0A458).withOpacity(0.15),
+      color: const Color(0xFFE0A458).withValues(alpha: 0.15),
       child: const Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

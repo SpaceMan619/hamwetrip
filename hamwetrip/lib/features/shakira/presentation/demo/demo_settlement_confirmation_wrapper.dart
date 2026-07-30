@@ -17,32 +17,11 @@ class _DemoSettlementConfirmationWrapperState
     extends State<DemoSettlementConfirmationWrapper> {
   bool _isProcessing = true;
   late SettlementArgs _args;
+  bool _didReadArguments = false;
 
   @override
   void initState() {
     super.initState();
-
-    // 1. Grab arguments passed from the Expense screen
-    final args = ModalRoute.of(context)?.settings.arguments as SettlementArgs?;
-
-    if (args != null) {
-      _args = args;
-    } else {
-      // Fallback dummy data if opened directly from Screen Explorer
-      _args = const SettlementArgs(
-        balance: Balance(
-          fromInitials: 'SK',
-          fromName: 'Shakira',
-          toInitials: 'RM',
-          toName: 'Rajveer Malik',
-          amount: 20000,
-        ),
-        maskedPhone: '*** *** 456',
-        referenceId: 'MTN-DEMO-001',
-      );
-    }
-
-    // 2. Simulate the 2-second MoMo processing time
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
         setState(() {
@@ -53,17 +32,39 @@ class _DemoSettlementConfirmationWrapperState
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_didReadArguments) return;
+    _didReadArguments = true;
+
+    _args =
+        ModalRoute.of(context)?.settings.arguments as SettlementArgs? ??
+        const SettlementArgs(
+          balance: Balance(
+            fromInitials: 'SK',
+            fromName: 'Shakira',
+            toInitials: 'RM',
+            toName: 'Rajveer Malik',
+            amount: 20000,
+          ),
+          maskedPhone: '*** *** 456',
+          referenceId: 'MTN-DEMO-001',
+        );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SettlementConfirmationScreen(
       args: _args,
       isProcessing: _isProcessing,
 
-      // Fixes "Empty Handler" - Close / Back to ledger
       onDone: () {
-        Navigator.of(context).pop(); // Go back to expenses
+        final navigator = Navigator.of(context);
+        if (navigator.canPop()) {
+          navigator.pop();
+        }
       },
 
-      // Fixes "Empty Handler" - Share receipt
       onShareReceipt: () {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

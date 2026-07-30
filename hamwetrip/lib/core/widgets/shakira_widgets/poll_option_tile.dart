@@ -31,7 +31,9 @@ class PollOptionTile extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.forest.withOpacity(0.08) : Colors.white,
+          color: isSelected
+              ? AppColors.forest.withValues(alpha: 0.08)
+              : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? AppColors.forest : AppColors.line,
@@ -142,7 +144,7 @@ class PollOptionTile extends StatelessWidget {
                         children: [
                           Container(
                             decoration: BoxDecoration(
-                              color: AppColors.line.withOpacity(0.3),
+                              color: AppColors.line.withValues(alpha: 0.3),
                               borderRadius: BorderRadius.circular(3),
                             ),
                           ),
@@ -153,7 +155,7 @@ class PollOptionTile extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: isSelected
                                   ? AppColors.forest
-                                  : AppColors.muted.withOpacity(0.5),
+                                  : AppColors.muted.withValues(alpha: 0.5),
                               borderRadius: BorderRadius.circular(3),
                             ),
                           ),
@@ -193,8 +195,9 @@ class _SelectionIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (showResults && !isSelected)
+    if (showResults && !isSelected) {
       return const SizedBox(width: 20, height: 20);
+    }
     return Container(
       width: 20,
       height: 20,

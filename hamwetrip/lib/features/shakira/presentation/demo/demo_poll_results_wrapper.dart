@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../data/models/poll.dart';
+import '../../data/demo/mock_polls.dart';
 import '../poll_results_screen.dart';
 
 /// Wires up mock voter data to your pure UI screen.
@@ -11,15 +12,9 @@ class DemoPollResultsWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // 1. Grab the Poll passed from the Group Voting Screen
-    final poll = ModalRoute.of(context)?.settings.arguments as Poll?;
-
-    if (poll == null) {
-      return const Scaffold(
-        body: Center(
-          child: Text('Poll not found. Please open from the Voting screen.'),
-        ),
-      );
-    }
+    final poll =
+        ModalRoute.of(context)?.settings.arguments as Poll? ??
+        mockPolls.firstWhere((candidate) => !candidate.isActive);
 
     // 2. Dynamically generate the voter map from the poll's voterInitials
     // (In production, the backend would return exactly who voted for what)

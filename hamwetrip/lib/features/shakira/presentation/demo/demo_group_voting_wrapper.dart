@@ -32,36 +32,36 @@ class _DemoGroupVotingWrapperState extends State<DemoGroupVotingWrapper> {
   Widget build(BuildContext context) {
     final activePolls = _controller.polls
         .where((s) => !s.isClosed && s.poll.isActive)
-        .map((s) => s.poll)
+        .map((s) => s.displayPoll)
         .toList();
 
     final closedPolls = _controller.polls
         .where((s) => s.isClosed || !s.poll.isActive)
-        .map((s) => s.poll)
+        .map((s) => s.displayPoll)
         .toList();
 
-    // Extract the last clicked option ID from the Set to satisfy PollCard
-    final Map<String, String?> selectedIds = {};
-    for (final state in _controller.polls) {
-      if (state.selectedOptionIds.isNotEmpty) {
-        selectedIds[state.poll.id] = state.selectedOptionIds.last;
-      } else {
-        selectedIds[state.poll.id] = null;
-      }
-    }
+    final selectedIds = {
+      for (final state in _controller.polls)
+        state.poll.id: Set<String>.unmodifiable(state.selectedOptionIds),
+    };
+    final votedPollIds = {
+      for (final state in _controller.polls)
+        if (state.hasVoted) state.poll.id,
+    };
 
     return GroupVotingScreen(
       activePolls: activePolls,
       closedPolls: closedPolls,
       selectedOptionIds: selectedIds,
+      votedPollIds: votedPollIds,
       bottomNavigation: const HamweBottomNavigation(
-        selected: HamweDestination.ledger,
+        selected: HamweDestination.trips,
       ),
       onOptionTap: (pollId, optId) {
-        _controller.vote(pollId, optId);
+        _controller.selectOption(pollId, optId);
       },
       onVote: (pollId) {
-        if (_controller.hasVoted(pollId)) {
+        if (_controller.submitVote(pollId)) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Vote recorded successfully! (Demo)'),

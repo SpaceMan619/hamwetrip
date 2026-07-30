@@ -156,9 +156,7 @@ class DocumentCard extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(2),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(
-                  0.8,
-                ), // Slight white background so it's visible over the warm sand
+                color: Colors.white.withValues(alpha: 0.8),
                 shape: BoxShape.circle,
               ),
               child: Icon(

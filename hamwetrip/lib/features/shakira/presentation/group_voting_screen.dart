@@ -6,7 +6,8 @@ import '../../../core/widgets/shakira_widgets/poll_card.dart';
 class GroupVotingScreen extends StatelessWidget {
   final List<Poll> activePolls;
   final List<Poll> closedPolls;
-  final Map<String, String?> selectedOptionIds;
+  final Map<String, Set<String>> selectedOptionIds;
+  final Set<String> votedPollIds;
   final void Function(String, String) onOptionTap;
   final void Function(String) onVote;
   final void Function(String) onClosePoll;
@@ -19,6 +20,7 @@ class GroupVotingScreen extends StatelessWidget {
     required this.activePolls,
     required this.closedPolls,
     required this.selectedOptionIds,
+    required this.votedPollIds,
     required this.onOptionTap,
     required this.onVote,
     required this.onClosePoll,
@@ -65,6 +67,7 @@ class GroupVotingScreen extends StatelessWidget {
             _PollListView(
               polls: activePolls,
               selectedOptionIds: selectedOptionIds,
+              votedPollIds: votedPollIds,
               onOptionTap: onOptionTap,
               onVote: onVote,
               onClosePoll: onClosePoll,
@@ -73,6 +76,7 @@ class GroupVotingScreen extends StatelessWidget {
             _PollListView(
               polls: closedPolls,
               selectedOptionIds: selectedOptionIds,
+              votedPollIds: votedPollIds,
               onOptionTap: onOptionTap,
               onVote: onVote,
               onClosePoll: onClosePoll,
@@ -93,7 +97,8 @@ class GroupVotingScreen extends StatelessWidget {
 
 class _PollListView extends StatelessWidget {
   final List<Poll> polls;
-  final Map<String, String?> selectedOptionIds;
+  final Map<String, Set<String>> selectedOptionIds;
+  final Set<String> votedPollIds;
   final void Function(String, String) onOptionTap;
   final void Function(String) onVote;
   final void Function(String) onClosePoll;
@@ -102,6 +107,7 @@ class _PollListView extends StatelessWidget {
   const _PollListView({
     required this.polls,
     required this.selectedOptionIds,
+    required this.votedPollIds,
     required this.onOptionTap,
     required this.onVote,
     required this.onClosePoll,
@@ -122,8 +128,8 @@ class _PollListView extends StatelessWidget {
         final poll = polls[index];
         return PollCard(
           poll: poll,
-          selectedOptionId: selectedOptionIds[poll.id],
-          hasVoted: selectedOptionIds[poll.id] != null,
+          selectedOptionIds: selectedOptionIds[poll.id] ?? const {},
+          hasVoted: votedPollIds.contains(poll.id),
           onTap: !poll.isActive ? () => onViewResults(poll) : null,
           onOptionTap: (optId) => onOptionTap(poll.id, optId),
           onVote: () => onVote(poll.id),
