@@ -40,9 +40,20 @@ class _DemoGroupVotingWrapperState extends State<DemoGroupVotingWrapper> {
         .map((s) => s.poll)
         .toList();
 
+    // Extract the last clicked option ID from the Set to satisfy PollCard
+    final Map<String, String?> selectedIds = {};
+    for (final state in _controller.polls) {
+      if (state.selectedOptionIds.isNotEmpty) {
+        selectedIds[state.poll.id] = state.selectedOptionIds.last;
+      } else {
+        selectedIds[state.poll.id] = null;
+      }
+    }
+
     return GroupVotingScreen(
       activePolls: activePolls,
       closedPolls: closedPolls,
+      selectedOptionIds: selectedIds,
       bottomNavigation: const HamweBottomNavigation(
         selected: HamweDestination.ledger,
       ),

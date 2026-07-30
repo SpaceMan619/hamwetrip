@@ -6,6 +6,7 @@ import '../../../core/widgets/shakira_widgets/poll_card.dart';
 class GroupVotingScreen extends StatelessWidget {
   final List<Poll> activePolls;
   final List<Poll> closedPolls;
+  final Map<String, String?> selectedOptionIds;
   final void Function(String, String) onOptionTap;
   final void Function(String) onVote;
   final void Function(String) onClosePoll;
@@ -17,6 +18,7 @@ class GroupVotingScreen extends StatelessWidget {
     super.key,
     required this.activePolls,
     required this.closedPolls,
+    required this.selectedOptionIds,
     required this.onOptionTap,
     required this.onVote,
     required this.onClosePoll,
@@ -62,6 +64,7 @@ class GroupVotingScreen extends StatelessWidget {
           children: [
             _PollListView(
               polls: activePolls,
+              selectedOptionIds: selectedOptionIds,
               onOptionTap: onOptionTap,
               onVote: onVote,
               onClosePoll: onClosePoll,
@@ -69,6 +72,7 @@ class GroupVotingScreen extends StatelessWidget {
             ),
             _PollListView(
               polls: closedPolls,
+              selectedOptionIds: selectedOptionIds,
               onOptionTap: onOptionTap,
               onVote: onVote,
               onClosePoll: onClosePoll,
@@ -89,6 +93,7 @@ class GroupVotingScreen extends StatelessWidget {
 
 class _PollListView extends StatelessWidget {
   final List<Poll> polls;
+  final Map<String, String?> selectedOptionIds;
   final void Function(String, String) onOptionTap;
   final void Function(String) onVote;
   final void Function(String) onClosePoll;
@@ -96,6 +101,7 @@ class _PollListView extends StatelessWidget {
 
   const _PollListView({
     required this.polls,
+    required this.selectedOptionIds,
     required this.onOptionTap,
     required this.onVote,
     required this.onClosePoll,
@@ -116,6 +122,8 @@ class _PollListView extends StatelessWidget {
         final poll = polls[index];
         return PollCard(
           poll: poll,
+          selectedOptionId: selectedOptionIds[poll.id],
+          hasVoted: selectedOptionIds[poll.id] != null,
           onTap: !poll.isActive ? () => onViewResults(poll) : null,
           onOptionTap: (optId) => onOptionTap(poll.id, optId),
           onVote: () => onVote(poll.id),
