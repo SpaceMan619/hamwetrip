@@ -41,6 +41,27 @@ class ScreenExplorer extends ConsumerWidget {
       Icons.notifications_active_outlined,
     ),
     ('Profile and settings', AppRoutes.profile, Icons.person_outline_rounded),
+
+    // --- Shakira Trip Screens ---
+    (
+      'Detailed itinerary',
+      AppRoutes.detailedItinerary,
+      Icons.edit_calendar_outlined,
+    ),
+    ('Document vault', AppRoutes.documentVault, Icons.folder_shared_outlined),
+    (
+      'Expense splitting',
+      AppRoutes.expenseSplitting,
+      Icons.receipt_long_outlined,
+    ),
+    ('Group voting', AppRoutes.groupVoting, Icons.how_to_vote_outlined),
+    ('MoMo summary', AppRoutes.momoSummary, Icons.phone_android_outlined),
+    ('Poll results', AppRoutes.pollResults, Icons.poll_outlined),
+    (
+      'Settlement confirmation',
+      AppRoutes.settlementConfirmation,
+      Icons.check_circle_outline_rounded,
+    ),
   ];
 
   /// Routes whose screen reads a trip id from the route arguments — see

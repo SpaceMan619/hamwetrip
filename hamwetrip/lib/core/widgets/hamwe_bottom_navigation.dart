@@ -21,26 +21,14 @@ class HamweBottomNavigation extends StatelessWidget {
   void _open(BuildContext context, HamweDestination destination) {
     if (destination == selected) return;
 
+    // ✅ UPDATED: Now maps Ledger and Vault to the real Shakira screens
     final route = switch (destination) {
       HamweDestination.home => AppRoutes.home,
       HamweDestination.trips => AppRoutes.dashboard,
+      HamweDestination.ledger => AppRoutes.expenseSplitting,
+      HamweDestination.vault => AppRoutes.documentVault,
       HamweDestination.profile => AppRoutes.profile,
-      HamweDestination.ledger || HamweDestination.vault => null,
     };
-
-    if (route == null) {
-      final name = destination == HamweDestination.ledger ? 'Ledger' : 'Vault';
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(
-            content: Text(
-              '$name will connect when Shakira\'s screens are merged.',
-            ),
-          ),
-        );
-      return;
-    }
 
     Navigator.of(context).pushNamedAndRemoveUntil(route, (route) => false);
   }
