@@ -101,10 +101,16 @@ service cloud.firestore {
 
     match /invites/{code} {
       // Any signed-in user may fetch one invite by its exact code — that is the
-      // whole point of a code. Listing stays forbidden, or this collection
-      // becomes an enumerable directory of every trip in the system.
+      // whole point of a code.
       allow get: if signedIn();
-      allow list: if false;
+
+      // Organizers list the codes for their own trip on the invite screen.
+      //
+      // Evaluated per candidate document, so a query that reaches beyond one
+      // trip fails on the first document the caller does not organize. That
+      // keeps the original protection intact: this collection still cannot be
+      // enumerated as a directory of every trip in the system.
+      allow list: if signedIn() && isOrganizer(resource.data.tripId);
 
       allow create: if signedIn()
         && isOrganizer(request.resource.data.tripId)
