@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../data/models/momo_transaction.dart';
+import '../../../../../core/util/currency_format.dart';
 
 class MomoTransactionTile extends StatelessWidget {
   final MomoTransaction transaction;
@@ -78,8 +79,8 @@ class MomoTransactionTile extends StatelessWidget {
             children: [
               Text(
                 isSend
-                    ? '-RWF ${transaction.amount.toStringAsFixed(0)}'
-                    : '+RWF ${transaction.amount.toStringAsFixed(0)}',
+                    ? '-${formatRwf(transaction.amount)}'
+                    : '+${formatRwf(transaction.amount)}',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(

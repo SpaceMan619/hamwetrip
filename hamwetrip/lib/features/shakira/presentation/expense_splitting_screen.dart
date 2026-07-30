@@ -3,6 +3,7 @@ import '../../../../../core/theme/app_colors.dart';
 import '../../../../../data/models/expense.dart';
 import '../../../core/widgets/shakira_widgets/expense_card.dart';
 import '../../../core/widgets/shakira_widgets/settlement_card.dart';
+import '../../../core/util/currency_format.dart';
 
 class ExpenseSplittingScreen extends StatelessWidget {
   final List<Expense> expenses;
@@ -75,21 +76,21 @@ class ExpenseSplittingScreen extends StatelessWidget {
                 children: [
                   _SummaryBox(
                     title: 'Total Spent',
-                    value: 'RWF ${totalSpent.toStringAsFixed(0)}',
+                    value: formatRwf(totalSpent),
                     color: AppColors.sand,
                     textColor: AppColors.ink,
                   ),
                   const SizedBox(width: 12),
                   _SummaryBox(
                     title: 'You Owe',
-                    value: 'RWF ${youOwe.toStringAsFixed(0)}',
+                    value: formatRwf(youOwe),
                     color: AppColors.paleSunset,
                     textColor: AppColors.sunset,
                   ),
                   const SizedBox(width: 12),
                   _SummaryBox(
                     title: 'You Are Owed',
-                    value: 'RWF ${youAreOwed.toStringAsFixed(0)}',
+                    value: formatRwf(youAreOwed),
                     color: AppColors.paleMint,
                     textColor: AppColors.forest,
                   ),

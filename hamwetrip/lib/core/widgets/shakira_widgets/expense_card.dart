@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../data/models/expense.dart';
+import '../../../../../core/util/currency_format.dart';
 
 class ExpenseCard extends StatelessWidget {
   final Expense expense;
@@ -97,7 +98,7 @@ class ExpenseCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            'RWF ${expense.amount.toStringAsFixed(0)}',
+                            formatRwf(expense.amount),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
@@ -111,7 +112,7 @@ class ExpenseCard extends StatelessWidget {
                             children: [
                               Flexible(
                                 child: Text(
-                                  'RWF ${expense.splitAmount.toStringAsFixed(0)} each',
+                                  '${formatRwf(expense.splitAmount)} each',
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(

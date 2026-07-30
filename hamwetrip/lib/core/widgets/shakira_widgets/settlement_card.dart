@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../data/models/expense.dart';
+import '../../../../../core/util/currency_format.dart';
 
 class SettlementCard extends StatelessWidget {
   final Balance balance;
@@ -63,7 +64,7 @@ class SettlementCard extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  'RWF ${balance.amount.toStringAsFixed(0)}',
+                  formatRwf(balance.amount),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
