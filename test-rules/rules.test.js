@@ -157,6 +157,15 @@ describe('trips', () => {
     );
   });
 
+  test('a creator cannot read their trip before creating it', async () => {
+    await seed();
+    // Regression guard. An idempotency pre-check that reads trips/{requestId}
+    // before writing is denied for the very person about to create it —
+    // `allow get` needs isMember(tripId), and nobody is a member yet. A
+    // createTrip built on such a read can never create anything.
+    await assertFails(getDoc(doc(asOutsider(), 'trips', 't_not_yet')));
+  });
+
   test('creating a trip and its organizer membership in one batch works', async () => {
     await seed();
     // Rules evaluate each write against the state from *before* the batch, so
@@ -279,6 +288,42 @@ describe('membership', () => {
     await assertSucceeds(
       deleteDoc(doc(asOrganizer(), 'trips', TRIP, 'members', MEMBER)),
     );
+  });
+
+  test('a leave event cannot be filed after the membership is gone', async () => {
+    await seed();
+    const db = asMember();
+    await assertSucceeds(deleteDoc(doc(db, 'trips', TRIP, 'members', MEMBER)));
+    // Regression guard: the activity rule needs isMember(tripId), which a
+    // departing member no longer satisfies. leaveTrip must enlist the event in
+    // the same transaction as the delete, where both are evaluated against the
+    // state from before the commit.
+    await assertFails(
+      setDoc(doc(db, 'trips', TRIP, 'activity', 'leave1'), {
+        type: 'member_removed',
+        actorId: MEMBER,
+        actorName: 'Eric',
+        summary: 'Eric left the trip',
+        entityId: MEMBER,
+        createdAt: new Date(),
+      }),
+    );
+  });
+
+  test('a leave event and the delete succeed together in one transaction', async () => {
+    await seed();
+    const db = asMember();
+    const batch = writeBatch(db);
+    batch.set(doc(db, 'trips', TRIP, 'activity', 'leave2'), {
+      type: 'member_removed',
+      actorId: MEMBER,
+      actorName: 'Eric',
+      summary: 'Eric left the trip',
+      entityId: MEMBER,
+      createdAt: new Date(),
+    });
+    batch.delete(doc(db, 'trips', TRIP, 'members', MEMBER));
+    await assertSucceeds(batch.commit());
   });
 
   test('watchMyTrips: the collection-group query is allowed when scoped to self', async () => {
@@ -434,8 +479,45 @@ describe('invites', () => {
 
   test('the invite collection cannot be enumerated', async () => {
     await seed();
-    // Listing would turn this into a directory of every trip in the system.
+    // An unscoped list would turn this into a directory of every trip.
     await assertFails(getDocs(collection(asOutsider(), 'invites')));
+    await assertFails(getDocs(collection(asOrganizer(), 'invites')));
+  });
+
+  test('an organizer can list the codes for their own trip', async () => {
+    await seed();
+    // Backs watchInvites() on the invite screen.
+    await assertSucceeds(
+      getDocs(
+        query(
+          collection(asOrganizer(), 'invites'),
+          where('tripId', '==', TRIP),
+          where('revoked', '==', false),
+        ),
+      ),
+    );
+  });
+
+  test('a plain member cannot list invite codes', async () => {
+    await seed();
+    await assertFails(
+      getDocs(query(collection(asMember(), 'invites'), where('tripId', '==', TRIP))),
+    );
+  });
+
+  test('an organizer cannot list another trip\'s codes', async () => {
+    await seed();
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      await setDoc(
+        doc(context.firestore(), 'invites', 'OTHER2'),
+        inviteDoc({ tripId: 't_not_mine' }),
+      );
+    });
+    await assertFails(
+      getDocs(
+        query(collection(asOrganizer(), 'invites'), where('tripId', '==', 't_not_mine')),
+      ),
+    );
   });
 
   test('only an organizer can create an invite', async () => {

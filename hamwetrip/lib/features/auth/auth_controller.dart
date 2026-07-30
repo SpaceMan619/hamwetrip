@@ -63,6 +63,7 @@ class AuthController extends BaseController<AuthUser?> {
 }
 
 final authControllerProvider =
-    StateNotifierProvider.autoDispose<AuthController, ControllerState<AuthUser?>>(
-      (ref) => AuthController(ref.watch(authRepositoryProvider)),
-    );
+    StateNotifierProvider.autoDispose<
+      AuthController,
+      ControllerState<AuthUser?>
+    >((ref) => AuthController(ref.watch(authRepositoryProvider)));

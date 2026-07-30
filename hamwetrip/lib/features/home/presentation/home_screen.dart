@@ -8,6 +8,7 @@ import '../../../core/util/date_format.dart';
 import '../../../core/widgets/hamwe_bottom_navigation.dart';
 import '../../../data/models/trip_summary.dart';
 import '../../rajveer/presentation/rajveer_screens.dart';
+import '../../trips/trip_providers.dart';
 import '../home_providers.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -19,7 +20,8 @@ class HomeScreen extends ConsumerWidget {
 
     final profileState = ref.watch(currentUserProfileProvider);
     final firstName = switch (profileState.view) {
-      ViewData(:final data) when data != null && data.displayName.trim().isNotEmpty =>
+      ViewData(:final data)
+          when data != null && data.displayName.trim().isNotEmpty =>
         data.displayName.trim().split(RegExp(r'\s+')).first,
       _ => 'Traveller',
     };
@@ -72,7 +74,10 @@ class HomeScreen extends ConsumerWidget {
                   trip: TripSummary(
                     name: activeTrip.name,
                     location: activeTrip.destination,
-                    dateRange: formatDateRange(activeTrip.startDate, activeTrip.endDate),
+                    dateRange: formatDateRange(
+                      activeTrip.startDate,
+                      activeTrip.endDate,
+                    ),
                     travellerCount: travellerCount,
                     // The shared ledger balance is not yet computed anywhere
                     // in Phase 2 (see TripMember.balanceMinor) — 0 is a

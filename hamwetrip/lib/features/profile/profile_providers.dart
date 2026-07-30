@@ -68,12 +68,13 @@ class ProfileActionsController extends BaseController<bool> {
   }
 }
 
-final profileActionsControllerProvider = StateNotifierProvider.autoDispose<
-  ProfileActionsController,
-  ControllerState<bool>
->(
-  (ref) => ProfileActionsController(
-    ref.watch(userRepositoryProvider),
-    ref.watch(authRepositoryProvider),
-  ),
-);
+final profileActionsControllerProvider =
+    StateNotifierProvider.autoDispose<
+      ProfileActionsController,
+      ControllerState<bool>
+    >(
+      (ref) => ProfileActionsController(
+        ref.watch(userRepositoryProvider),
+        ref.watch(authRepositoryProvider),
+      ),
+    );

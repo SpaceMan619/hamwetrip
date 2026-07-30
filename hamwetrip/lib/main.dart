@@ -12,7 +12,9 @@ Future<void> main() async {
   // Mock runs skip Firebase entirely, so the UI can be developed without a
   // reachable Firebase project — see core/config/app_config.dart.
   if (!useMockRepositories) {
-    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
   }
 
   // ProviderScope wraps the app root here rather than living inside

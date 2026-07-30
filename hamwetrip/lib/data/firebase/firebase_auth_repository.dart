@@ -35,7 +35,9 @@ class FirebaseAuthRepository implements AuthRepository {
 
   @override
   Stream<AuthUser?> authState() {
-    return _auth.authStateChanges().map((user) => user == null ? null : _toAuthUser(user));
+    return _auth.authStateChanges().map(
+      (user) => user == null ? null : _toAuthUser(user),
+    );
   }
 
   @override

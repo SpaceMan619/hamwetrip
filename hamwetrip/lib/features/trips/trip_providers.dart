@@ -15,8 +15,9 @@ import '../../domain/repositories/trip_repository.dart';
 
 final tripControllerProvider = StateNotifierProvider.autoDispose
     .family<StreamViewController<Trip?>, ControllerState<Trip?>, String>(
-      (ref, tripId) =>
-          StreamViewController<Trip?>(ref.watch(tripRepositoryProvider).watchTrip(tripId)),
+      (ref, tripId) => StreamViewController<Trip?>(
+        ref.watch(tripRepositoryProvider).watchTrip(tripId),
+      ),
     );
 
 final tripMembersControllerProvider = StateNotifierProvider.autoDispose
@@ -32,7 +33,11 @@ final tripMembersControllerProvider = StateNotifierProvider.autoDispose
     );
 
 final myMembershipControllerProvider = StateNotifierProvider.autoDispose
-    .family<StreamViewController<TripMember?>, ControllerState<TripMember?>, String>(
+    .family<
+      StreamViewController<TripMember?>,
+      ControllerState<TripMember?>,
+      String
+    >(
       (ref, tripId) => StreamViewController<TripMember?>(
         ref.watch(tripRepositoryProvider).watchMyMembership(tripId),
       ),
@@ -42,7 +47,11 @@ final myMembershipControllerProvider = StateNotifierProvider.autoDispose
 /// PermissionDeniedError view state until firestore.rules grows the `list`
 /// clause it needs — that is expected, not a bug in this provider.
 final tripInvitesControllerProvider = StateNotifierProvider.autoDispose
-    .family<StreamViewController<List<Invite>>, ControllerState<List<Invite>>, String>(
+    .family<
+      StreamViewController<List<Invite>>,
+      ControllerState<List<Invite>>,
+      String
+    >(
       (ref, tripId) => StreamViewController<List<Invite>>(
         ref.watch(tripRepositoryProvider).watchInvites(tripId),
         isEmptyWhen: (invites) => invites.isEmpty,
@@ -85,9 +94,10 @@ class CreateTripController extends BaseController<Trip?> {
 }
 
 final createTripControllerProvider =
-    StateNotifierProvider.autoDispose<CreateTripController, ControllerState<Trip?>>(
-      (ref) => CreateTripController(ref.watch(tripRepositoryProvider)),
-    );
+    StateNotifierProvider.autoDispose<
+      CreateTripController,
+      ControllerState<Trip?>
+    >((ref) => CreateTripController(ref.watch(tripRepositoryProvider)));
 
 /// Organizer-only edits to an existing trip's details. `data` is just "did
 /// the last edit succeed" — the dashboard reads the trip itself from
@@ -125,10 +135,11 @@ class TripDetailsController extends BaseController<bool> {
   }
 }
 
-final tripDetailsControllerProvider = StateNotifierProvider.autoDispose<
-  TripDetailsController,
-  ControllerState<bool>
->((ref) => TripDetailsController(ref.watch(tripRepositoryProvider)));
+final tripDetailsControllerProvider =
+    StateNotifierProvider.autoDispose<
+      TripDetailsController,
+      ControllerState<bool>
+    >((ref) => TripDetailsController(ref.watch(tripRepositoryProvider)));
 
 /// Leave / remove / role-change: `data` is just "did the last action
 /// succeed" — these screens act on the trip-scoped streams above for actual
@@ -138,7 +149,8 @@ class MembershipActionsController extends BaseController<bool> {
 
   final TripRepository _repository;
 
-  Future<bool> leave(String tripId) => _run(() => _repository.leaveTrip(tripId));
+  Future<bool> leave(String tripId) =>
+      _run(() => _repository.leaveTrip(tripId));
 
   Future<bool> remove({required String tripId, required String uid}) =>
       _run(() => _repository.removeMember(tripId: tripId, uid: uid));
@@ -165,10 +177,11 @@ class MembershipActionsController extends BaseController<bool> {
   }
 }
 
-final membershipActionsControllerProvider = StateNotifierProvider.autoDispose<
-  MembershipActionsController,
-  ControllerState<bool>
->((ref) => MembershipActionsController(ref.watch(tripRepositoryProvider)));
+final membershipActionsControllerProvider =
+    StateNotifierProvider.autoDispose<
+      MembershipActionsController,
+      ControllerState<bool>
+    >((ref) => MembershipActionsController(ref.watch(tripRepositoryProvider)));
 
 class InviteActionsController extends BaseController<Invite?> {
   InviteActionsController(this._repository);
@@ -209,7 +222,8 @@ class InviteActionsController extends BaseController<Invite?> {
   }
 }
 
-final inviteActionsControllerProvider = StateNotifierProvider.autoDispose<
-  InviteActionsController,
-  ControllerState<Invite?>
->((ref) => InviteActionsController(ref.watch(tripRepositoryProvider)));
+final inviteActionsControllerProvider =
+    StateNotifierProvider.autoDispose<
+      InviteActionsController,
+      ControllerState<Invite?>
+    >((ref) => InviteActionsController(ref.watch(tripRepositoryProvider)));

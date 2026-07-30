@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../error/app_error.dart';
@@ -29,7 +30,14 @@ class ControllerState<T> {
 /// submission, so screens read one consistent state machine regardless of
 /// which repository backs them.
 abstract class BaseController<T> extends StateNotifier<ControllerState<T>> {
-  BaseController() : super(const ControllerState(view: ViewLoading()));
+  // Deliberately not `const`. A const expression cannot reference a type
+  // parameter, so `const ControllerState(view: ViewLoading())` infers
+  // ControllerState<Never> — which type-checks here, because
+  // ControllerState<Never> is a subtype of ControllerState<T>, but leaves
+  // every controller holding a <Never>-typed state at runtime. The first
+  // setData then fails inside copyWith with "ViewData<Foo> is not a subtype
+  // of ViewState<Never>?". Spelling out <T> keeps the state properly typed.
+  BaseController() : super(ControllerState<T>(view: ViewLoading<T>()));
 
   var _disposed = false;
 
@@ -40,10 +48,13 @@ abstract class BaseController<T> extends StateNotifier<ControllerState<T>> {
   void setLoading() => _emit(state.copyWith(view: const ViewLoading()));
 
   void setData(T data) {
-    _emit(state.copyWith(view: isEmpty(data) ? ViewEmpty<T>() : ViewData<T>(data)));
+    _emit(
+      state.copyWith(view: isEmpty(data) ? ViewEmpty<T>() : ViewData<T>(data)),
+    );
   }
 
-  void setError(AppError error) => _emit(state.copyWith(view: ViewError<T>(error)));
+  void setError(AppError error) =>
+      _emit(state.copyWith(view: ViewError<T>(error)));
 
   /// Runs [action] with [isSubmitting] true for its duration, independent of
   /// the underlying [ViewState]. Use for button-triggered mutations —

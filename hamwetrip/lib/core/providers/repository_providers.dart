@@ -23,9 +23,13 @@ import '../config/app_config.dart';
 /// A provider rather than reading [useMockRepositories] directly from every
 /// repository provider, so a widget test can override just this one binding
 /// to force mocks without touching the compile-time constant.
-final useMockRepositoriesProvider = Provider<bool>((ref) => useMockRepositories);
+final useMockRepositoriesProvider = Provider<bool>(
+  (ref) => useMockRepositories,
+);
 
-final firebaseAuthProvider = Provider<FirebaseAuth>((ref) => FirebaseAuth.instance);
+final firebaseAuthProvider = Provider<FirebaseAuth>(
+  (ref) => FirebaseAuth.instance,
+);
 
 final firestoreProvider = Provider<FirebaseFirestore>(
   (ref) => FirebaseFirestore.instance,

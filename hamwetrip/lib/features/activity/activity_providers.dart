@@ -19,13 +19,14 @@ final tripActivityControllerProvider = StateNotifierProvider.autoDispose
 
 /// The home feed: merges activity across every trip the signed-in user
 /// belongs to — see FirebaseActivityRepository.watchMyActivity.
-final myActivityControllerProvider = StateNotifierProvider.autoDispose<
-  StreamViewController<List<ActivityEvent>>,
-  ControllerState<List<ActivityEvent>>
->((ref) {
-  ref.watch(authStateProvider);
-  return StreamViewController<List<ActivityEvent>>(
-    ref.watch(activityRepositoryProvider).watchMyActivity(),
-    isEmptyWhen: (events) => events.isEmpty,
-  );
-});
+final myActivityControllerProvider =
+    StateNotifierProvider.autoDispose<
+      StreamViewController<List<ActivityEvent>>,
+      ControllerState<List<ActivityEvent>>
+    >((ref) {
+      ref.watch(authStateProvider);
+      return StreamViewController<List<ActivityEvent>>(
+        ref.watch(activityRepositoryProvider).watchMyActivity(),
+        isEmptyWhen: (events) => events.isEmpty,
+      );
+    });

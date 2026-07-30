@@ -47,8 +47,10 @@ class FirebaseTripRepository implements TripRepository {
   CollectionReference<Map<String, Object?>> _membersOf(String tripId) =>
       _trips.doc(tripId).collection('members');
 
-  DocumentReference<Map<String, Object?>> _memberDoc(String tripId, String uid) =>
-      _membersOf(tripId).doc(uid);
+  DocumentReference<Map<String, Object?>> _memberDoc(
+    String tripId,
+    String uid,
+  ) => _membersOf(tripId).doc(uid);
 
   CollectionReference<Map<String, Object?>> _activityOf(String tripId) =>
       _trips.doc(tripId).collection('activity');
@@ -104,32 +106,42 @@ class FirebaseTripRepository implements TripRepository {
     final tripSnaps = await Future.wait(
       tripIds.map((id) => _trips.doc(id).get()),
     );
-    final trips = tripSnaps
-        .where((snap) => snap.exists)
-        .map((snap) => Trip.fromMap(snap.id, snap.data()!))
-        .toList()
-      ..sort(_byRecency);
+    final trips =
+        tripSnaps
+            .where((snap) => snap.exists)
+            .map((snap) => Trip.fromMap(snap.id, snap.data()!))
+            .toList()
+          ..sort(_byRecency);
     return trips;
   }
 
   @override
   Stream<Trip?> watchTrip(String tripId) {
-    return _trips.doc(tripId).snapshots().transform(
-      StreamTransformer<DocumentSnapshot<Map<String, Object?>>, Trip?>.fromHandlers(
-        handleData: (snap, sink) {
-          sink.add(snap.exists ? Trip.fromMap(snap.id, snap.data()!) : null);
-        },
-        handleError: (Object error, StackTrace stackTrace, sink) {
-          if (error is FirebaseException && error.code == 'permission-denied') {
-            // Documented contract: losing access reads the same as the trip
-            // being deleted, so the dashboard navigates away either way.
-            sink.add(null);
-            return;
-          }
-          sink.addError(mapFirebaseError(error), stackTrace);
-        },
-      ),
-    );
+    return _trips
+        .doc(tripId)
+        .snapshots()
+        .transform(
+          StreamTransformer<
+            DocumentSnapshot<Map<String, Object?>>,
+            Trip?
+          >.fromHandlers(
+            handleData: (snap, sink) {
+              sink.add(
+                snap.exists ? Trip.fromMap(snap.id, snap.data()!) : null,
+              );
+            },
+            handleError: (Object error, StackTrace stackTrace, sink) {
+              if (error is FirebaseException &&
+                  error.code == 'permission-denied') {
+                // Documented contract: losing access reads the same as the trip
+                // being deleted, so the dashboard navigates away either way.
+                sink.add(null);
+                return;
+              }
+              sink.addError(mapFirebaseError(error), stackTrace);
+            },
+          ),
+        );
   }
 
   @override
@@ -158,14 +170,16 @@ class FirebaseTripRepository implements TripRepository {
     }
 
     try {
-      // requestId doubles as the trip's document id: a repeated call with the
-      // same id reads the trip the first call created instead of writing
-      // anything again. That sidesteps needing a separate request-tracking
-      // document — which would need its own security rule this repository
-      // isn't in a position to add.
+      // requestId doubles as the trip's document id, which is what makes a
+      // repeated call idempotent: the second attempt writes the same two
+      // documents to the same two paths rather than creating a second trip.
+      //
+      // Deliberately no existence pre-check. `allow get` on a trip requires
+      // isMember(tripId), and on a trip that does not exist yet nobody is a
+      // member — so reading it first is denied for the very person about to
+      // create it, and the create never happens. Idempotency comes from the
+      // document id, not from a read.
       final tripRef = _trips.doc(requestId);
-      final existing = await tripRef.get();
-      if (existing.exists) return Trip.fromMap(existing.id, existing.data()!);
 
       final now = DateTime.now().toUtc();
       final trip = Trip(
@@ -203,7 +217,24 @@ class FirebaseTripRepository implements TripRepository {
       final batch = _firestore.batch();
       batch.set(tripRef, tripData);
       batch.set(_memberDoc(tripRef.id, uid), memberData);
-      await batch.commit();
+
+      try {
+        await batch.commit();
+      } on FirebaseException catch (error) {
+        if (error.code != 'permission-denied') rethrow;
+
+        // This is what a genuine repeat looks like. The first call already
+        // created the trip, so the second one is an *update* as far as the
+        // rules are concerned — and the update rule refuses to let createdAt
+        // be restamped. Reading the trip back is permitted now that the first
+        // call made us a member, so a repeat resolves to the original trip
+        // instead of an error.
+        final existing = await tripRef.get();
+        if (existing.exists) {
+          return Trip.fromMap(existing.id, existing.data()!);
+        }
+        rethrow;
+      }
 
       await _writeActivity(
         tripId: tripRef.id,
@@ -239,7 +270,7 @@ class FirebaseTripRepository implements TripRepository {
       await _requireOrganizer(tripId, uid);
 
       final updates = <String, Object?>{
-        if (trimmedName != null) 'name': trimmedName,
+        'name': ?trimmedName,
         if (destination != null) 'destination': destination.trim(),
         if (startDate != null) 'startDate': startDate.toUtc(),
         if (endDate != null) 'endDate': endDate.toUtc(),
@@ -277,10 +308,15 @@ class FirebaseTripRepository implements TripRepository {
     if (uid == null) return Stream.value(null);
 
     return _memberDoc(tripId, uid).snapshots().transform(
-      StreamTransformer<DocumentSnapshot<Map<String, Object?>>, TripMember?>.fromHandlers(
+      StreamTransformer<
+        DocumentSnapshot<Map<String, Object?>>,
+        TripMember?
+      >.fromHandlers(
         handleData: (snap, sink) {
           sink.add(
-            snap.exists ? TripMember.fromMap(tripId, snap.id, snap.data()!) : null,
+            snap.exists
+                ? TripMember.fromMap(tripId, snap.id, snap.data()!)
+                : null,
           );
         },
         handleError: (Object error, StackTrace stackTrace, sink) {
@@ -314,6 +350,34 @@ class FirebaseTripRepository implements TripRepository {
     return member;
   }
 
+  /// Builds the document reference and payload for an audit-trail event,
+  /// without writing it.
+  ///
+  /// Split out from [_writeActivity] so an event can also be enlisted into a
+  /// caller's transaction — which [leaveTrip] needs, because it is removing
+  /// the very membership that authorizes the event.
+  (DocumentReference<Map<String, Object?>>, Map<String, Object?>)
+  _activityWrite({
+    required String tripId,
+    required ActivityType type,
+    required String actorId,
+    required String summary,
+    String? actorName,
+    String? entityId,
+  }) {
+    final ref = _activityOf(tripId).doc();
+    final event = ActivityEvent(
+      id: ref.id,
+      tripId: tripId,
+      type: type,
+      actorId: actorId,
+      actorName: actorName,
+      summary: summary,
+      entityId: entityId,
+    );
+    return (ref, event.toMap()..['createdAt'] = FieldValue.serverTimestamp());
+  }
+
   /// Best-effort audit-trail write. Failing to record an event never rolls
   /// back — or blocks — the mutation it describes; see the class doc for why
   /// it cannot share a commit with the write that created the actor's own
@@ -326,17 +390,14 @@ class FirebaseTripRepository implements TripRepository {
     String? actorName,
     String? entityId,
   }) async {
-    final ref = _activityOf(tripId).doc();
-    final event = ActivityEvent(
-      id: ref.id,
+    final (ref, data) = _activityWrite(
       tripId: tripId,
       type: type,
       actorId: actorId,
-      actorName: actorName,
       summary: summary,
+      actorName: actorName,
       entityId: entityId,
     );
-    final data = event.toMap()..['createdAt'] = FieldValue.serverTimestamp();
     await ref.set(data);
   }
 
@@ -398,19 +459,19 @@ class FirebaseTripRepository implements TripRepository {
 
   @override
   Stream<List<Invite>> watchInvites(String tripId) {
-    // Requires a rules change your teammate owns: `firestore.rules` currently
-    // denies `list` on `invites` unconditionally, so this query is rejected
-    // (surfaces as PermissionDeniedError) until an `allow list` clause scoped
-    // to `isOrganizer(resource.data.tripId)` is added. Written against the
-    // interface's actual contract so it starts working the moment that rule
-    // lands, rather than being faked here.
+    // Authorized by `allow list: if isOrganizer(resource.data.tripId)` on the
+    // top-level `invites` collection. The tripId filter below is not optional:
+    // the rule is evaluated per candidate document, so a query that reached
+    // beyond this trip would be rejected on the first document belonging to a
+    // trip the caller does not organize.
     return _invites
         .where('tripId', isEqualTo: tripId)
         .where('revoked', isEqualTo: false)
         .snapshots()
         .map(
-          (snap) =>
-              snap.docs.map((d) => Invite.fromMap(d.id, d.data())).toList(growable: false),
+          (snap) => snap.docs
+              .map((d) => Invite.fromMap(d.id, d.data()))
+              .toList(growable: false),
         )
         .mapFirebaseErrors();
   }
@@ -455,7 +516,9 @@ class FirebaseTripRepository implements TripRepository {
           : joinerProfile.displayName;
       final joinerPhoto = joinerProfile.photoUrl;
 
-      final tripId = await _firestore.runTransaction<String>((transaction) async {
+      final tripId = await _firestore.runTransaction<String>((
+        transaction,
+      ) async {
         final inviteSnap = await transaction.get(inviteRef);
         if (!inviteSnap.exists) {
           throw const NotFoundError(
@@ -541,7 +604,11 @@ class FirebaseTripRepository implements TripRepository {
       if (!target.exists) {
         throw const NotFoundError(message: 'That person is not in this trip.');
       }
-      final targetMember = TripMember.fromMap(tripId, target.id, target.data()!);
+      final targetMember = TripMember.fromMap(
+        tripId,
+        target.id,
+        target.data()!,
+      );
 
       await _runIfNotLastOrganizer(
         tripId: tripId,
@@ -570,20 +637,36 @@ class FirebaseTripRepository implements TripRepository {
     try {
       final member = await _requireMember(tripId, uid);
 
+      // The audit event rides inside the same transaction as the delete.
+      //
+      // It cannot be written afterwards: the activity create rule requires
+      // isMember(tripId), and this member has just stopped being one, so the
+      // event is denied and the caller sees a failure for a departure that
+      // actually succeeded. It cannot simply be written beforehand either —
+      // the last-organizer check below may reject the leave, which would
+      // leave a "left the trip" event behind for someone still in the trip.
+      //
+      // Inside the transaction both writes are evaluated against the state
+      // from before the commit, where the membership still exists, so the
+      // event is authorized and a rejected leave records nothing.
+      final (activityRef, activityData) = _activityWrite(
+        tripId: tripId,
+        type: ActivityType.memberRemoved,
+        actorId: uid,
+        actorName: member.displayName,
+        summary: '${member.displayName} left the trip',
+        entityId: uid,
+      );
+
       await _runIfNotLastOrganizer(
         tripId: tripId,
         uid: uid,
         currentRole: member.role,
         nextRole: null,
-        write: (transaction, memberRef) => transaction.delete(memberRef),
-      );
-
-      await _writeActivity(
-        tripId: tripId,
-        type: ActivityType.memberRemoved,
-        actorId: uid,
-        summary: '${member.displayName} left the trip',
-        entityId: uid,
+        write: (transaction, memberRef) {
+          transaction.set(activityRef, activityData);
+          transaction.delete(memberRef);
+        },
       );
     } catch (error) {
       throw mapFirebaseError(error);
@@ -607,7 +690,11 @@ class FirebaseTripRepository implements TripRepository {
       if (!target.exists) {
         throw const NotFoundError(message: 'That person is not in this trip.');
       }
-      final targetMember = TripMember.fromMap(tripId, target.id, target.data()!);
+      final targetMember = TripMember.fromMap(
+        tripId,
+        target.id,
+        target.data()!,
+      );
 
       await _runIfNotLastOrganizer(
         tripId: tripId,
@@ -656,8 +743,8 @@ class FirebaseTripRepository implements TripRepository {
     )
     write,
   }) async {
-    final losesOrganizer = currentRole == TripRole.organizer &&
-        nextRole != TripRole.organizer;
+    final losesOrganizer =
+        currentRole == TripRole.organizer && nextRole != TripRole.organizer;
     if (!losesOrganizer) {
       await _firestore.runTransaction((transaction) async {
         write(transaction, _memberDoc(tripId, uid));

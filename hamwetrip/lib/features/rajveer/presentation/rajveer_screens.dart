@@ -283,7 +283,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       return;
     }
     final view = ref.read(authControllerProvider).view;
-    if (view is ViewError<dynamic>) showAppErrorSnackBar(context, view.error);
+    if (view.error case final error?) showAppErrorSnackBar(context, error);
   }
 
   Future<void> _forgotPassword() async {
@@ -299,7 +299,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       showInfoSnackBar(context, 'Check $email for a reset link.');
     } else {
       final view = ref.read(authControllerProvider).view;
-      if (view is ViewError<dynamic>) showAppErrorSnackBar(context, view.error);
+      if (view.error case final error?) showAppErrorSnackBar(context, error);
     }
   }
 
@@ -479,7 +479,7 @@ class _TripDashboardBody extends ConsumerWidget {
         .updateTrip(tripId: tripId, name: newName);
     if (!context.mounted || ok) return;
     final view = ref.read(tripDetailsControllerProvider).view;
-    if (view is ViewError<dynamic>) showAppErrorSnackBar(context, view.error);
+    if (view.error case final error?) showAppErrorSnackBar(context, error);
   }
 
   @override
@@ -487,7 +487,9 @@ class _TripDashboardBody extends ConsumerWidget {
     final tripState = ref.watch(tripControllerProvider(tripId));
     if (tripState.view is ViewError<dynamic>) {
       final error = (tripState.view as ViewError<dynamic>).error;
-      return _DashboardScaffold(child: _DashboardMessage(message: error.message));
+      return _DashboardScaffold(
+        child: _DashboardMessage(message: error.message),
+      );
     }
 
     final trip = switch (tripState.view) {
@@ -678,7 +680,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
       return;
     }
     final view = ref.read(createTripControllerProvider).view;
-    if (view is ViewError<dynamic>) showAppErrorSnackBar(context, view.error);
+    if (view.error case final error?) showAppErrorSnackBar(context, error);
   }
 
   @override
@@ -782,7 +784,7 @@ class _InviteMembersScreenState extends ConsumerState<InviteMembersScreen> {
       return;
     }
     final view = ref.read(inviteActionsControllerProvider).view;
-    if (view is ViewError<dynamic>) showAppErrorSnackBar(context, view.error);
+    if (view.error case final error?) showAppErrorSnackBar(context, error);
   }
 
   Future<void> _revoke(String tripId, String code) async {
@@ -793,7 +795,7 @@ class _InviteMembersScreenState extends ConsumerState<InviteMembersScreen> {
     if (_lastGeneratedCode == code) setState(() => _lastGeneratedCode = null);
     if (!ok) {
       final view = ref.read(inviteActionsControllerProvider).view;
-      if (view is ViewError<dynamic>) showAppErrorSnackBar(context, view.error);
+      if (view.error case final error?) showAppErrorSnackBar(context, error);
     }
   }
 
@@ -935,7 +937,9 @@ class _InviteMembersScreenState extends ConsumerState<InviteMembersScreen> {
                       )
                     : const Icon(Icons.add_link_rounded),
                 label: const Text('Generate invite code'),
-                style: FilledButton.styleFrom(backgroundColor: AppColors.forest),
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.forest,
+                ),
               ),
             ),
           const SizedBox(height: 28),
@@ -977,7 +981,10 @@ class ActivityFeedScreen extends ConsumerWidget {
       ),
       ViewError(:final error) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 20),
-        child: Text(error.message, style: const TextStyle(color: AppColors.muted)),
+        child: Text(
+          error.message,
+          style: const TextStyle(color: AppColors.muted),
+        ),
       ),
       ViewData(:final data) => Column(
         children: [for (final event in data) _ActivityRow(event: event)],
@@ -1113,7 +1120,7 @@ class ProfileScreen extends ConsumerWidget {
         .updateProfile(displayName: newName);
     if (!context.mounted || ok) return;
     final view = ref.read(profileActionsControllerProvider).view;
-    if (view is ViewError<dynamic>) showAppErrorSnackBar(context, view.error);
+    if (view.error case final error?) showAppErrorSnackBar(context, error);
   }
 
   Future<void> _toggleNotifications(
@@ -1126,7 +1133,7 @@ class ProfileScreen extends ConsumerWidget {
         .setNotificationsEnabled(enabled);
     if (!context.mounted || ok) return;
     final view = ref.read(profileActionsControllerProvider).view;
-    if (view is ViewError<dynamic>) showAppErrorSnackBar(context, view.error);
+    if (view.error case final error?) showAppErrorSnackBar(context, error);
   }
 
   Future<void> _signOut(BuildContext context, WidgetRef ref) async {
@@ -1141,7 +1148,7 @@ class ProfileScreen extends ConsumerWidget {
       return;
     }
     final view = ref.read(profileActionsControllerProvider).view;
-    if (view is ViewError<dynamic>) showAppErrorSnackBar(context, view.error);
+    if (view.error case final error?) showAppErrorSnackBar(context, error);
   }
 
   @override
@@ -1494,7 +1501,10 @@ class _NotificationsTile extends StatelessWidget {
     margin: const EdgeInsets.only(bottom: 10),
     child: ListTile(
       contentPadding: const EdgeInsets.all(14),
-      leading: const Icon(Icons.notifications_none_rounded, color: AppColors.forest),
+      leading: const Icon(
+        Icons.notifications_none_rounded,
+        color: AppColors.forest,
+      ),
       title: const Text(
         'Notifications',
         style: TextStyle(fontWeight: FontWeight.w700),

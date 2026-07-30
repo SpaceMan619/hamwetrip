@@ -33,7 +33,9 @@ class FirebaseUserRepository implements UserRepository {
     return _users
         .doc(uid)
         .snapshots()
-        .map((snap) => snap.exists ? AppUser.fromMap(snap.id, snap.data()!) : null)
+        .map(
+          (snap) => snap.exists ? AppUser.fromMap(snap.id, snap.data()!) : null,
+        )
         .mapFirebaseErrors();
   }
 
@@ -80,15 +82,12 @@ class FirebaseUserRepository implements UserRepository {
     }
 
     final updates = <String, Object?>{
-      if (trimmedName != null) 'displayName': trimmedName,
-      if (clearPhone)
-        'phone': FieldValue.delete()
-      else if (phone != null)
-        'phone': phone,
+      'displayName': ?trimmedName,
+      if (clearPhone) 'phone': FieldValue.delete() else 'phone': ?phone,
       if (clearPhotoUrl)
         'photoUrl': FieldValue.delete()
-      else if (photoUrl != null)
-        'photoUrl': photoUrl,
+      else
+        'photoUrl': ?photoUrl,
     };
 
     try {
@@ -114,7 +113,11 @@ class FirebaseUserRepository implements UserRepository {
         .where('uid', isEqualTo: uid)
         .get();
 
-    for (var offset = 0; offset < memberships.docs.length; offset += _maxBatchWrites) {
+    for (
+      var offset = 0;
+      offset < memberships.docs.length;
+      offset += _maxBatchWrites
+    ) {
       final chunk = memberships.docs.skip(offset).take(_maxBatchWrites);
       final batch = _firestore.batch();
       for (final doc in chunk) {

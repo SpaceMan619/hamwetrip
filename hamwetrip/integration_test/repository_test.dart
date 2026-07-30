@@ -53,7 +53,9 @@ void main() {
       await firestoreClear.close();
 
       final authClear = await client.deleteUrl(
-        Uri.parse('http://localhost:9099/emulator/v1/projects/$projectId/accounts'),
+        Uri.parse(
+          'http://localhost:9099/emulator/v1/projects/$projectId/accounts',
+        ),
       );
       await authClear.close();
     } finally {
@@ -72,7 +74,9 @@ void main() {
   }
 
   setUpAll(() async {
-    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
     auth = fb_auth.FirebaseAuth.instance;
     firestore = FirebaseFirestore.instance;
     await auth.useAuthEmulator('localhost', 9099);
@@ -92,25 +96,28 @@ void main() {
   });
 
   group('createTrip', () {
-    test('double tap with the same requestId creates exactly one trip', () async {
-      await signUpAndSignIn('organizer1@example.com', 'Aline Uwase');
-      const requestId = 'req-fixed-1';
+    test(
+      'double tap with the same requestId creates exactly one trip',
+      () async {
+        await signUpAndSignIn('organizer1@example.com', 'Aline Uwase');
+        const requestId = 'req-fixed-1';
 
-      final first = await tripRepo.createTrip(
-        name: 'Lake Kivu',
-        destination: 'Rubavu',
-        requestId: requestId,
-      );
-      final second = await tripRepo.createTrip(
-        name: 'Lake Kivu',
-        destination: 'Rubavu',
-        requestId: requestId,
-      );
+        final first = await tripRepo.createTrip(
+          name: 'Lake Kivu',
+          destination: 'Rubavu',
+          requestId: requestId,
+        );
+        final second = await tripRepo.createTrip(
+          name: 'Lake Kivu',
+          destination: 'Rubavu',
+          requestId: requestId,
+        );
 
-      expect(first.id, second.id);
-      final myTrips = await tripRepo.watchMyTrips().first;
-      expect(myTrips.where((t) => t.id == first.id).length, 1);
-    });
+        expect(first.id, second.id);
+        final myTrips = await tripRepo.watchMyTrips().first;
+        expect(myTrips.where((t) => t.id == first.id).length, 1);
+      },
+    );
 
     test('creates the organizer membership atomically with the trip', () async {
       await signUpAndSignIn('organizer2@example.com', 'Eric Habimana');
@@ -126,48 +133,54 @@ void main() {
   });
 
   group('joinTrip / invite redemption', () {
-    test('double tap after already joining is rejected, not double counted', () async {
-      await signUpAndSignIn('organizer3@example.com', 'Aline');
-      final trip = await tripRepo.createTrip(
-        name: 'Kivu',
-        destination: 'Rubavu',
-        requestId: 'req-join-1',
-      );
-      final invite = await tripRepo.createInvite(tripId: trip.id);
+    test(
+      'double tap after already joining is rejected, not double counted',
+      () async {
+        await signUpAndSignIn('organizer3@example.com', 'Aline');
+        final trip = await tripRepo.createTrip(
+          name: 'Kivu',
+          destination: 'Rubavu',
+          requestId: 'req-join-1',
+        );
+        final invite = await tripRepo.createInvite(tripId: trip.id);
 
-      await auth.signOut();
-      await signUpAndSignIn('joiner1@example.com', 'Eric');
+        await auth.signOut();
+        await signUpAndSignIn('joiner1@example.com', 'Eric');
 
-      await tripRepo.joinTrip(code: invite.code);
-      await expectLater(
-        tripRepo.joinTrip(code: invite.code),
-        throwsA(isA<AlreadyExistsError>()),
-      );
+        await tripRepo.joinTrip(code: invite.code);
+        await expectLater(
+          tripRepo.joinTrip(code: invite.code),
+          throwsA(isA<AlreadyExistsError>()),
+        );
 
-      final members = await tripRepo.watchMembers(trip.id).first;
-      expect(members.where((m) => m.displayName == 'Eric').length, 1);
-    });
+        final members = await tripRepo.watchMembers(trip.id).first;
+        expect(members.where((m) => m.displayName == 'Eric').length, 1);
+      },
+    );
 
-    test('a single-use code cannot be redeemed twice by different people', () async {
-      await signUpAndSignIn('organizer4@example.com', 'Aline');
-      final trip = await tripRepo.createTrip(
-        name: 'Kivu',
-        destination: 'Rubavu',
-        requestId: 'req-join-2',
-      );
-      final invite = await tripRepo.createInvite(tripId: trip.id, maxUses: 1);
+    test(
+      'a single-use code cannot be redeemed twice by different people',
+      () async {
+        await signUpAndSignIn('organizer4@example.com', 'Aline');
+        final trip = await tripRepo.createTrip(
+          name: 'Kivu',
+          destination: 'Rubavu',
+          requestId: 'req-join-2',
+        );
+        final invite = await tripRepo.createInvite(tripId: trip.id, maxUses: 1);
 
-      await auth.signOut();
-      await signUpAndSignIn('joiner2@example.com', 'Eric');
-      await tripRepo.joinTrip(code: invite.code);
+        await auth.signOut();
+        await signUpAndSignIn('joiner2@example.com', 'Eric');
+        await tripRepo.joinTrip(code: invite.code);
 
-      await auth.signOut();
-      await signUpAndSignIn('joiner3@example.com', 'Chantal');
-      await expectLater(
-        tripRepo.joinTrip(code: invite.code),
-        throwsA(isA<InvalidInputError>()),
-      );
-    });
+        await auth.signOut();
+        await signUpAndSignIn('joiner3@example.com', 'Chantal');
+        await expectLater(
+          tripRepo.joinTrip(code: invite.code),
+          throwsA(isA<InvalidInputError>()),
+        );
+      },
+    );
   });
 
   group('updateMemberRole', () {
@@ -220,37 +233,34 @@ void main() {
       );
     });
 
-    test(
-      'an organizer can leave once another organizer exists; '
-      'a double-tap leave afterwards fails gracefully',
-      () async {
-        await signUpAndSignIn('organizer7@example.com', 'Aline');
-        final trip = await tripRepo.createTrip(
-          name: 'Kivu',
-          destination: 'Rubavu',
-          requestId: 'req-leave-2',
-        );
-        final invite = await tripRepo.createInvite(tripId: trip.id);
+    test('an organizer can leave once another organizer exists; '
+        'a double-tap leave afterwards fails gracefully', () async {
+      await signUpAndSignIn('organizer7@example.com', 'Aline');
+      final trip = await tripRepo.createTrip(
+        name: 'Kivu',
+        destination: 'Rubavu',
+        requestId: 'req-leave-2',
+      );
+      final invite = await tripRepo.createInvite(tripId: trip.id);
 
-        await auth.signOut();
-        await signUpAndSignIn('member2@example.com', 'Eric');
-        await tripRepo.joinTrip(code: invite.code);
-        final memberUid = auth.currentUser!.uid;
+      await auth.signOut();
+      await signUpAndSignIn('member2@example.com', 'Eric');
+      await tripRepo.joinTrip(code: invite.code);
+      final memberUid = auth.currentUser!.uid;
 
-        await auth.signOut();
-        await signInAs('organizer7@example.com');
-        await tripRepo.updateMemberRole(
-          tripId: trip.id,
-          uid: memberUid,
-          role: TripRole.organizer,
-        );
+      await auth.signOut();
+      await signInAs('organizer7@example.com');
+      await tripRepo.updateMemberRole(
+        tripId: trip.id,
+        uid: memberUid,
+        role: TripRole.organizer,
+      );
 
-        await tripRepo.leaveTrip(trip.id);
-        // Second call: already left, so this must surface as a graceful
-        // AppError (no longer a member) rather than an unhandled exception.
-        await expectLater(tripRepo.leaveTrip(trip.id), throwsA(isA<AppError>()));
-      },
-    );
+      await tripRepo.leaveTrip(trip.id);
+      // Second call: already left, so this must surface as a graceful
+      // AppError (no longer a member) rather than an unhandled exception.
+      await expectLater(tripRepo.leaveTrip(trip.id), throwsA(isA<AppError>()));
+    });
 
     test('the last organizer cannot be demoted either', () async {
       await signUpAndSignIn('organizer8@example.com', 'Aline');
@@ -262,7 +272,11 @@ void main() {
       final uid = auth.currentUser!.uid;
 
       await expectLater(
-        tripRepo.updateMemberRole(tripId: trip.id, uid: uid, role: TripRole.member),
+        tripRepo.updateMemberRole(
+          tripId: trip.id,
+          uid: uid,
+          role: TripRole.member,
+        ),
         throwsA(isA<InvalidInputError>()),
       );
     });
