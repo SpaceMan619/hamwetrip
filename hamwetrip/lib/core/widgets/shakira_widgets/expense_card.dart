@@ -108,15 +108,16 @@ class ExpenseCard extends StatelessWidget {
                           ),
                           const SizedBox(height: 2),
                           Row(
-                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(
-                                'RWF ${expense.splitAmount.toStringAsFixed(0)} each',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: AppColors.muted,
+                              Flexible(
+                                child: Text(
+                                  'RWF ${expense.splitAmount.toStringAsFixed(0)} each',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: AppColors.muted,
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 4),
