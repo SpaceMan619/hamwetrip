@@ -154,12 +154,17 @@ class _SummaryBox extends StatelessWidget {
               style: const TextStyle(fontSize: 12, color: AppColors.muted),
             ),
             const SizedBox(height: 4),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-                color: textColor,
+            FittedBox(
+              alignment: Alignment.centerLeft,
+              fit: BoxFit.scaleDown,
+              child: Text(
+                value,
+                maxLines: 1,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: textColor,
+                ),
               ),
             ),
           ],
@@ -467,7 +472,7 @@ class _AddExpenseTabState extends State<_AddExpenseTab> {
                 )
                 .toList(),
           ),
-          const Spacer(),
+          const SizedBox(height: 24),
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(

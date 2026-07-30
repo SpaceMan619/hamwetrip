@@ -63,7 +63,9 @@ class SettlementCard extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  '\$${balance.amount.toStringAsFixed(2)}',
+                  'RWF ${balance.amount.toStringAsFixed(0)}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,

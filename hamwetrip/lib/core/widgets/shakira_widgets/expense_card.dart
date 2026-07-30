@@ -107,32 +107,34 @@ class ExpenseCard extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 2),
-                          Text(
-                            'RWF ${expense.splitAmount.toStringAsFixed(0)} each',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: AppColors.muted,
-                            ),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'RWF ${expense.splitAmount.toStringAsFixed(0)} each',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: AppColors.muted,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Icon(
+                                isSynced
+                                    ? Icons.cloud_done_outlined
+                                    : Icons.sync_problem_outlined,
+                                size: 15,
+                                color: isSynced
+                                    ? AppColors.mint
+                                    : AppColors.sunset,
+                              ),
+                            ],
                           ),
                         ],
                       ),
                     ),
                   ],
-                ),
-
-                // NEW: Clear "Sync Status" icon in the top right corner
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: Icon(
-                    isSynced
-                        ? Icons.cloud_done_outlined
-                        : Icons.sync_problem_outlined,
-                    size: 18,
-                    color: isSynced ? AppColors.mint : AppColors.sunset,
-                  ),
                 ),
               ],
             ),
