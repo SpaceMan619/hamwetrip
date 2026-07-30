@@ -577,6 +577,24 @@ class _TripDashboardBody extends ConsumerWidget {
               context,
             ).pushNamed(AppRoutes.activityFeed, arguments: tripId),
           ),
+          const SizedBox(height: 12),
+          _ActionTile(
+            icon: Icons.how_to_vote_outlined,
+            title: 'Group voting',
+            note: 'Make trip decisions together',
+            onTap: () => Navigator.of(
+              context,
+            ).pushNamed(AppRoutes.groupVoting, arguments: tripId),
+          ),
+          const SizedBox(height: 12),
+          _ActionTile(
+            icon: Icons.route_outlined,
+            title: 'Detailed itinerary',
+            note: 'See the plan day by day',
+            onTap: () => Navigator.of(
+              context,
+            ).pushNamed(AppRoutes.detailedItinerary, arguments: tripId),
+          ),
           if (isOrganizer) ...[
             const SizedBox(height: 12),
             _ActionTile(

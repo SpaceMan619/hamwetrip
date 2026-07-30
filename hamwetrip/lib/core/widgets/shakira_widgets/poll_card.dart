@@ -6,7 +6,7 @@ import 'poll_option_tile.dart';
 
 class PollCard extends StatelessWidget {
   final Poll poll;
-  final String? selectedOptionId;
+  final Set<String> selectedOptionIds;
   final bool hasVoted;
   final VoidCallback? onVote;
   final ValueChanged<String>? onOptionTap;
@@ -16,7 +16,7 @@ class PollCard extends StatelessWidget {
   const PollCard({
     super.key,
     required this.poll,
-    this.selectedOptionId,
+    this.selectedOptionIds = const {},
     this.hasVoted = false,
     this.onVote,
     this.onOptionTap,
@@ -41,7 +41,7 @@ class PollCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -74,7 +74,7 @@ class PollCard extends StatelessWidget {
                 child: PollOptionTile(
                   option: option,
                   totalVotes: poll.totalVotes,
-                  isSelected: selectedOptionId == option.id,
+                  isSelected: selectedOptionIds.contains(option.id),
                   showResults: hasVoted || !poll.isActive,
                   isEnabled: poll.isActive && !hasVoted,
                   onTap: onOptionTap != null
@@ -87,7 +87,8 @@ class PollCard extends StatelessWidget {
             _FooterRow(
               poll: poll,
               hasVoted: hasVoted,
-              canVote: selectedOptionId != null && !hasVoted && poll.isActive,
+              canVote:
+                  selectedOptionIds.isNotEmpty && !hasVoted && poll.isActive,
               onVote: onVote,
             ),
           ],

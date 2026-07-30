@@ -17,13 +17,16 @@ class WinnerCard extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.paleMint, AppColors.paleMint.withOpacity(0.3)],
+          colors: [
+            AppColors.paleMint,
+            AppColors.paleMint.withValues(alpha: 0.3),
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: AppColors.forest.withOpacity(0.2),
+          color: AppColors.forest.withValues(alpha: 0.2),
           width: 1.5,
         ),
       ),

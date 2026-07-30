@@ -27,7 +27,10 @@ class ResultOptionBar extends StatelessWidget {
         color: isWinner ? Colors.white : AppColors.warmSand,
         borderRadius: BorderRadius.circular(14),
         border: isWinner
-            ? Border.all(color: AppColors.forest.withOpacity(0.3), width: 1.5)
+            ? Border.all(
+                color: AppColors.forest.withValues(alpha: 0.3),
+                width: 1.5,
+              )
             : null,
       ),
       child: Column(
@@ -84,7 +87,7 @@ class ResultOptionBar extends StatelessWidget {
                     children: [
                       Container(
                         decoration: BoxDecoration(
-                          color: AppColors.line.withOpacity(0.3),
+                          color: AppColors.line.withValues(alpha: 0.3),
                           borderRadius: BorderRadius.circular(6),
                         ),
                       ),

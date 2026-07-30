@@ -14,6 +14,7 @@ class ExpenseSplittingScreen extends StatelessWidget {
   final void Function(Expense) onExpenseTap;
   final void Function(Balance) onSettleUp;
   final VoidCallback onRemindEveryone;
+  final VoidCallback onOpenMomoSummary;
   final Widget? bottomNavigation;
 
   const ExpenseSplittingScreen({
@@ -27,6 +28,7 @@ class ExpenseSplittingScreen extends StatelessWidget {
     required this.onExpenseTap,
     required this.onSettleUp,
     required this.onRemindEveryone,
+    required this.onOpenMomoSummary,
     this.bottomNavigation,
   });
 
@@ -41,6 +43,13 @@ class ExpenseSplittingScreen extends StatelessWidget {
           surfaceTintColor: Colors.transparent,
           elevation: 0,
           title: const Text('Expenses'),
+          actions: [
+            IconButton(
+              tooltip: 'MoMo payment summary',
+              onPressed: onOpenMomoSummary,
+              icon: const Icon(Icons.phone_android_outlined),
+            ),
+          ],
           bottom: const TabBar(
             indicatorColor: AppColors.forest,
             labelStyle: TextStyle(
@@ -48,7 +57,7 @@ class ExpenseSplittingScreen extends StatelessWidget {
               color: AppColors.ink,
             ),
             unselectedLabelStyle: TextStyle(color: AppColors.muted),
-            tabs: const [
+            tabs: [
               Tab(text: 'History'),
               Tab(text: 'Add Expense'),
               Tab(text: 'Settlements'),
@@ -207,7 +216,7 @@ class _SettlementsTab extends StatelessWidget {
       return const Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: const [
+          children: [
             Icon(Icons.check_circle_outline, size: 64, color: AppColors.forest),
             SizedBox(height: 16),
             Text(
@@ -370,7 +379,7 @@ class _AddExpenseTabState extends State<_AddExpenseTab> {
                   ),
                   decoration: BoxDecoration(
                     color: _selectedCategory == cat
-                        ? AppColors.forest.withOpacity(0.1)
+                        ? AppColors.forest.withValues(alpha: 0.1)
                         : Colors.transparent,
                     borderRadius: BorderRadius.circular(10),
                     border: _selectedCategory == cat
@@ -473,7 +482,7 @@ class _AddExpenseTabState extends State<_AddExpenseTab> {
                     SizedBox(width: 8),
                     Text(
                       'Pay via MoMo',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w600,
                         color: AppColors.ink,
                       ),
@@ -482,7 +491,7 @@ class _AddExpenseTabState extends State<_AddExpenseTab> {
                 ),
                 Switch(
                   value: _payViaMoMo,
-                  activeColor: AppColors.forest,
+                  activeThumbColor: AppColors.forest,
                   onChanged: (val) => setState(() => _payViaMoMo = val),
                 ),
               ],

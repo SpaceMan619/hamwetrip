@@ -73,7 +73,7 @@ class DocumentVaultScreen extends StatelessWidget {
                       SizedBox(height: 4),
                       // NEW: Storage Stats matching Figma
                       Row(
-                        children: const [
+                        children: [
                           Icon(
                             Icons.fingerprint,
                             color: AppColors.forest,
@@ -134,7 +134,7 @@ class DocumentVaultScreen extends StatelessWidget {
                       label: Text(category),
                       selected: selectedCategory == category,
                       onSelected: (_) => onCategoryChanged(category),
-                      selectedColor: AppColors.forest.withOpacity(0.1),
+                      selectedColor: AppColors.forest.withValues(alpha: 0.1),
                       labelStyle: TextStyle(
                         color: selectedCategory == category
                             ? AppColors.forest

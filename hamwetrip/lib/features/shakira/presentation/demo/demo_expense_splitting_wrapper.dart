@@ -117,6 +117,9 @@ class _DemoExpenseSplittingWrapperState
           ),
         );
       },
+      onOpenMomoSummary: () {
+        Navigator.of(context).pushNamed(AppRoutes.momoSummary);
+      },
     );
   }
 }
