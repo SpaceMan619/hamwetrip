@@ -314,6 +314,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (view.error case final error?) showAppErrorSnackBar(context, error);
   }
 
+  Future<void> _signInWithGoogle() async {
+    final controller = ref.read(authControllerProvider.notifier);
+    final ok = await controller.signInWithGoogle();
+
+    if (!mounted) return;
+    if (ok) {
+      Navigator.of(context).pushReplacementNamed(AppRoutes.home);
+      return;
+    }
+    final view = ref.read(authControllerProvider).view;
+    if (view.error case final error?) showAppErrorSnackBar(context, error);
+  }
+
   Future<void> _forgotPassword() async {
     final email = _emailController.text.trim();
     if (email.isEmpty) {
@@ -419,6 +432,42 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ),
                           )
                         : Text(_isSignUp ? 'Create account' : 'Sign in'),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Row(
+                  children: [
+                    const Expanded(child: Divider(color: AppColors.line)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Text(
+                        'or',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.muted,
+                        ),
+                      ),
+                    ),
+                    const Expanded(child: Divider(color: AppColors.line)),
+                  ],
+                ),
+                const SizedBox(height: 18),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: isSubmitting ? null : _signInWithGoogle,
+                    icon: const Icon(
+                      Icons.account_circle_outlined,
+                      color: AppColors.forest,
+                    ),
+                    label: const Text('Continue with Google'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.forest,
+                      side: const BorderSide(color: AppColors.line),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 10),

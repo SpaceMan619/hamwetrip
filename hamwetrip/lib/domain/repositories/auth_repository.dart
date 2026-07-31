@@ -37,6 +37,16 @@ abstract interface class AuthRepository {
     required String displayName,
   });
 
+  /// Signs in with a Google account, the app's second authentication method.
+  ///
+  /// Creates the `users/{uid}` profile on first use, taking the name and photo
+  /// from the Google account, so a member who only ever uses this route still
+  /// appears properly in a trip's member list.
+  ///
+  /// Throws [AuthError] if the person dismisses the account chooser, which is a
+  /// cancellation rather than a failure and should be reported quietly.
+  Future<AuthUser> signInWithGoogle();
+
   Future<void> signOut();
 
   /// Beyond the guide's minimum four methods, but the login screen needs
