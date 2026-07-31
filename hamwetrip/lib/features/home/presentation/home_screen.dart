@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/app_routes.dart';
+import '../../../core/preferences/app_preferences.dart';
 import '../../../core/state/view_state.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/util/date_format.dart';
@@ -27,8 +28,15 @@ class HomeScreen extends ConsumerWidget {
     };
 
     final tripsState = ref.watch(myTripsControllerProvider);
+    // Reopen whatever this device was last looking at, falling back to the most
+    // recent trip. Someone who belongs to several trips should come back to the
+    // one they were working on, not to whichever happens to sort first.
+    final rememberedTripId = ref.read(appPreferencesProvider).lastOpenedTripId;
     final activeTrip = switch (tripsState.view) {
-      ViewData(:final data) when data.isNotEmpty => data.first,
+      ViewData(:final data) when data.isNotEmpty => data.firstWhere(
+        (trip) => trip.id == rememberedTripId,
+        orElse: () => data.first,
+      ),
       _ => null,
     };
 
@@ -85,9 +93,14 @@ class HomeScreen extends ConsumerWidget {
                     // settled.
                     ledgerBalance: 0,
                   ),
-                  onOpenItinerary: () => Navigator.of(
-                    context,
-                  ).pushNamed(AppRoutes.dashboard, arguments: activeTrip.id),
+                  onOpenItinerary: () {
+                    ref
+                        .read(appPreferencesProvider)
+                        .setLastOpenedTripId(activeTrip.id);
+                    Navigator.of(
+                      context,
+                    ).pushNamed(AppRoutes.dashboard, arguments: activeTrip.id);
+                  },
                 ),
               const SizedBox(height: 28),
               const _SectionHeading(title: 'Upcoming Trips'),
