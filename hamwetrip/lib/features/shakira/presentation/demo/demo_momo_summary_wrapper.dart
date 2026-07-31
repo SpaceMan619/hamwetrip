@@ -79,7 +79,7 @@ class _DemoMomoSummaryWrapperState
       ),
       onPayNow: (tx) async {
         await _controller.payNow(tx.id);
-        if (!mounted) return;
+        if (!context.mounted) return;
         if (_controller.hasError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -103,7 +103,7 @@ class _DemoMomoSummaryWrapperState
       },
       onRequest: (tx) async {
         await _controller.requestPayment(tx.id);
-        if (!mounted) return;
+        if (!context.mounted) return;
         if (_controller.hasError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

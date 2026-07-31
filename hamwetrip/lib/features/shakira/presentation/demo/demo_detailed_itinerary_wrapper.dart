@@ -77,7 +77,7 @@ class _DemoDetailedItineraryWrapperState
       onEditItem: (item) async {
         await _controller.toggleItemCompletion(item.id);
 
-        if (!mounted) return;
+        if (!context.mounted) return;
         final isNowCompleted = _controller.isItemCompleted(item.id);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

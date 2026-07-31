@@ -102,7 +102,7 @@ class _DemoGroupVotingWrapperState
       },
       onVote: (pollId) async {
         final success = await _controller.submitVote(pollId);
-        if (!mounted) return;
+        if (!context.mounted) return;
         if (success) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -131,7 +131,7 @@ class _DemoGroupVotingWrapperState
       },
       onClosePoll: (pollId) async {
         await _controller.closePoll(pollId);
-        if (!mounted) return;
+        if (!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
