@@ -18,6 +18,7 @@ class SettlementConfirmationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // confirm a payment using route arguments supplied by the settlement flow.
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(

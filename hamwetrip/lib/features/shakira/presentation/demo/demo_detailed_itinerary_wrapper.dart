@@ -32,6 +32,7 @@ class _DemoDetailedItineraryWrapperState
 
   @override
   Widget build(BuildContext context) {
+    // connect local itinerary state to the timeline screen.
     return DetailedItineraryScreen(
       days: _controller.days,
       bottomNavigation: const HamweBottomNavigation(

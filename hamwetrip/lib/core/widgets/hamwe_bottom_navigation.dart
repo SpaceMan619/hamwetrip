@@ -19,6 +19,7 @@ class HamweBottomNavigation extends StatelessWidget {
   ];
 
   void _open(BuildContext context, HamweDestination destination) {
+    // map the selected pill item to its feature route.
     if (destination == selected) return;
 
     // ✅ UPDATED: Now maps Ledger and Vault to the real Shakira screens
@@ -35,6 +36,7 @@ class HamweBottomNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // keep the floating pill safe above the phone home indicator.
     return SafeArea(
       minimum: const EdgeInsets.fromLTRB(16, 0, 16, 14),
       child: Container(

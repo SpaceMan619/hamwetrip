@@ -35,6 +35,7 @@ class ExpenseSplittingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // keep the three ledger views on one tab controller.
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -184,6 +185,7 @@ class _ExpensesTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // render the supplied history list without owning its data source.
     if (expenses.isEmpty) {
       return const Center(
         child: Text(
@@ -219,6 +221,7 @@ class _SettlementsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // render pending balances and send settlement actions to the wrapper.
     if (balances.isEmpty) {
       return const Center(
         child: Column(
@@ -299,6 +302,7 @@ class _AddExpenseTabState extends State<_AddExpenseTab> {
 
   @override
   Widget build(BuildContext context) {
+    // collect a new expense before passing the save action upward.
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Column(

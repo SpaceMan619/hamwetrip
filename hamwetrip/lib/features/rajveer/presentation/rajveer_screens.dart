@@ -446,6 +446,7 @@ class TripDashboardScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // show the selected trip and expose its connected feature screens.
     final routeTripId = _tripIdArgument(context);
     if (routeTripId != null) return _TripDashboardBody(tripId: routeTripId);
 

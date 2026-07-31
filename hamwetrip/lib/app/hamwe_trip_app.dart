@@ -19,6 +19,7 @@ class HamweTripApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // set up the shared app shell and route table.
     return MaterialApp(
       title: 'HamweTrip',
       debugShowCheckedModeBanner: false,
@@ -31,6 +32,7 @@ class HamweTripApp extends StatelessWidget {
   // Top-level destinations behave like a workspace switch: no misleading
   // horizontal page slide when the floating navigation pill is used.
   static Route<dynamic> _routeFor(RouteSettings settings) {
+    // build each screen without a slide when switching destinations.
     final Widget page = switch (settings.name) {
       AppRoutes.home => const HomeScreen(),
       AppRoutes.onboarding => const OnboardingScreen(),

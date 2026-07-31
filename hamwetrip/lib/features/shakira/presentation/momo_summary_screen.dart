@@ -29,6 +29,7 @@ class MomoSummaryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // show payment history and let the integration layer handle actions.
     return DefaultTabController(
       length: 2,
       child: Scaffold(

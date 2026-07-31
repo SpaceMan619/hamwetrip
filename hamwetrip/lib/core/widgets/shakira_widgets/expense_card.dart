@@ -17,6 +17,7 @@ class ExpenseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // keep expense details readable on narrow phone widths.
     return Padding(
       padding: const EdgeInsets.only(bottom: 12), // High-density 12px padding
       child: Material(

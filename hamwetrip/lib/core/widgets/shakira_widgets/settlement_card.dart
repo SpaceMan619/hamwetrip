@@ -12,6 +12,7 @@ class SettlementCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // show who owes whom and expose the integration callback.
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),

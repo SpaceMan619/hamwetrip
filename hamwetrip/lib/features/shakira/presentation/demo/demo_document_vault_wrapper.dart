@@ -118,6 +118,7 @@ class _DemoDocumentVaultWrapperState extends State<DemoDocumentVaultWrapper> {
 
   @override
   Widget build(BuildContext context) {
+    // connect local document actions to the reusable vault screen.
     return DocumentVaultScreen(
       documents: _controller.documents,
       selectedCategory: _controller.currentCategory,

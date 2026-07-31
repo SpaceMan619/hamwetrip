@@ -39,6 +39,7 @@ class _DemoExpenseSplittingWrapperState
 
   @override
   Widget build(BuildContext context) {
+    // connect local demo ledger state to the reusable expense screen.
     // Calculate what "you" (RM) owe and are owed based on balances
     double youOwe = 0;
     double youAreOwed = 0;

@@ -31,6 +31,7 @@ class GroupVotingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // display polls from the controller and forward vote decisions upward.
     return DefaultTabController(
       length: 2,
       child: Scaffold(

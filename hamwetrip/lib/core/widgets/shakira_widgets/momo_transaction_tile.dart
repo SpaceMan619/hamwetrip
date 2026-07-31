@@ -14,6 +14,7 @@ class MomoTransactionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // show one payment and keep pending actions optional.
     final isSend = transaction.type == MomoType.send;
     final isPending = transaction.status == MomoStatus.pending;
 

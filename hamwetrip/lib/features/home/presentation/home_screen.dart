@@ -16,6 +16,7 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // read the current user and first active trip for the home summary.
     final textTheme = Theme.of(context).textTheme;
 
     final profileState = ref.watch(currentUserProfileProvider);

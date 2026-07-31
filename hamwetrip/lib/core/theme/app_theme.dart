@@ -4,6 +4,7 @@ import 'app_colors.dart';
 
 abstract final class AppTheme {
   static ThemeData get light {
+    // keep typography, surfaces, and controls on one visual system.
     const scheme = ColorScheme.light(
       primary: AppColors.forest,
       onPrimary: Colors.white,

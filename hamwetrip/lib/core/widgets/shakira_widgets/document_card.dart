@@ -40,6 +40,7 @@ class DocumentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // keep document metadata and offline status inside one reusable card.
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,

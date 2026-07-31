@@ -43,6 +43,7 @@ class ItineraryItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // render one timeline item with safe text wrapping.
     return Container(
       margin: const EdgeInsets.only(bottom: 12), // High-density 12px padding
       decoration: BoxDecoration(

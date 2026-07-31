@@ -11,6 +11,7 @@ class DemoPollResultsWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // provide a selected poll to the results screen.
     // 1. Grab the Poll passed from the Group Voting Screen
     final poll =
         ModalRoute.of(context)?.settings.arguments as Poll? ??

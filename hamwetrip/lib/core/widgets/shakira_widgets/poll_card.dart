@@ -34,6 +34,7 @@ class PollCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // display one poll and its current voting controls.
     Widget cardUI = Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(

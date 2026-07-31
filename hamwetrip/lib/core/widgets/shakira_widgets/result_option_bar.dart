@@ -20,6 +20,7 @@ class ResultOptionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // turn vote counts into a compact result bar.
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),

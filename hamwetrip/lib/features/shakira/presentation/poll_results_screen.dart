@@ -27,6 +27,7 @@ class PollResultsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // present the final vote split for one selected poll.
     final sortedOptions = List<PollOption>.from(poll.options)
       ..sort((a, b) => b.voteCount.compareTo(a.voteCount));
 

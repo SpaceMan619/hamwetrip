@@ -23,6 +23,7 @@ class DetailedItineraryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // render days as a timeline and leave editing to the parent controller.
     return Scaffold(
       backgroundColor: AppColors.warmSand,
       appBar: AppBar(

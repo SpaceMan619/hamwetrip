@@ -30,6 +30,7 @@ class _DemoGroupVotingWrapperState extends State<DemoGroupVotingWrapper> {
 
   @override
   Widget build(BuildContext context) {
+    // connect the demo voting controller to the voting screen.
     final activePolls = _controller.polls
         .where((s) => !s.isClosed && s.poll.isActive)
         .map((s) => s.displayPoll)

@@ -32,6 +32,7 @@ class DocumentVaultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // show offline documents while keeping upload and search as callbacks.
     return Scaffold(
       backgroundColor: AppColors.warmSand,
       appBar: AppBar(

@@ -30,6 +30,7 @@ class _DemoMomoSummaryWrapperState extends State<DemoMomoSummaryWrapper> {
 
   @override
   Widget build(BuildContext context) {
+    // connect local payment state to the summary screen.
     return MomoSummaryScreen(
       toSend: _controller.toSend,
       toReceive: _controller.toReceive,

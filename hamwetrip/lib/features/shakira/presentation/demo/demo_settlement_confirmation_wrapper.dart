@@ -54,6 +54,7 @@ class _DemoSettlementConfirmationWrapperState
 
   @override
   Widget build(BuildContext context) {
+    // provide safe demo route arguments to the confirmation screen.
     return SettlementConfirmationScreen(
       args: _args,
       isProcessing: _isProcessing,

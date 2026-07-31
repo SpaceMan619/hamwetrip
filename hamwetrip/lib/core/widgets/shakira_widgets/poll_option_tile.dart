@@ -25,6 +25,7 @@ class PollOptionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // show one selectable option and its vote state.
     return GestureDetector(
       onTap: isEnabled ? onTap : null,
       child: AnimatedContainer(
