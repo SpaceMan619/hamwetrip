@@ -5,18 +5,30 @@ import '../../../../core/providers/repository_providers.dart';
 import '../momo_summary_screen.dart';
 import 'controllers/demo_momo_controller.dart';
 import '../../../../core/widgets/hamwe_bottom_navigation.dart';
+import '../../../../core/widgets/trip_scoped.dart';
 
 /// Wires up MoMo data from Firestore to the pure UI screen.
-class DemoMomoSummaryWrapper extends ConsumerStatefulWidget {
+class DemoMomoSummaryWrapper extends StatelessWidget {
   const DemoMomoSummaryWrapper({super.key});
 
   @override
-  ConsumerState<DemoMomoSummaryWrapper> createState() =>
+  Widget build(BuildContext context) => TripScoped(
+    builder: (tripId) =>
+        _MomoSummaryView(key: ValueKey(tripId), tripId: tripId),
+  );
+}
+
+class _MomoSummaryView extends ConsumerStatefulWidget {
+  const _MomoSummaryView({super.key, required this.tripId});
+
+  final String tripId;
+
+  @override
+  ConsumerState<_MomoSummaryView> createState() =>
       _DemoMomoSummaryWrapperState();
 }
 
-class _DemoMomoSummaryWrapperState
-    extends ConsumerState<DemoMomoSummaryWrapper> {
+class _DemoMomoSummaryWrapperState extends ConsumerState<_MomoSummaryView> {
   late final DemoMomoController _controller;
 
   @override
@@ -24,6 +36,7 @@ class _DemoMomoSummaryWrapperState
     super.initState();
     _controller = DemoMomoController(
       repository: ref.read(momoRepositoryProvider),
+      tripId: widget.tripId,
     );
     _controller.addListener(() => setState(() {}));
   }

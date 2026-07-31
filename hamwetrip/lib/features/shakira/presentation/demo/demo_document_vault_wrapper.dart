@@ -6,18 +6,30 @@ import '../../../../data/models/document.dart';
 import '../document_vault_screen.dart';
 import 'controllers/demo_document_controller.dart';
 import '../../../../core/widgets/hamwe_bottom_navigation.dart';
+import '../../../../core/widgets/trip_scoped.dart';
 
 /// Wires up document data from Firestore to the pure UI screen.
-class DemoDocumentVaultWrapper extends ConsumerStatefulWidget {
+class DemoDocumentVaultWrapper extends StatelessWidget {
   const DemoDocumentVaultWrapper({super.key});
 
   @override
-  ConsumerState<DemoDocumentVaultWrapper> createState() =>
+  Widget build(BuildContext context) => TripScoped(
+    builder: (tripId) =>
+        _DocumentVaultView(key: ValueKey(tripId), tripId: tripId),
+  );
+}
+
+class _DocumentVaultView extends ConsumerStatefulWidget {
+  const _DocumentVaultView({super.key, required this.tripId});
+
+  final String tripId;
+
+  @override
+  ConsumerState<_DocumentVaultView> createState() =>
       _DemoDocumentVaultWrapperState();
 }
 
-class _DemoDocumentVaultWrapperState
-    extends ConsumerState<DemoDocumentVaultWrapper> {
+class _DemoDocumentVaultWrapperState extends ConsumerState<_DocumentVaultView> {
   late final DemoDocumentController _controller;
 
   @override
@@ -25,6 +37,7 @@ class _DemoDocumentVaultWrapperState
     super.initState();
     _controller = DemoDocumentController(
       repository: ref.read(documentRepositoryProvider),
+      tripId: widget.tripId,
     );
     _controller.addListener(() => setState(() {}));
   }

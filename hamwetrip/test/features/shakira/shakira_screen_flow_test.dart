@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hamwetrip/app/app_routes.dart';
+import 'package:hamwetrip/core/preferences/app_preferences.dart';
 import 'package:hamwetrip/core/providers/repository_providers.dart';
+import 'package:hamwetrip/data/mock/mock_backend.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hamwetrip/core/widgets/shakira_widgets/poll_option_tile.dart';
 import 'package:hamwetrip/data/models/expense.dart';
 import 'package:hamwetrip/data/models/settlement_args.dart';
@@ -11,7 +14,28 @@ import 'package:hamwetrip/features/shakira/presentation/demo/demo_group_voting_w
 import 'package:hamwetrip/features/shakira/presentation/demo/demo_poll_results_wrapper.dart';
 import 'package:hamwetrip/features/shakira/presentation/demo/demo_settlement_confirmation_wrapper.dart';
 
+late AppPreferences testPreferences;
+
+/// The Shakira screens resolve which trip to show before building, so a test
+/// that pumps one needs a signed-in account with a trip. Without these the
+/// wrapper stops at its "create or join a trip first" state and the screen
+/// under test is never built.
+List<Override> tripScopeOverrides() => [
+  useMockRepositoriesProvider.overrideWithValue(true),
+  appPreferencesProvider.overrideWithValue(testPreferences),
+  mockBackendProvider.overrideWith((ref) {
+    final backend = MockBackend.seeded(latency: Duration.zero);
+    ref.onDispose(backend.dispose);
+    return backend;
+  }),
+];
+
 void main() {
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    testPreferences = AppPreferences(await SharedPreferences.getInstance());
+  });
+
   testWidgets('an option can be selected and submitted as a vote', (
     tester,
   ) async {
@@ -24,12 +48,15 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [pollRepositoryProvider.overrideWithValue(mockRepo)],
+        overrides: [
+          pollRepositoryProvider.overrideWithValue(mockRepo),
+          ...tripScopeOverrides(),
+        ],
         child: const MaterialApp(home: DemoGroupVotingWrapper()),
       ),
     );
     // Allow the stream to emit and loading to finish.
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pumpAndSettle();
 
     await tester.tap(find.text('Friday afternoon').first);
     await tester.pump();
@@ -63,12 +90,15 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [pollRepositoryProvider.overrideWithValue(mockRepo)],
+        overrides: [
+          pollRepositoryProvider.overrideWithValue(mockRepo),
+          ...tripScopeOverrides(),
+        ],
         child: const MaterialApp(home: DemoGroupVotingWrapper()),
       ),
     );
     // Allow the stream to emit and loading to finish.
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pumpAndSettle();
 
     await tester.tap(find.text('Visit Kimironko Market').first);
     await tester.pump();

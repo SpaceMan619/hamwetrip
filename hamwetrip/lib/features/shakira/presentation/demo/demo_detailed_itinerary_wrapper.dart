@@ -5,18 +5,31 @@ import '../../../../core/providers/repository_providers.dart';
 import '../detailed_itinerary_screen.dart';
 import 'controllers/demo_itinerary_controller.dart';
 import '../../../../core/widgets/hamwe_bottom_navigation.dart';
+import '../../../../core/widgets/trip_scoped.dart';
 
 /// Wires up itinerary data from Firestore to the pure UI screen.
-class DemoDetailedItineraryWrapper extends ConsumerStatefulWidget {
+class DemoDetailedItineraryWrapper extends StatelessWidget {
   const DemoDetailedItineraryWrapper({super.key});
 
   @override
-  ConsumerState<DemoDetailedItineraryWrapper> createState() =>
+  Widget build(BuildContext context) => TripScoped(
+    builder: (tripId) =>
+        _DetailedItineraryView(key: ValueKey(tripId), tripId: tripId),
+  );
+}
+
+class _DetailedItineraryView extends ConsumerStatefulWidget {
+  const _DetailedItineraryView({super.key, required this.tripId});
+
+  final String tripId;
+
+  @override
+  ConsumerState<_DetailedItineraryView> createState() =>
       _DemoDetailedItineraryWrapperState();
 }
 
 class _DemoDetailedItineraryWrapperState
-    extends ConsumerState<DemoDetailedItineraryWrapper> {
+    extends ConsumerState<_DetailedItineraryView> {
   late final DemoItineraryController _controller;
 
   @override
@@ -24,6 +37,7 @@ class _DemoDetailedItineraryWrapperState
     super.initState();
     _controller = DemoItineraryController(
       repository: ref.read(itineraryRepositoryProvider),
+      tripId: widget.tripId,
     );
     _controller.addListener(() => setState(() {}));
   }

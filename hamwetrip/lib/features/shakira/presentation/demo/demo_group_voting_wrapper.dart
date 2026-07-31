@@ -6,17 +6,29 @@ import '../../../../app/app_routes.dart';
 import '../group_voting_screen.dart';
 import 'controllers/demo_voting_controller.dart';
 import '../../../../core/widgets/hamwe_bottom_navigation.dart';
+import '../../../../core/widgets/trip_scoped.dart';
 
-class DemoGroupVotingWrapper extends ConsumerStatefulWidget {
+class DemoGroupVotingWrapper extends StatelessWidget {
   const DemoGroupVotingWrapper({super.key});
 
   @override
-  ConsumerState<DemoGroupVotingWrapper> createState() =>
+  Widget build(BuildContext context) => TripScoped(
+    builder: (tripId) =>
+        _GroupVotingView(key: ValueKey(tripId), tripId: tripId),
+  );
+}
+
+class _GroupVotingView extends ConsumerStatefulWidget {
+  const _GroupVotingView({super.key, required this.tripId});
+
+  final String tripId;
+
+  @override
+  ConsumerState<_GroupVotingView> createState() =>
       _DemoGroupVotingWrapperState();
 }
 
-class _DemoGroupVotingWrapperState
-    extends ConsumerState<DemoGroupVotingWrapper> {
+class _DemoGroupVotingWrapperState extends ConsumerState<_GroupVotingView> {
   late final DemoVotingController _controller;
 
   @override
@@ -24,6 +36,7 @@ class _DemoGroupVotingWrapperState
     super.initState();
     _controller = DemoVotingController(
       repository: ref.read(pollRepositoryProvider),
+      tripId: widget.tripId,
       voterInitials: 'ME',
     );
     _controller.addListener(() => setState(() {}));

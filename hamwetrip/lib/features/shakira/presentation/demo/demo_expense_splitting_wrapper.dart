@@ -7,18 +7,31 @@ import '../../../../data/models/settlement_args.dart';
 import '../expense_splitting_screen.dart';
 import 'controllers/demo_expense_controller.dart';
 import '../../../../core/widgets/hamwe_bottom_navigation.dart';
+import '../../../../core/widgets/trip_scoped.dart';
 
 /// Wires up expense data from Firestore to the pure UI screen.
-class DemoExpenseSplittingWrapper extends ConsumerStatefulWidget {
+class DemoExpenseSplittingWrapper extends StatelessWidget {
   const DemoExpenseSplittingWrapper({super.key});
 
   @override
-  ConsumerState<DemoExpenseSplittingWrapper> createState() =>
+  Widget build(BuildContext context) => TripScoped(
+    builder: (tripId) =>
+        _ExpenseSplittingView(key: ValueKey(tripId), tripId: tripId),
+  );
+}
+
+class _ExpenseSplittingView extends ConsumerStatefulWidget {
+  const _ExpenseSplittingView({super.key, required this.tripId});
+
+  final String tripId;
+
+  @override
+  ConsumerState<_ExpenseSplittingView> createState() =>
       _DemoExpenseSplittingWrapperState();
 }
 
 class _DemoExpenseSplittingWrapperState
-    extends ConsumerState<DemoExpenseSplittingWrapper> {
+    extends ConsumerState<_ExpenseSplittingView> {
   late final DemoExpenseController _controller;
 
   // Current demo user is RM (Rajveer Malik)
@@ -29,6 +42,7 @@ class _DemoExpenseSplittingWrapperState
     super.initState();
     _controller = DemoExpenseController(
       repository: ref.read(expenseRepositoryProvider),
+      tripId: widget.tripId,
     );
     _controller.addListener(() => setState(() {}));
   }
