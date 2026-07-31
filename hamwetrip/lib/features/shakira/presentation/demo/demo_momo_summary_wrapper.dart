@@ -1,24 +1,30 @@
 import 'package:flutter/material.dart';
-import '../../../../../core/theme/app_colors.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/providers/repository_providers.dart';
 import '../momo_summary_screen.dart';
 import 'controllers/demo_momo_controller.dart';
-import '../../../../../core/widgets/hamwe_bottom_navigation.dart';
+import '../../../../core/widgets/hamwe_bottom_navigation.dart';
 
-/// Wires up mock MoMo data to your pure UI screen.
-class DemoMomoSummaryWrapper extends StatefulWidget {
+/// Wires up MoMo data from Firestore to the pure UI screen.
+class DemoMomoSummaryWrapper extends ConsumerStatefulWidget {
   const DemoMomoSummaryWrapper({super.key});
 
   @override
-  State<DemoMomoSummaryWrapper> createState() => _DemoMomoSummaryWrapperState();
+  ConsumerState<DemoMomoSummaryWrapper> createState() =>
+      _DemoMomoSummaryWrapperState();
 }
 
-class _DemoMomoSummaryWrapperState extends State<DemoMomoSummaryWrapper> {
+class _DemoMomoSummaryWrapperState
+    extends ConsumerState<DemoMomoSummaryWrapper> {
   late final DemoMomoController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = DemoMomoController();
+    _controller = DemoMomoController(
+      repository: ref.read(momoRepositoryProvider),
+    );
     _controller.addListener(() => setState(() {}));
   }
 
@@ -30,6 +36,39 @@ class _DemoMomoSummaryWrapperState extends State<DemoMomoSummaryWrapper> {
 
   @override
   Widget build(BuildContext context) {
+    // Loading state
+    if (_controller.isLoading) {
+      return const Scaffold(
+        backgroundColor: AppColors.warmSand,
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    // Error state
+    if (_controller.hasError) {
+      return Scaffold(
+        backgroundColor: AppColors.warmSand,
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.error_outline, size: 48, color: Colors.red),
+              const SizedBox(height: 16),
+              Text(
+                _controller.error?.message ?? 'Something went wrong',
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              FilledButton(
+                onPressed: _controller.retry,
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return MomoSummaryScreen(
       toSend: _controller.toSend,
       toReceive: _controller.toReceive,
@@ -38,43 +77,59 @@ class _DemoMomoSummaryWrapperState extends State<DemoMomoSummaryWrapper> {
       bottomNavigation: const HamweBottomNavigation(
         selected: HamweDestination.ledger,
       ),
-
-      // Fixes "Empty Handler" - Pay Now button in "To Send" tab
-      onPayNow: (tx) {
-        _controller.payNow(tx.id);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Sent ${tx.amount.toStringAsFixed(0)} RWF to ${tx.name} via MoMo! (Demo)',
+      onPayNow: (tx) async {
+        await _controller.payNow(tx.id);
+        if (!context.mounted) return;
+        if (_controller.hasError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                _controller.error?.message ?? 'Failed to send payment',
+              ),
+              behavior: SnackBarBehavior.floating,
             ),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: AppColors.forest,
-          ),
-        );
-      },
-
-      // Fixes "Empty Handler" - Request button in "To Receive" tab
-      onRequest: (tx) {
-        _controller.requestPayment(tx.id);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'MoMo request sent to ${tx.name} for ${tx.amount.toStringAsFixed(0)} RWF! (Demo)',
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Sent ${tx.amount.toStringAsFixed(0)} RWF to ${tx.name} via MoMo!',
+              ),
+              behavior: SnackBarBehavior.floating,
+              backgroundColor: AppColors.forest,
             ),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: AppColors.forest,
-          ),
-        );
+          );
+        }
       },
-
-      // Fixes "Empty Handler" - FAB
+      onRequest: (tx) async {
+        await _controller.requestPayment(tx.id);
+        if (!context.mounted) return;
+        if (_controller.hasError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                _controller.error?.message ?? 'Failed to request payment',
+              ),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'MoMo request sent to ${tx.name} for ${tx.amount.toStringAsFixed(0)} RWF!',
+              ),
+              behavior: SnackBarBehavior.floating,
+              backgroundColor: AppColors.forest,
+            ),
+          );
+        }
+      },
       fabLabel: 'Send Request',
       onFabTap: () {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text(
-              'Send new request form will be available after backend integration',
-            ),
+            content: Text('Send new request form coming soon'),
             behavior: SnackBarBehavior.floating,
           ),
         );

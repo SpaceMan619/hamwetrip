@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hamwetrip/app/app_routes.dart';
+import 'package:hamwetrip/core/providers/repository_providers.dart';
 import 'package:hamwetrip/core/widgets/shakira_widgets/poll_option_tile.dart';
 import 'package:hamwetrip/data/models/expense.dart';
 import 'package:hamwetrip/data/models/settlement_args.dart';
+import 'package:hamwetrip/data/mock/mock_poll_repository.dart';
 import 'package:hamwetrip/features/shakira/presentation/demo/demo_group_voting_wrapper.dart';
 import 'package:hamwetrip/features/shakira/presentation/demo/demo_poll_results_wrapper.dart';
 import 'package:hamwetrip/features/shakira/presentation/demo/demo_settlement_confirmation_wrapper.dart';
@@ -17,16 +20,35 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
 
-    await tester.pumpWidget(const MaterialApp(home: DemoGroupVotingWrapper()));
+    final mockRepo = MockPollRepository();
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [pollRepositoryProvider.overrideWithValue(mockRepo)],
+        child: const MaterialApp(home: DemoGroupVotingWrapper()),
+      ),
+    );
+    // Allow the stream to emit and loading to finish.
+    await tester.pump(const Duration(milliseconds: 100));
 
     await tester.tap(find.text('Friday afternoon').first);
     await tester.pump();
-    expect(find.widgetWithText(FilledButton, 'Vote'), findsOneWidget);
 
+    expect(find.widgetWithText(FilledButton, 'Vote'), findsOneWidget);
     await tester.tap(find.widgetWithText(FilledButton, 'Vote'));
-    await tester.pump();
-    expect(find.text('Voted'), findsOneWidget);
+    await tester.pumpAndSettle();
+
+    // The success message is shown on the tab the vote was cast from.
     expect(find.textContaining('Vote recorded successfully'), findsOneWidget);
+
+    // Voting moves the poll off the Active tab: the wrapper files a poll under
+    // closedPolls as soon as hasVoted is true, and the screen renders the two
+    // lists as separate tabs. TabBarView only builds the visible page, so the
+    // "Voted" pill is not in the tree until the Closed tab is shown.
+    await tester.tap(find.text('Closed'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Voted'), findsOneWidget);
   });
 
   testWidgets('multiple options remain selected before submitting', (
@@ -37,7 +59,16 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
 
-    await tester.pumpWidget(const MaterialApp(home: DemoGroupVotingWrapper()));
+    final mockRepo = MockPollRepository();
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [pollRepositoryProvider.overrideWithValue(mockRepo)],
+        child: const MaterialApp(home: DemoGroupVotingWrapper()),
+      ),
+    );
+    // Allow the stream to emit and loading to finish.
+    await tester.pump(const Duration(milliseconds: 100));
 
     await tester.tap(find.text('Visit Kimironko Market').first);
     await tester.pump();

@@ -26,6 +26,33 @@ class Expense {
 
   double get splitAmount =>
       splitAmongInitials.isNotEmpty ? amount / splitAmongInitials.length : 0;
+
+  Map<String, Object?> toMap() => {
+    'description': description,
+    'amount': amount,
+    'paidByInitials': paidByInitials,
+    'paidByName': paidByName,
+    'categoryEmoji': categoryEmoji,
+    'category': category,
+    'splitAmongInitials': splitAmongInitials,
+    'date': date.toIso8601String(),
+  };
+
+  factory Expense.fromMap(String id, Map<String, Object?> map) => Expense(
+    id: id,
+    description: map['description'] as String? ?? '',
+    amount: (map['amount'] as num?)?.toDouble() ?? 0,
+    paidByInitials: map['paidByInitials'] as String? ?? '',
+    paidByName: map['paidByName'] as String? ?? '',
+    categoryEmoji: map['categoryEmoji'] as String? ?? '',
+    category: map['category'] as String? ?? '',
+    splitAmongInitials: (map['splitAmongInitials'] as List<dynamic>? ?? [])
+        .map((e) => e as String)
+        .toList(),
+    date: map['date'] != null
+        ? DateTime.parse(map['date'] as String)
+        : DateTime.now(),
+  );
 }
 
 @immutable

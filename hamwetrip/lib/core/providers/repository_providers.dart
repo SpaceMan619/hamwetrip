@@ -4,16 +4,31 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/firebase/firebase_activity_repository.dart';
 import '../../data/firebase/firebase_auth_repository.dart';
+import '../../data/firebase/firebase_document_repository.dart';
+import '../../data/firebase/firebase_expense_repository.dart';
+import '../../data/firebase/firebase_itinerary_repository.dart';
+import '../../data/firebase/firebase_momo_repository.dart';
+import '../../data/firebase/firebase_poll_repository.dart';
 import '../../data/firebase/firebase_trip_repository.dart';
 import '../../data/firebase/firebase_user_repository.dart';
 import '../../data/mock/mock_activity_repository.dart';
 import '../../data/mock/mock_auth_repository.dart';
 import '../../data/mock/mock_backend.dart';
+import '../../data/mock/mock_document_repository.dart';
+import '../../data/mock/mock_expense_repository.dart';
+import '../../data/mock/mock_itinerary_repository.dart';
+import '../../data/mock/mock_momo_repository.dart';
+import '../../data/mock/mock_poll_repository.dart';
 import '../../data/mock/mock_trip_repository.dart';
 import '../../data/mock/mock_user_repository.dart';
 import '../../domain/models/auth_user.dart';
 import '../../domain/repositories/activity_repository.dart';
 import '../../domain/repositories/auth_repository.dart';
+import '../../domain/repositories/document_repository.dart';
+import '../../domain/repositories/expense_repository.dart';
+import '../../domain/repositories/itinerary_repository.dart';
+import '../../domain/repositories/momo_repository.dart';
+import '../../domain/repositories/poll_repository.dart';
 import '../../domain/repositories/trip_repository.dart';
 import '../../domain/repositories/user_repository.dart';
 import '../config/app_config.dart';
@@ -79,6 +94,75 @@ final activityRepositoryProvider = Provider<ActivityRepository>((ref) {
     return MockActivityRepository(ref.watch(mockBackendProvider));
   }
   return FirebaseActivityRepository(
+    ref.watch(firestoreProvider),
+    ref.watch(firebaseAuthProvider),
+  );
+});
+
+// ---------------------------------------------------------------------------
+// Shakira-feature repositories (polls, expenses, itinerary, documents, momo).
+//
+// Each follows the same mock/Firebase switch as the Phase 1 repositories
+// above, so `--dart-define=USE_MOCK_REPOSITORIES=true` still gives a fully
+// offline-capable UI for the group-voting, expense-splitting, itinerary,
+// document-vault and momo-summary screens.
+// ---------------------------------------------------------------------------
+
+final pollRepositoryProvider = Provider<PollRepository>((ref) {
+  if (ref.watch(useMockRepositoriesProvider)) {
+    final repo = MockPollRepository();
+    ref.onDispose(repo.dispose);
+    return repo;
+  }
+  return FirebasePollRepository(
+    ref.watch(firestoreProvider),
+    ref.watch(firebaseAuthProvider),
+  );
+});
+
+final expenseRepositoryProvider = Provider<ExpenseRepository>((ref) {
+  if (ref.watch(useMockRepositoriesProvider)) {
+    final repo = MockExpenseRepository();
+    ref.onDispose(repo.dispose);
+    return repo;
+  }
+  return FirebaseExpenseRepository(
+    ref.watch(firestoreProvider),
+    ref.watch(firebaseAuthProvider),
+  );
+});
+
+final itineraryRepositoryProvider = Provider<ItineraryRepository>((ref) {
+  if (ref.watch(useMockRepositoriesProvider)) {
+    final repo = MockItineraryRepository();
+    ref.onDispose(repo.dispose);
+    return repo;
+  }
+  return FirebaseItineraryRepository(
+    ref.watch(firestoreProvider),
+    ref.watch(firebaseAuthProvider),
+  );
+});
+
+final documentRepositoryProvider = Provider<DocumentRepository>((ref) {
+  if (ref.watch(useMockRepositoriesProvider)) {
+    final repo = MockDocumentRepository();
+    ref.onDispose(repo.dispose);
+    return repo;
+  }
+  return FirebaseDocumentRepository(
+    ref.watch(firestoreProvider),
+    ref.watch(firebaseAuthProvider),
+  );
+});
+
+final momoRepositoryProvider = Provider<MomoRepository>((ref) {
+  if (ref.watch(useMockRepositoriesProvider)) {
+    final repo = MockMomoRepository();
+    ref.onDispose(repo.dispose);
+    return repo;
+  }
+  return FirebaseMomoRepository(
     ref.watch(firestoreProvider),
     ref.watch(firebaseAuthProvider),
   );

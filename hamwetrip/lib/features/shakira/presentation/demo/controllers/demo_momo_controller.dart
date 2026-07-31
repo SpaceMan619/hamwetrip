@@ -1,64 +1,97 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
+import '../../../../../core/error/app_error.dart';
 import '../../../../../data/models/momo_transaction.dart';
-import '../../../../../features/shakira/data/demo/mock_momo.dart';
+import '../../../../../domain/repositories/momo_repository.dart';
 
 class DemoMomoController extends ChangeNotifier {
-  final List<MomoTransaction> _allTransactions = List.from(
-    mockMomoTransactions,
-  );
+  final MomoRepository _repository;
+  final String tripId;
 
-  // Tracks which transactions have been acted upon in the demo
-  final Set<String> _completedIds = {};
+  List<MomoTransaction> _transactions = [];
+  bool _isLoading = true;
+  AppError? _error;
+  StreamSubscription<List<MomoTransaction>>? _subscription;
 
-  List<MomoTransaction> get toSend => _allTransactions
-      .where((t) => t.type == MomoType.send)
-      .map(
-        (t) => _completedIds.contains(t.id)
-            ? MomoTransaction(
-                id: t.id,
-                name: t.name,
-                initials: t.initials,
-                maskedPhone: t.maskedPhone,
-                amount: t.amount,
-                type: t.type,
-                status: MomoStatus.completed,
-              )
-            : t,
-      )
-      .toList();
+  DemoMomoController({
+    required MomoRepository repository,
+    this.tripId = 'demo-trip',
+  }) : _repository = repository {
+    _loadTransactions();
+  }
 
-  List<MomoTransaction> get toReceive => _allTransactions
-      .where((t) => t.type == MomoType.receive)
-      .map(
-        (t) => _completedIds.contains(t.id)
-            ? MomoTransaction(
-                id: t.id,
-                name: t.name,
-                initials: t.initials,
-                maskedPhone: t.maskedPhone,
-                amount: t.amount,
-                type: t.type,
-                status: MomoStatus.completed,
-              )
-            : t,
-      )
-      .toList();
+  bool get isLoading => _isLoading;
+  AppError? get error => _error;
+  bool get hasError => _error != null;
+
+  List<MomoTransaction> get toSend =>
+      _transactions.where((t) => t.type == MomoType.send).toList();
+  List<MomoTransaction> get toReceive =>
+      _transactions.where((t) => t.type == MomoType.receive).toList();
 
   double get totalSendAmount => toSend.fold(0.0, (sum, t) => sum + t.amount);
   double get totalReceiveAmount =>
       toReceive.fold(0.0, (sum, t) => sum + t.amount);
 
-  // ──────────────────────────────────────────────
-  // Actions
-  // ──────────────────────────────────────────────
-
-  void payNow(String transactionId) {
-    _completedIds.add(transactionId);
+  void _loadTransactions() {
+    _isLoading = true;
+    _error = null;
     notifyListeners();
+
+    _subscription = _repository
+        .watchTransactions(tripId)
+        .listen(
+          (transactions) {
+            _transactions = transactions;
+            _isLoading = false;
+            notifyListeners();
+          },
+          onError: (Object error) {
+            _isLoading = false;
+            _error = error is AppError
+                ? error
+                : const UnknownError(message: 'Failed to load transactions.');
+            notifyListeners();
+          },
+        );
   }
 
-  void requestPayment(String transactionId) {
-    _completedIds.add(transactionId);
-    notifyListeners();
+  Future<void> retry() async {
+    await _subscription?.cancel();
+    _loadTransactions();
+  }
+
+  Future<void> payNow(String transactionId) async {
+    try {
+      await _repository.payNow(tripId: tripId, transactionId: transactionId);
+    } on AppError catch (e) {
+      _error = e;
+      notifyListeners();
+    } catch (e) {
+      _error = UnknownError(cause: e);
+      notifyListeners();
+    }
+  }
+
+  Future<void> requestPayment(String transactionId) async {
+    try {
+      await _repository.requestPayment(
+        tripId: tripId,
+        transactionId: transactionId,
+      );
+    } on AppError catch (e) {
+      _error = e;
+      notifyListeners();
+    } catch (e) {
+      _error = UnknownError(cause: e);
+      notifyListeners();
+    }
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
   }
 }

@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
-import '../../../../../core/theme/app_colors.dart';
-import '../../../../../app/app_routes.dart';
-import '../../../../../data/models/settlement_args.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/providers/repository_providers.dart';
+import '../../../../app/app_routes.dart';
+import '../../../../data/models/settlement_args.dart';
 import '../expense_splitting_screen.dart';
 import 'controllers/demo_expense_controller.dart';
-import '../../../../../core/widgets/hamwe_bottom_navigation.dart';
+import '../../../../core/widgets/hamwe_bottom_navigation.dart';
 
-/// Wires up mock expense data and local state to your pure UI screen.
-class DemoExpenseSplittingWrapper extends StatefulWidget {
+/// Wires up expense data from Firestore to the pure UI screen.
+class DemoExpenseSplittingWrapper extends ConsumerStatefulWidget {
   const DemoExpenseSplittingWrapper({super.key});
 
   @override
-  State<DemoExpenseSplittingWrapper> createState() =>
+  ConsumerState<DemoExpenseSplittingWrapper> createState() =>
       _DemoExpenseSplittingWrapperState();
 }
 
 class _DemoExpenseSplittingWrapperState
-    extends State<DemoExpenseSplittingWrapper> {
+    extends ConsumerState<DemoExpenseSplittingWrapper> {
   late final DemoExpenseController _controller;
 
   // Current demo user is RM (Rajveer Malik)
@@ -25,10 +27,10 @@ class _DemoExpenseSplittingWrapperState
   @override
   void initState() {
     super.initState();
-    _controller = DemoExpenseController();
-    _controller.addListener(
-      () => setState(() {}),
-    ); // Rebuild UI on state change
+    _controller = DemoExpenseController(
+      repository: ref.read(expenseRepositoryProvider),
+    );
+    _controller.addListener(() => setState(() {}));
   }
 
   @override
@@ -39,6 +41,39 @@ class _DemoExpenseSplittingWrapperState
 
   @override
   Widget build(BuildContext context) {
+    // Loading state
+    if (_controller.isLoading) {
+      return const Scaffold(
+        backgroundColor: AppColors.warmSand,
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    // Error state
+    if (_controller.hasError) {
+      return Scaffold(
+        backgroundColor: AppColors.warmSand,
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.error_outline, size: 48, color: Colors.red),
+              const SizedBox(height: 16),
+              Text(
+                _controller.error?.message ?? 'Something went wrong',
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              FilledButton(
+                onPressed: _controller.retry,
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     // Calculate what "you" (RM) owe and are owed based on balances
     double youOwe = 0;
     double youAreOwed = 0;
@@ -60,21 +95,15 @@ class _DemoExpenseSplittingWrapperState
       bottomNavigation: const HamweBottomNavigation(
         selected: HamweDestination.ledger,
       ),
-
-      // Fixes "Empty Handler" - Add Expense button
       onAddExpense: () {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text(
-              'Expense form submitted! (Demo mode - not persisted to backend)',
-            ),
+            content: Text('Add expense form coming soon'),
             behavior: SnackBarBehavior.floating,
             backgroundColor: AppColors.forest,
           ),
         );
       },
-
-      // Fixes "Empty Handler" - Tapping an expense card
       onExpenseTap: (expense) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -85,34 +114,27 @@ class _DemoExpenseSplittingWrapperState
           ),
         );
       },
-
-      // Fixes "Empty Handler" - Settle up button (NOW NAVIGATES!)
       onSettleUp: (balance) {
-        // Create the arguments expected by the settlement screen
         final settlementArgs = SettlementArgs(
           balance: balance,
           maskedPhone:
-              '*** *** ${balance.toInitials.hashCode.abs() % 900 + 100}', // Fake masked phone
+              '*** *** ${balance.toInitials.hashCode.abs() % 900 + 100}',
           referenceId: 'MTN-${DateTime.now().millisecondsSinceEpoch}',
         );
 
-        // Navigate to the settlement confirmation screen
         Navigator.of(context)
             .pushNamed(
               AppRoutes.settlementConfirmation,
               arguments: settlementArgs,
             )
             .then((_) {
-              // After coming back from settlement, mark as settled locally
               _controller.settleBalance(balance);
             });
       },
-
-      // Fixes "Empty Handler" - Remind Everyone button
       onRemindEveryone: () {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('MoMo payment reminders sent to all members! (Demo)'),
+            content: Text('MoMo payment reminders sent to all members!'),
             behavior: SnackBarBehavior.floating,
           ),
         );

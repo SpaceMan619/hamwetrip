@@ -243,16 +243,122 @@ service cloud.firestore {
       }
 
       // -------------------------------------------------------------------
-      // Owned by later phases. Denied until their rules are written — an
-      // unmatched path is denied anyway, but saying so explicitly stops a
-      // future reader assuming the omission was an oversight.
+      // Trip content: polls, expenses, balances, payments, itinerary and
+      // documents.
+      //
+      // Access is scoped to trip membership. Somebody who is not in a trip
+      // cannot read or write any of its content, which is the guarantee that
+      // matters most here: trips are private to the people travelling.
+      //
+      // Update rules are narrowed to the exact fields each repository writes.
+      // That is deliberately tighter than "a member may edit anything". A
+      // member casting a vote, for example, can move the tallies but cannot
+      // rewrite the question or replace the options underneath everyone else.
+      //
+      // These rules do not distinguish organizer from member, because the
+      // screens themselves do not: closing a poll and deleting an expense are
+      // offered to every member. Tightening those to organizers is a change to
+      // the interface and the rules together, noted as future work rather than
+      // done here by halves.
       // -------------------------------------------------------------------
 
-      match /polls/{document=**} { allow read, write: if false; }      // Phase 2
-      match /expenses/{document=**} { allow read, write: if false; }   // Phase 2
-      match /payments/{document=**} { allow read, write: if false; }   // Phase 2
-      match /itinerary/{document=**} { allow read, write: if false; }  // Phase 3
-      match /documents/{document=**} { allow read, write: if false; }  // Phase 3
+      // trips/{tripId}/polls/{pollId}
+      match /polls/{pollId} {
+        allow read: if isMember(tripId);
+
+        allow create: if isMember(tripId)
+          && request.resource.data.question is string
+          && request.resource.data.question.size() > 0
+          && request.resource.data.options is list
+          && request.resource.data.isActive is bool;
+
+        // Casting a vote rewrites `options` and `voterInitials`; closing a poll
+        // flips `isActive`. Nothing else may move.
+        allow update: if isMember(tripId)
+          && changedKeys().hasOnly(['options', 'voterInitials', 'isActive']);
+
+        allow delete: if isMember(tripId);
+      }
+
+      // trips/{tripId}/expenses/{expenseId}
+      match /expenses/{expenseId} {
+        allow read: if isMember(tripId);
+
+        allow create: if isMember(tripId)
+          && request.resource.data.description is string
+          && request.resource.data.description.size() > 0
+          && request.resource.data.amount is number
+          && request.resource.data.amount >= 0
+          && request.resource.data.splitAmongInitials is list;
+
+        // Settling an expense only flips `isSettled`. An amount cannot be
+        // edited after the fact, which is what keeps the ledger trustworthy.
+        allow update: if isMember(tripId)
+          && changedKeys().hasOnly(['isSettled']);
+
+        allow delete: if isMember(tripId);
+      }
+
+      // trips/{tripId}/balances/{balanceId}
+      //
+      // Derived from the expenses above. Settling a balance removes it.
+      match /balances/{balanceId} {
+        allow read: if isMember(tripId);
+
+        allow create: if isMember(tripId)
+          && request.resource.data.amount is number;
+
+        allow update, delete: if isMember(tripId);
+      }
+
+      // trips/{tripId}/payments/{paymentId}
+      match /payments/{paymentId} {
+        allow read: if isMember(tripId);
+
+        allow create: if isMember(tripId)
+          && request.resource.data.amount is number
+          && request.resource.data.status is string;
+
+        // Marking a payment sent or received only moves `status`. The amount
+        // and the two parties are fixed once the record exists.
+        allow update: if isMember(tripId)
+          && changedKeys().hasOnly(['status']);
+
+        // Settlement history is never removed. Deleting a payment record would
+        // erase the evidence that somebody paid.
+        allow delete: if false;
+      }
+
+      // trips/{tripId}/itinerary/{dayId}
+      //
+      // Each document is a day, holding its activities in an `items` array, so
+      // every itinerary edit is an update to that one field.
+      match /itinerary/{dayId} {
+        allow read: if isMember(tripId);
+
+        allow create: if isMember(tripId)
+          && request.resource.data.items is list;
+
+        allow update: if isMember(tripId)
+          && changedKeys().hasOnly(['items']);
+
+        allow delete: if isMember(tripId);
+      }
+
+      // trips/{tripId}/documents/{docId}
+      match /documents/{docId} {
+        allow read: if isMember(tripId);
+
+        allow create: if isMember(tripId)
+          && request.resource.data.title is string
+          && request.resource.data.title.size() > 0;
+
+        // A document record is created and removed, never edited. Allowing an
+        // update would let one member silently retitle another's upload.
+        allow update: if false;
+
+        allow delete: if isMember(tripId);
+      }
     }
   }
 }

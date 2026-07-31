@@ -19,6 +19,26 @@ class ItineraryItem {
     required this.emoji,
     required this.type,
   });
+
+  Map<String, Object?> toMap() => {
+    'time': time,
+    'title': title,
+    'location': location,
+    'description': description,
+    'emoji': emoji,
+    'type': type,
+  };
+
+  factory ItineraryItem.fromMap(String id, Map<String, Object?> map) =>
+      ItineraryItem(
+        id: id,
+        time: map['time'] as String? ?? '',
+        title: map['title'] as String? ?? '',
+        location: map['location'] as String? ?? '',
+        description: map['description'] as String? ?? '',
+        emoji: map['emoji'] as String? ?? '',
+        type: map['type'] as String? ?? 'activity',
+      );
 }
 
 @immutable
@@ -32,4 +52,20 @@ class ItineraryDay {
     required this.date,
     required this.items,
   });
+
+  Map<String, Object?> toMap() => {
+    'dayTitle': dayTitle,
+    'date': date,
+    'items': items.map((i) => i.toMap()).toList(),
+  };
+
+  factory ItineraryDay.fromMap(Map<String, Object?> map) => ItineraryDay(
+    dayTitle: map['dayTitle'] as String? ?? '',
+    date: map['date'] as String? ?? '',
+    items: (map['items'] as List<dynamic>? ?? [])
+        .map(
+          (i) => ItineraryItem.fromMap('', Map<String, Object?>.from(i as Map)),
+        )
+        .toList(),
+  );
 }

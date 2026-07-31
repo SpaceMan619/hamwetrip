@@ -1,49 +1,86 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
+import '../../../../../core/error/app_error.dart';
 import '../../../../../data/models/document.dart';
-import '../../../../../features/shakira/data/demo/mock_documents.dart';
+import '../../../../../domain/repositories/document_repository.dart';
 
 class DemoDocumentController extends ChangeNotifier {
-  final List<TripDocument> _allDocuments = List.from(mockDocuments);
+  final DocumentRepository _repository;
+  final String tripId;
+
+  List<TripDocument> _allDocuments = [];
+  bool _isLoading = true;
+  AppError? _error;
   String? _searchQuery;
-  String _filterCategory = 'All';
+  String _currentCategory = 'All';
+  StreamSubscription<List<TripDocument>>? _subscription;
+
+  DemoDocumentController({
+    required DocumentRepository repository,
+    this.tripId = 'demo-trip',
+  }) : _repository = repository {
+    _loadDocuments();
+  }
+
+  bool get isLoading => _isLoading;
+  AppError? get error => _error;
+  bool get hasError => _error != null;
 
   List<TripDocument> get documents => _filteredDocuments;
-  int get totalDocuments => _allDocuments.length;
-  String get currentCategory => _filterCategory;
-
+  String get currentCategory => _currentCategory;
   List<String> get categories => [
     'All',
-    'Identity',
-    'Booking',
-    'Insurance',
+    'Bookings',
+    'IDs',
+    'Receipts',
     'Other',
   ];
 
   List<TripDocument> get _filteredDocuments {
     var result = _allDocuments.toList();
-
+    if (_currentCategory != 'All') {
+      result = result.where((d) => d.category == _currentCategory).toList();
+    }
     if (_searchQuery != null && _searchQuery!.isNotEmpty) {
       final q = _searchQuery!.toLowerCase();
-      result = result
-          .where(
-            (d) =>
-                d.title.toLowerCase().contains(q) ||
-                d.uploadedBy.toLowerCase().contains(q),
-          )
-          .toList();
+      result = result.where((d) => d.title.toLowerCase().contains(q)).toList();
     }
-
-    if (_filterCategory != 'All') {
-      result = result.where((d) => d.category == _filterCategory).toList();
-    }
-
-    // Show newest uploads first
-    return result.reversed.toList();
+    return result;
   }
 
-  // ──────────────────────────────────────────────
-  // Actions
-  // ──────────────────────────────────────────────
+  void _loadDocuments() {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    _subscription = _repository
+        .watchDocuments(tripId)
+        .listen(
+          (docs) {
+            _allDocuments = docs;
+            _isLoading = false;
+            notifyListeners();
+          },
+          onError: (Object error) {
+            _isLoading = false;
+            _error = error is AppError
+                ? error
+                : const UnknownError(message: 'Failed to load documents.');
+            notifyListeners();
+          },
+        );
+  }
+
+  Future<void> retry() async {
+    await _subscription?.cancel();
+    _loadDocuments();
+  }
+
+  void setCategory(String category) {
+    _currentCategory = category;
+    notifyListeners();
+  }
 
   void search(String query) {
     _searchQuery = query;
@@ -55,29 +92,41 @@ class DemoDocumentController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setCategory(String category) {
-    _filterCategory = category;
-    notifyListeners();
+  Future<void> deleteDocument(String docId) async {
+    try {
+      await _repository.deleteDocument(tripId: tripId, docId: docId);
+    } on AppError catch (e) {
+      _error = e;
+      notifyListeners();
+    } catch (e) {
+      _error = UnknownError(cause: e);
+      notifyListeners();
+    }
   }
 
-  void deleteDocument(String docId) {
-    _allDocuments.removeWhere((d) => d.id == docId);
-    notifyListeners();
-  }
-
-  void simulateUpload() {
-    _allDocuments.add(
-      TripDocument(
-        id: 'doc_${DateTime.now().millisecondsSinceEpoch}',
-        title: 'New_Upload_Simulated.pdf',
+  Future<void> simulateUpload() async {
+    try {
+      await _repository.uploadDocument(
+        tripId: tripId,
+        title: 'New Document ${DateTime.now().millisecondsSinceEpoch}',
         category: 'Other',
-        type: DocType.pdf,
-        uploadedBy: 'Rajveer Malik',
-        uploadedByInitials: 'RM',
-        fileSize: '1.0 MB',
-        date: DateTime.now(),
-      ),
-    );
-    notifyListeners();
+        type: DocType.document,
+        uploadedBy: 'Demo User',
+        uploadedByInitials: 'DU',
+        fileSize: '1.2 MB',
+      );
+    } on AppError catch (e) {
+      _error = e;
+      notifyListeners();
+    } catch (e) {
+      _error = UnknownError(cause: e);
+      notifyListeners();
+    }
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
   }
 }

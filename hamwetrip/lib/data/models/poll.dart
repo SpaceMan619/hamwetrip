@@ -13,6 +13,20 @@ class PollOption {
     this.emoji,
     this.voteCount = 0,
   });
+
+  Map<String, Object?> toMap() => {
+    'id': id,
+    'label': label,
+    if (emoji != null) 'emoji': emoji,
+    'voteCount': voteCount,
+  };
+
+  factory PollOption.fromMap(Map<String, Object?> map) => PollOption(
+    id: map['id'] as String,
+    label: map['label'] as String,
+    emoji: map['emoji'] as String?,
+    voteCount: (map['voteCount'] as num?)?.toInt() ?? 0,
+  );
 }
 
 @immutable
@@ -43,4 +57,35 @@ class Poll {
     required this.voterInitials,
     required this.createdBy,
   });
+
+  Map<String, Object?> toMap() => {
+    'question': question,
+    'category': category,
+    'categoryEmoji': categoryEmoji,
+    'options': options.map((o) => o.toMap()).toList(),
+    'totalMembers': totalMembers,
+    'deadline': deadline?.toIso8601String(),
+    'isActive': isActive,
+    'voterInitials': voterInitials,
+    'createdBy': createdBy,
+  };
+
+  factory Poll.fromMap(String id, Map<String, Object?> map) => Poll(
+    id: id,
+    question: map['question'] as String,
+    category: map['category'] as String? ?? '',
+    categoryEmoji: map['categoryEmoji'] as String? ?? '',
+    options: (map['options'] as List<dynamic>? ?? [])
+        .map((o) => PollOption.fromMap(Map<String, Object?>.from(o as Map)))
+        .toList(),
+    totalMembers: (map['totalMembers'] as num?)?.toInt() ?? 0,
+    deadline: map['deadline'] != null
+        ? DateTime.parse(map['deadline'] as String)
+        : null,
+    isActive: map['isActive'] as bool? ?? true,
+    voterInitials: (map['voterInitials'] as List<dynamic>? ?? [])
+        .map((e) => e as String)
+        .toList(),
+    createdBy: map['createdBy'] as String? ?? '',
+  );
 }

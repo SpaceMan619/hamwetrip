@@ -1,19 +1,18 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
-import '../../../../../../data/models/poll.dart';
-import '../../../data/demo/mock_polls.dart';
+import '../../../../../core/error/app_error.dart';
+import '../../../../../data/models/poll.dart';
+import '../../../../../domain/repositories/poll_repository.dart';
 
 class DemoPollState {
   final Poll poll;
   final Set<String> selectedOptionIds;
-  final Map<String, int> adjustedVoteCounts;
-  final bool isClosed;
   final bool hasVoted;
 
   const DemoPollState({
     required this.poll,
     required this.selectedOptionIds,
-    required this.adjustedVoteCounts,
-    this.isClosed = false,
     this.hasVoted = false,
   });
 
@@ -21,8 +20,7 @@ class DemoPollState {
       selectedOptionIds.contains(optionId);
 
   int voteCountFor(String optionId) {
-    return adjustedVoteCounts[optionId] ??
-        poll.options.firstWhere((o) => o.id == optionId).voteCount;
+    return poll.options.firstWhere((o) => o.id == optionId).voteCount;
   }
 
   int get computedTotalVotes =>
@@ -32,66 +30,53 @@ class DemoPollState {
       poll.question.toLowerCase().contains('select all') ||
       poll.category == 'Activities';
 
-  Poll get displayPoll => Poll(
-    id: poll.id,
-    question: poll.question,
-    category: poll.category,
-    categoryEmoji: poll.categoryEmoji,
-    options: poll.options
-        .map(
-          (option) => PollOption(
-            id: option.id,
-            label: option.label,
-            emoji: option.emoji,
-            voteCount: voteCountFor(option.id),
-          ),
-        )
-        .toList(growable: false),
-    totalMembers: poll.totalMembers,
-    deadline: poll.deadline,
-    isActive: poll.isActive && !isClosed,
-    voterInitials: poll.voterInitials,
-    createdBy: poll.createdBy,
-  );
+  Poll get displayPoll => poll;
 
-  DemoPollState copyWith({
-    Set<String>? selectedOptionIds,
-    Map<String, int>? adjustedVoteCounts,
-    bool? isClosed,
-    bool? hasVoted,
-  }) {
+  DemoPollState copyWith({Set<String>? selectedOptionIds, bool? hasVoted}) {
     return DemoPollState(
       poll: poll,
       selectedOptionIds: selectedOptionIds ?? this.selectedOptionIds,
-      adjustedVoteCounts: adjustedVoteCounts ?? this.adjustedVoteCounts,
-      isClosed: isClosed ?? this.isClosed,
       hasVoted: hasVoted ?? this.hasVoted,
     );
   }
 }
 
 class DemoVotingController extends ChangeNotifier {
-  final List<Poll> _sourcePolls = List.from(mockPolls);
-  late List<DemoPollState> _states;
-  String? _searchQuery;
+  final PollRepository _repository;
+  final String tripId;
+  final String voterInitials;
 
-  DemoVotingController() {
-    _states = _sourcePolls
-        .map(
-          (p) => DemoPollState(
-            poll: p,
-            selectedOptionIds: {},
-            adjustedVoteCounts: {},
-          ),
-        )
-        .toList();
+  List<DemoPollState> _states = [];
+  bool _isLoading = true;
+  AppError? _error;
+  String? _searchQuery;
+  StreamSubscription<List<Poll>>? _subscription;
+
+  DemoVotingController({
+    required PollRepository repository,
+    this.tripId = 'demo-trip',
+    this.voterInitials = 'ME',
+  }) : _repository = repository {
+    _loadPolls();
   }
+
+  // ──────────────────────────────────────────────
+  // Loading & error state
+  // ──────────────────────────────────────────────
+
+  bool get isLoading => _isLoading;
+  AppError? get error => _error;
+  bool get hasError => _error != null;
+
+  // ──────────────────────────────────────────────
+  // Data accessors
+  // ──────────────────────────────────────────────
 
   List<DemoPollState> get polls => _filteredStates;
   int get activePollCount =>
-      _states.where((s) => !s.isClosed && s.poll.isActive).length;
+      _states.where((s) => s.poll.isActive && !s.hasVoted).length;
   int get closedPollCount =>
-      _states.where((s) => s.isClosed || !s.poll.isActive).length;
+      _states.where((s) => !s.poll.isActive || s.hasVoted).length;
 
   List<DemoPollState> get _filteredStates {
     if (_searchQuery == null || _searchQuery!.isEmpty) return _states;
@@ -108,11 +93,57 @@ class DemoVotingController extends ChangeNotifier {
   int _stateIndex(String pollId) =>
       _states.indexWhere((s) => s.poll.id == pollId);
 
+  // ──────────────────────────────────────────────
+  // Stream subscription
+  // ──────────────────────────────────────────────
+
+  void _loadPolls() {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    _subscription = _repository
+        .watchPolls(tripId)
+        .listen(
+          (polls) {
+            _isLoading = false;
+            _error = null;
+            // Preserve local selection/voted state across stream updates.
+            final previousStates = {for (final s in _states) s.poll.id: s};
+            _states = polls.map((p) {
+              final prev = previousStates[p.id];
+              return DemoPollState(
+                poll: p,
+                selectedOptionIds: prev?.selectedOptionIds ?? {},
+                hasVoted: prev?.hasVoted ?? false,
+              );
+            }).toList();
+            notifyListeners();
+          },
+          onError: (Object error) {
+            _isLoading = false;
+            _error = error is AppError
+                ? error
+                : const UnknownError(message: 'Failed to load polls.');
+            notifyListeners();
+          },
+        );
+  }
+
+  Future<void> retry() async {
+    await _subscription?.cancel();
+    _loadPolls();
+  }
+
+  // ──────────────────────────────────────────────
+  // Actions
+  // ──────────────────────────────────────────────
+
   void selectOption(String pollId, String optionId) {
     final idx = _stateIndex(pollId);
     if (idx == -1) return;
     final state = _states[idx];
-    if (state.isClosed || !state.poll.isActive || state.hasVoted) return;
+    if (!state.poll.isActive || state.hasVoted) return;
 
     final newSelected = Set<String>.from(state.selectedOptionIds);
 
@@ -131,43 +162,63 @@ class DemoVotingController extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool submitVote(String pollId) {
+  Future<bool> submitVote(String pollId) async {
     final idx = _stateIndex(pollId);
     if (idx == -1) return false;
     final state = _states[idx];
-    if (state.isClosed ||
-        !state.poll.isActive ||
+    if (!state.poll.isActive ||
         state.hasVoted ||
         state.selectedOptionIds.isEmpty) {
       return false;
     }
 
-    final newCounts = Map<String, int>.from(state.adjustedVoteCounts);
-    for (final optionId in state.selectedOptionIds) {
-      final base = state.poll.options
-          .firstWhere((option) => option.id == optionId)
-          .voteCount;
-      newCounts[optionId] = (newCounts[optionId] ?? base) + 1;
+    // Set hasVoted BEFORE the repository call, because the repository
+    // may emit a stream event that triggers _loadPolls' listener, which
+    // rebuilds _states. Setting it first ensures the listener preserves it.
+    _states[idx] = state.copyWith(hasVoted: true);
+    notifyListeners();
+
+    try {
+      await _repository.submitVote(
+        tripId: tripId,
+        pollId: pollId,
+        optionIds: state.selectedOptionIds,
+        voterInitials: voterInitials,
+      );
+      return true;
+    } on AppError catch (e) {
+      _error = e;
+      notifyListeners();
+      return false;
+    } catch (e) {
+      _error = UnknownError(cause: e);
+      notifyListeners();
+      return false;
     }
-
-    _states[idx] = state.copyWith(
-      adjustedVoteCounts: newCounts,
-      hasVoted: true,
-    );
-    notifyListeners();
-    return true;
   }
 
-  void closePoll(String pollId) {
-    final idx = _stateIndex(pollId);
-    if (idx == -1) return;
-    _states[idx] = _states[idx].copyWith(isClosed: true);
-    notifyListeners();
+  Future<void> closePoll(String pollId) async {
+    try {
+      await _repository.closePoll(tripId: tripId, pollId: pollId);
+    } on AppError catch (e) {
+      _error = e;
+      notifyListeners();
+    } catch (e) {
+      _error = UnknownError(cause: e);
+      notifyListeners();
+    }
   }
 
-  void deletePoll(String pollId) {
-    _states.removeWhere((s) => s.poll.id == pollId);
-    notifyListeners();
+  Future<void> deletePoll(String pollId) async {
+    try {
+      await _repository.deletePoll(tripId: tripId, pollId: pollId);
+    } on AppError catch (e) {
+      _error = e;
+      notifyListeners();
+    } catch (e) {
+      _error = UnknownError(cause: e);
+      notifyListeners();
+    }
   }
 
   void search(String query) {
@@ -195,5 +246,11 @@ class DemoVotingController extends ChangeNotifier {
   bool isOptionSelected(String pollId, String optionId) {
     final state = _states.firstWhere((s) => s.poll.id == pollId);
     return state.isOptionSelected(optionId);
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
   }
 }
