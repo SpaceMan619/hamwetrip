@@ -307,6 +307,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     if (!mounted) return;
     if (ok) {
+      if (_isSignUp) {
+        // Registration sends a verification link. Saying so here is the only
+        // point the person is looking for confirmation; nothing blocks them
+        // from using the app in the meantime.
+        showInfoSnackBar(
+          context,
+          'Account created. Check $email to verify your address.',
+        );
+      }
       Navigator.of(context).pushReplacementNamed(AppRoutes.home);
       return;
     }

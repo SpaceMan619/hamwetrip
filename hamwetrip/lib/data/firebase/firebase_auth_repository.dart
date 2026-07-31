@@ -122,6 +122,20 @@ class FirebaseAuthRepository implements AuthRepository {
       throw mapFirebaseError(error);
     }
 
+    // Best effort, and deliberately not awaited into the success path's
+    // outcome. Registration has already succeeded by this point, and a mail
+    // delivery problem is not a reason to fail it or to undo the account. The
+    // address can be verified later from the link whenever it arrives.
+    //
+    // Verification is sent but not enforced: nothing blocks an unverified
+    // member from using the app. Enforcing it would be a product decision about
+    // what an unverified account may do, not a detail of registration.
+    try {
+      await user.sendEmailVerification();
+    } catch (_) {
+      // Swallowed on purpose. See above.
+    }
+
     return _toAuthUser(user);
   }
 
