@@ -1,21 +1,30 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hamwetrip/data/mock/mock_expense_repository.dart';
 import 'package:hamwetrip/features/shakira/presentation/demo/controllers/demo_expense_controller.dart';
 import 'package:hamwetrip/features/shakira/data/demo/mock_expenses.dart';
 
 void main() {
+  late MockExpenseRepository repository;
   late DemoExpenseController controller;
 
   setUp(() {
-    controller = DemoExpenseController();
+    repository = MockExpenseRepository();
+    controller = DemoExpenseController(repository: repository);
+  });
+
+  tearDown(() {
+    repository.dispose();
   });
 
   group('DemoExpenseController', () {
-    test('initial load should have 5 expenses and 3 balances', () {
+    test('initial load should have 5 expenses and 3 balances', () async {
+      await Future.delayed(const Duration(milliseconds: 10));
       expect(controller.expenses.length, 5);
       expect(controller.pendingBalances.length, 3);
     });
 
-    test('totals should be calculated in RWF correctly', () {
+    test('totals should be calculated in RWF correctly', () async {
+      await Future.delayed(const Duration(milliseconds: 10));
       // 85k + 45k + 120k + 36k + 20k = 306,000 RWF
       expect(controller.totalSpent, 306000.0);
 
@@ -23,52 +32,55 @@ void main() {
       expect(controller.totalOwed, 106000.0);
     });
 
-    test('markExpenseSettled should track the state', () {
+    test('markExpenseSettled should track the state', () async {
+      await Future.delayed(const Duration(milliseconds: 10));
       expect(controller.isExpenseSettled('exp_1'), false);
 
       controller.markExpenseSettled('exp_1');
 
       expect(controller.isExpenseSettled('exp_1'), true);
-      // Calling again shouldn't duplicate or cause issues
       controller.markExpenseSettled('exp_1');
       expect(controller.isExpenseSettled('exp_1'), true);
     });
 
-    test('settleBalance should remove it from pending list', () {
-      // Get the first balance (SK owes RM 20k)
+    test('settleBalance should remove it from pending list', () async {
+      await Future.delayed(const Duration(milliseconds: 10));
       final balanceToSettle = mockBalances.first;
       expect(controller.pendingBalances.length, 3);
 
-      controller.settleBalance(balanceToSettle);
+      await controller.settleBalance(balanceToSettle);
+      await Future.delayed(const Duration(milliseconds: 10));
 
       expect(controller.pendingBalances.length, 2);
-      // Total owed should drop by 20,000
       expect(controller.totalOwed, 86000.0);
     });
 
-    test('category filter should work', () {
+    test('category filter should work', () async {
+      await Future.delayed(const Duration(milliseconds: 10));
       controller.setCategory('Food');
 
-      // Should only show Lunch (exp_2) and Dinner (exp_4)
       expect(controller.expenses.length, 2);
       expect(controller.expenses.every((e) => e.category == 'Food'), true);
     });
 
-    test('search should filter expenses by description', () {
+    test('search should filter expenses by description', () async {
+      await Future.delayed(const Duration(milliseconds: 10));
       controller.search('van');
 
       expect(controller.expenses.length, 1);
       expect(controller.expenses.first.description.contains('van'), true);
     });
 
-    test('search should filter expenses by paidByName', () {
+    test('search should filter expenses by paidByName', () async {
+      await Future.delayed(const Duration(milliseconds: 10));
       controller.search('Aime');
 
       expect(controller.expenses.length, 1);
       expect(controller.expenses.first.paidByName, 'Aime');
     });
 
-    test('clearSearch should restore all expenses', () {
+    test('clearSearch should restore all expenses', () async {
+      await Future.delayed(const Duration(milliseconds: 10));
       controller.search('van');
       expect(controller.expenses.length, 1);
 
@@ -76,11 +88,12 @@ void main() {
       expect(controller.expenses.length, 5);
     });
 
-    test('deleteExpense should remove it from the list', () {
-      controller.deleteExpense('exp_1');
+    test('deleteExpense should remove it from the list', () async {
+      await Future.delayed(const Duration(milliseconds: 10));
+      await controller.deleteExpense('exp_1');
+      await Future.delayed(const Duration(milliseconds: 10));
 
       expect(controller.expenses.length, 4);
-      // Total spent should drop by 85,000
       expect(controller.totalSpent, 221000.0);
       expect(controller.expenses.any((e) => e.id == 'exp_1'), false);
     });

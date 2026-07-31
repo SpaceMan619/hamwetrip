@@ -1,26 +1,31 @@
 import 'package:flutter/material.dart';
-import '../../../../../core/theme/app_colors.dart';
-import '../../../../../data/models/document.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/providers/repository_providers.dart';
+import '../../../../data/models/document.dart';
 import '../document_vault_screen.dart';
 import 'controllers/demo_document_controller.dart';
-import '../../../../../core/widgets/hamwe_bottom_navigation.dart';
+import '../../../../core/widgets/hamwe_bottom_navigation.dart';
 
-/// Wires up mock document data to your pure UI screen.
-class DemoDocumentVaultWrapper extends StatefulWidget {
+/// Wires up document data from Firestore to the pure UI screen.
+class DemoDocumentVaultWrapper extends ConsumerStatefulWidget {
   const DemoDocumentVaultWrapper({super.key});
 
   @override
-  State<DemoDocumentVaultWrapper> createState() =>
+  ConsumerState<DemoDocumentVaultWrapper> createState() =>
       _DemoDocumentVaultWrapperState();
 }
 
-class _DemoDocumentVaultWrapperState extends State<DemoDocumentVaultWrapper> {
+class _DemoDocumentVaultWrapperState
+    extends ConsumerState<DemoDocumentVaultWrapper> {
   late final DemoDocumentController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = DemoDocumentController();
+    _controller = DemoDocumentController(
+      repository: ref.read(documentRepositoryProvider),
+    );
     _controller.addListener(() => setState(() {}));
   }
 
@@ -72,7 +77,7 @@ class _DemoDocumentVaultWrapperState extends State<DemoDocumentVaultWrapper> {
                 Navigator.pop(ctx);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('Opening ${doc.title}... (Demo)'),
+                    content: Text('Opening ${doc.title}...'),
                     behavior: SnackBarBehavior.floating,
                   ),
                 );
@@ -88,7 +93,7 @@ class _DemoDocumentVaultWrapperState extends State<DemoDocumentVaultWrapper> {
                 Navigator.pop(ctx);
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Share link copied (Demo)'),
+                    content: Text('Share link copied'),
                     behavior: SnackBarBehavior.floating,
                     backgroundColor: AppColors.forest,
                   ),
@@ -118,18 +123,48 @@ class _DemoDocumentVaultWrapperState extends State<DemoDocumentVaultWrapper> {
 
   @override
   Widget build(BuildContext context) {
+    // Loading state
+    if (_controller.isLoading) {
+      return const Scaffold(
+        backgroundColor: AppColors.warmSand,
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    // Error state
+    if (_controller.hasError) {
+      return Scaffold(
+        backgroundColor: AppColors.warmSand,
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.error_outline, size: 48, color: Colors.red),
+              const SizedBox(height: 16),
+              Text(
+                _controller.error?.message ?? 'Something went wrong',
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              FilledButton(
+                onPressed: _controller.retry,
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return DocumentVaultScreen(
       documents: _controller.documents,
       selectedCategory: _controller.currentCategory,
       categories: _controller.categories,
-      isOffline: true, // Simulating offline mode for the demo
-      // Wired to controller to actually filter the list
+      isOffline: false,
       onCategoryChanged: (category) => _controller.setCategory(category),
       bottomNavigation: const HamweBottomNavigation(
         selected: HamweDestination.vault,
       ),
-
-      // Fixes "Empty Handler" - View document
       onViewDocument: (doc) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -139,23 +174,17 @@ class _DemoDocumentVaultWrapperState extends State<DemoDocumentVaultWrapper> {
           ),
         );
       },
-
-      // Fixes "Empty Handler" - 3-dot options menu
       onDocumentOptions: (doc) => _showDocumentOptions(doc),
-
-      // Fixes "Empty Handler" - Upload button
       onUploadDocument: () {
         _controller.simulateUpload();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Document uploaded successfully! (Demo)'),
+            content: Text('Document uploaded successfully!'),
             behavior: SnackBarBehavior.floating,
             backgroundColor: AppColors.forest,
           ),
         );
       },
-
-      // Fixes "Empty Handler" - Search icon
       onSearch: () {
         showDialog(
           context: context,

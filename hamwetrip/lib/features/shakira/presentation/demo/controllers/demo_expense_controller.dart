@@ -1,17 +1,43 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
+import '../../../../../core/error/app_error.dart';
 import '../../../../../data/models/expense.dart';
-import '../../../../../features/shakira/data/demo/mock_expenses.dart';
+import '../../../../../domain/repositories/expense_repository.dart';
 
 class DemoExpenseController extends ChangeNotifier {
-  final List<Expense> _allExpenses = List.from(mockExpenses);
-  final List<Balance> _allBalances = List.from(mockBalances);
+  final ExpenseRepository _repository;
+  final String tripId;
 
-  // UI State tracked here since the models don't have isSettled/isPaid fields
-  final Set<String> _settledExpenseIds = {};
+  List<Expense> _allExpenses = [];
+  List<Balance> _allBalances = [];
   final Set<String> _settledBalanceKeys = {};
 
+  bool _isLoading = true;
+  AppError? _error;
   String? _searchQuery;
   String _filterCategory = 'All';
+  StreamSubscription<List<Expense>>? _expenseSub;
+  StreamSubscription<List<Balance>>? _balanceSub;
+
+  DemoExpenseController({
+    required ExpenseRepository repository,
+    this.tripId = 'demo-trip',
+  }) : _repository = repository {
+    _loadData();
+  }
+
+  // ──────────────────────────────────────────────
+  // Loading & error state
+  // ──────────────────────────────────────────────
+
+  bool get isLoading => _isLoading;
+  AppError? get error => _error;
+  bool get hasError => _error != null;
+
+  // ──────────────────────────────────────────────
+  // Data accessors
+  // ──────────────────────────────────────────────
 
   List<Expense> get expenses => _filteredExpenses;
   List<Balance> get pendingBalances => _allBalances
@@ -49,15 +75,71 @@ class DemoExpenseController extends ChangeNotifier {
     if (_filterCategory != 'All') {
       result = result.where((e) => e.category == _filterCategory).toList();
     }
-    // Show newest first
     return result.reversed.toList();
   }
 
-  bool isExpenseSettled(String id) => _settledExpenseIds.contains(id);
+  // ──────────────────────────────────────────────
+  // Stream subscription
+  // ──────────────────────────────────────────────
+
+  void _loadData() {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    _expenseSub = _repository
+        .watchExpenses(tripId)
+        .listen(
+          (expenses) {
+            _allExpenses = expenses;
+            _isLoading = false;
+            notifyListeners();
+          },
+          onError: (Object error) {
+            _isLoading = false;
+            _error = error is AppError
+                ? error
+                : const UnknownError(message: 'Failed to load expenses.');
+            notifyListeners();
+          },
+        );
+
+    _balanceSub = _repository
+        .watchBalances(tripId)
+        .listen(
+          (balances) {
+            _allBalances = balances;
+            notifyListeners();
+          },
+          onError: (Object error) {
+            _isLoading = false;
+            _error = error is AppError
+                ? error
+                : const UnknownError(message: 'Failed to load balances.');
+            notifyListeners();
+          },
+        );
+  }
+
+  Future<void> retry() async {
+    await _expenseSub?.cancel();
+    await _balanceSub?.cancel();
+    _loadData();
+  }
 
   // ──────────────────────────────────────────────
-  // Actions (Fixes "Empty Handlers" issue)
+  // Actions
   // ──────────────────────────────────────────────
+
+  final Set<String> _settledExpenseIds = {};
+
+  bool isExpenseSettled(String id) => _settledExpenseIds.contains(id);
+
+  void markExpenseSettled(String expenseId) {
+    if (_settledExpenseIds.contains(expenseId)) return;
+    _settledExpenseIds.add(expenseId);
+    notifyListeners();
+  }
 
   void search(String query) {
     _searchQuery = query;
@@ -74,21 +156,37 @@ class DemoExpenseController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void markExpenseSettled(String expenseId) {
-    if (_settledExpenseIds.contains(expenseId)) return;
-    _settledExpenseIds.add(expenseId);
-    notifyListeners();
+  Future<void> settleBalance(Balance balance) async {
+    try {
+      final key = '${balance.fromInitials}-${balance.toInitials}';
+      _settledBalanceKeys.add(key);
+      notifyListeners();
+      await _repository.settleBalance(tripId: tripId, balance: balance);
+    } on AppError catch (e) {
+      _error = e;
+      notifyListeners();
+    } catch (e) {
+      _error = UnknownError(cause: e);
+      notifyListeners();
+    }
   }
 
-  void settleBalance(Balance balance) {
-    final key = '${balance.fromInitials}-${balance.toInitials}';
-    if (_settledBalanceKeys.contains(key)) return;
-    _settledBalanceKeys.add(key);
-    notifyListeners();
+  Future<void> deleteExpense(String expenseId) async {
+    try {
+      await _repository.deleteExpense(tripId: tripId, expenseId: expenseId);
+    } on AppError catch (e) {
+      _error = e;
+      notifyListeners();
+    } catch (e) {
+      _error = UnknownError(cause: e);
+      notifyListeners();
+    }
   }
 
-  void deleteExpense(String expenseId) {
-    _allExpenses.removeWhere((e) => e.id == expenseId);
-    notifyListeners();
+  @override
+  void dispose() {
+    _expenseSub?.cancel();
+    _balanceSub?.cancel();
+    super.dispose();
   }
 }

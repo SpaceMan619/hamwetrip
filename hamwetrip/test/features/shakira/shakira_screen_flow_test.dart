@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hamwetrip/app/app_routes.dart';
+import 'package:hamwetrip/core/providers/repository_providers.dart';
 import 'package:hamwetrip/core/widgets/shakira_widgets/poll_option_tile.dart';
 import 'package:hamwetrip/data/models/expense.dart';
 import 'package:hamwetrip/data/models/settlement_args.dart';
+import 'package:hamwetrip/data/mock/mock_poll_repository.dart';
 import 'package:hamwetrip/features/shakira/presentation/demo/demo_group_voting_wrapper.dart';
 import 'package:hamwetrip/features/shakira/presentation/demo/demo_poll_results_wrapper.dart';
 import 'package:hamwetrip/features/shakira/presentation/demo/demo_settlement_confirmation_wrapper.dart';
@@ -17,14 +20,25 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
 
-    await tester.pumpWidget(const MaterialApp(home: DemoGroupVotingWrapper()));
+    final mockRepo = MockPollRepository();
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [pollRepositoryProvider.overrideWithValue(mockRepo)],
+        child: const MaterialApp(home: DemoGroupVotingWrapper()),
+      ),
+    );
+    // Allow the stream to emit and loading to finish.
+    await tester.pump(const Duration(milliseconds: 100));
 
     await tester.tap(find.text('Friday afternoon').first);
     await tester.pump();
-    expect(find.widgetWithText(FilledButton, 'Vote'), findsOneWidget);
 
+    expect(find.widgetWithText(FilledButton, 'Vote'), findsOneWidget);
     await tester.tap(find.widgetWithText(FilledButton, 'Vote'));
-    await tester.pump();
+    // Allow the async submitVote to complete and the UI to rebuild.
+    await tester.pump(const Duration(milliseconds: 200));
+
     expect(find.text('Voted'), findsOneWidget);
     expect(find.textContaining('Vote recorded successfully'), findsOneWidget);
   });
@@ -37,7 +51,16 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
 
-    await tester.pumpWidget(const MaterialApp(home: DemoGroupVotingWrapper()));
+    final mockRepo = MockPollRepository();
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [pollRepositoryProvider.overrideWithValue(mockRepo)],
+        child: const MaterialApp(home: DemoGroupVotingWrapper()),
+      ),
+    );
+    // Allow the stream to emit and loading to finish.
+    await tester.pump(const Duration(milliseconds: 100));
 
     await tester.tap(find.text('Visit Kimironko Market').first);
     await tester.pump();
