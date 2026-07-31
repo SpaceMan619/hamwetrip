@@ -19,6 +19,8 @@ ui-debug.log
 *-debug.log
 emulator-data/
 
-# Rules test workspace
+# Node workspaces
+node_modules/
 functions/node_modules/
 test-rules/node_modules/
+tools/seed/node_modules/

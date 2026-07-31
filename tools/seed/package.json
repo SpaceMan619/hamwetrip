@@ -1,0 +1,13 @@
+{
+  "name": "hamwetrip-seed",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Seeds a demo trip in hamwetrip-dev with content for every screen.",
+  "scripts": {
+    "seed": "node seed.mjs"
+  },
+  "dependencies": {
+    "firebase": "^12.16.0"
+  }
+}
