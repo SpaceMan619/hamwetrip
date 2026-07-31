@@ -643,22 +643,6 @@ describe('activity', () => {
   });
 });
 
-describe('collections owned by later phases', () => {
-  for (const name of [
-    'polls',
-    'expenses',
-    'payments',
-    'itinerary',
-    'documents',
-  ]) {
-    test(`${name} is denied until its phase writes rules`, async () => {
-      await seed();
-      await assertFails(
-        getDocs(collection(asOrganizer(), 'trips', TRIP, name)),
-      );
-      await assertFails(
-        setDoc(doc(asOrganizer(), 'trips', TRIP, name, 'x'), { a: 1 }),
-      );
-    });
-  }
-});
+// Polls, expenses, balances, payments, itinerary and documents used to be
+// denied here as unimplemented placeholders. They are now live, and their rules
+// are covered in trip-content.test.js.
