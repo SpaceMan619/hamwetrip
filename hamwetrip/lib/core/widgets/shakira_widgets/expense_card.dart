@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../data/models/expense.dart';
+import '../../../../../core/util/currency_format.dart';
 
 class ExpenseCard extends StatelessWidget {
   final Expense expense;
@@ -20,14 +21,14 @@ class ExpenseCard extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 12), // High-density 12px padding
       child: Material(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(8), // 0.5rem radius
+        borderRadius: BorderRadius.circular(16),
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(8),
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(16),
               border: Border.all(color: AppColors.line),
             ),
             // Stack allows us to overlay the sync icon in the top right
@@ -66,63 +67,76 @@ class ExpenseCard extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 4),
+                          Text.rich(
+                            TextSpan(
+                              text: expense.paidByName,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: AppColors.forest,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              children: [
+                                TextSpan(
+                                  text:
+                                      ' paid · Split ${expense.splitAmongInitials.length} ways',
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: AppColors.muted,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 112),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            formatRwfCompact(expense.amount),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.ink,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
                           Row(
                             children: [
-                              Text(
-                                expense.paidByName,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: AppColors.forest,
-                                  fontWeight: FontWeight.w600,
+                              Flexible(
+                                child: Text(
+                                  '${formatRwfCompact(expense.splitAmount)} each',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: AppColors.muted,
+                                  ),
                                 ),
                               ),
-                              Text(
-                                ' paid · Split ${expense.splitAmongInitials.length} ways',
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: AppColors.muted,
-                                ),
+                              const SizedBox(width: 4),
+                              Icon(
+                                isSynced
+                                    ? Icons.cloud_done_outlined
+                                    : Icons.sync_problem_outlined,
+                                size: 15,
+                                color: isSynced
+                                    ? AppColors.mint
+                                    : AppColors.sunset,
                               ),
                             ],
                           ),
                         ],
                       ),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          '\$${expense.amount.toStringAsFixed(2)}',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.ink,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          '\$${expense.splitAmount.toStringAsFixed(2)}/each',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AppColors.muted,
-                          ),
-                        ),
-                      ],
-                    ),
                   ],
-                ),
-
-                // NEW: Clear "Sync Status" icon in the top right corner
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: Icon(
-                    isSynced
-                        ? Icons.cloud_done_outlined
-                        : Icons.sync_problem_outlined,
-                    size: 18,
-                    color: isSynced ? AppColors.mint : AppColors.sunset,
-                  ),
                 ),
               ],
             ),

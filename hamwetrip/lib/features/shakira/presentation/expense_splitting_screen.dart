@@ -3,6 +3,7 @@ import '../../../../../core/theme/app_colors.dart';
 import '../../../../../data/models/expense.dart';
 import '../../../core/widgets/shakira_widgets/expense_card.dart';
 import '../../../core/widgets/shakira_widgets/settlement_card.dart';
+import '../../../core/util/currency_format.dart';
 
 class ExpenseSplittingScreen extends StatelessWidget {
   final List<Expense> expenses;
@@ -42,6 +43,7 @@ class ExpenseSplittingScreen extends StatelessWidget {
           backgroundColor: Colors.white,
           surfaceTintColor: Colors.transparent,
           elevation: 0,
+          automaticallyImplyLeading: false,
           title: const Text('Expenses'),
           actions: [
             IconButton(
@@ -74,21 +76,21 @@ class ExpenseSplittingScreen extends StatelessWidget {
                 children: [
                   _SummaryBox(
                     title: 'Total Spent',
-                    value: 'RWF ${totalSpent.toStringAsFixed(0)}',
+                    value: formatRwfCompact(totalSpent),
                     color: AppColors.sand,
                     textColor: AppColors.ink,
                   ),
                   const SizedBox(width: 12),
                   _SummaryBox(
                     title: 'You Owe',
-                    value: 'RWF ${youOwe.toStringAsFixed(0)}',
+                    value: formatRwfCompact(youOwe),
                     color: AppColors.paleSunset,
                     textColor: AppColors.sunset,
                   ),
                   const SizedBox(width: 12),
                   _SummaryBox(
                     title: 'You Are Owed',
-                    value: 'RWF ${youAreOwed.toStringAsFixed(0)}',
+                    value: formatRwfCompact(youAreOwed),
                     color: AppColors.paleMint,
                     textColor: AppColors.forest,
                   ),
@@ -113,7 +115,7 @@ class ExpenseSplittingScreen extends StatelessWidget {
         ),
         bottomNavigationBar: bottomNavigation,
         floatingActionButton: FloatingActionButton.extended(
-          onPressed: onAddExpense,
+          onPressed: () => DefaultTabController.of(context).animateTo(1),
           backgroundColor: AppColors.forest,
           icon: const Icon(Icons.add, color: Colors.white),
           label: const Text(
@@ -153,12 +155,17 @@ class _SummaryBox extends StatelessWidget {
               style: const TextStyle(fontSize: 12, color: AppColors.muted),
             ),
             const SizedBox(height: 4),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-                color: textColor,
+            FittedBox(
+              alignment: Alignment.centerLeft,
+              fit: BoxFit.scaleDown,
+              child: Text(
+                value,
+                maxLines: 1,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: textColor,
+                ),
               ),
             ),
           ],
@@ -466,7 +473,7 @@ class _AddExpenseTabState extends State<_AddExpenseTab> {
                 )
                 .toList(),
           ),
-          const Spacer(),
+          const SizedBox(height: 24),
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -503,8 +510,7 @@ class _AddExpenseTabState extends State<_AddExpenseTab> {
             width: double.infinity,
             child: FilledButton(
               onPressed: () {
-                debugPrint('Expense Submitted');
-                widget.onSubmit;
+                widget.onSubmit();
               },
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.forest,

@@ -38,6 +38,7 @@ class DocumentVaultScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
+        automaticallyImplyLeading: false,
         title: const Text('Documents'),
         actions: [
           IconButton(
@@ -56,13 +57,13 @@ class DocumentVaultScreen extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
             color: Colors.white,
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text(
+                Row(
+                  children: [
+                    const Expanded(
+                      child: Text(
                         'Offline Vault',
                         style: TextStyle(
                           fontSize: 18,
@@ -70,49 +71,38 @@ class DocumentVaultScreen extends StatelessWidget {
                           color: AppColors.ink,
                         ),
                       ),
-                      SizedBox(height: 4),
-                      // NEW: Storage Stats matching Figma
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.fingerprint,
-                            color: AppColors.forest,
-                            size: 16,
-                          ),
-                          SizedBox(width: 6),
-                          Text(
-                            '3 documents cached locally in Rwanda',
-                            style: TextStyle(
-                              color: AppColors.muted,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
+                    ),
+                    FilledButton.tonal(
+                      onPressed: onUploadDocument,
+                      style: FilledButton.styleFrom(
+                        backgroundColor: AppColors.forest,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(999),
+                        ),
                       ),
-                    ],
-                  ),
+                      child: const Icon(Icons.upload_file_outlined, size: 18),
+                    ),
+                  ],
                 ),
-                FilledButton.tonal(
-                  onPressed: onUploadDocument,
-                  style: FilledButton.styleFrom(
-                    backgroundColor: AppColors.forest,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
+                const SizedBox(height: 6),
+                const Row(
+                  children: [
+                    Icon(Icons.fingerprint, color: AppColors.forest, size: 16),
+                    SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        '3 documents cached locally • available offline',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(color: AppColors.muted, fontSize: 13),
+                      ),
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.upload_file_outlined, size: 18),
-                      SizedBox(width: 8),
-                      Text('Add Document'),
-                    ],
-                  ),
+                  ],
                 ),
               ],
             ),
@@ -167,7 +157,7 @@ class DocumentVaultScreen extends StatelessWidget {
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
-                          childAspectRatio: 0.75,
+                          mainAxisExtent: 244,
                           crossAxisSpacing: 12,
                           mainAxisSpacing: 12,
                         ),

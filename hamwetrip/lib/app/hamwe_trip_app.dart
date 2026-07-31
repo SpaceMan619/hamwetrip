@@ -24,27 +24,38 @@ class HamweTripApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       initialRoute: AppRoutes.home,
-      routes: {
-        AppRoutes.home: (_) => const HomeScreen(),
-        AppRoutes.onboarding: (_) => const OnboardingScreen(),
-        AppRoutes.login: (_) => const LoginScreen(),
-        AppRoutes.dashboard: (_) => const TripDashboardScreen(),
-        AppRoutes.createTrip: (_) => const CreateTripScreen(),
-        AppRoutes.inviteMembers: (_) => const InviteMembersScreen(),
-        AppRoutes.activityFeed: (_) => const ActivityFeedScreen(),
-        AppRoutes.profile: (_) => const ProfileScreen(),
+      onGenerateRoute: _routeFor,
+    );
+  }
 
-        // --- New Shakira Demo Routes ---
-        AppRoutes.detailedItinerary: (_) =>
-            const DemoDetailedItineraryWrapper(),
-        AppRoutes.documentVault: (_) => const DemoDocumentVaultWrapper(),
-        AppRoutes.expenseSplitting: (_) => const DemoExpenseSplittingWrapper(),
-        AppRoutes.groupVoting: (_) => const DemoGroupVotingWrapper(),
-        AppRoutes.momoSummary: (_) => const DemoMomoSummaryWrapper(),
-        AppRoutes.pollResults: (_) => const DemoPollResultsWrapper(),
-        AppRoutes.settlementConfirmation: (_) =>
-            const DemoSettlementConfirmationWrapper(),
-      },
+  // Top-level destinations behave like a workspace switch: no misleading
+  // horizontal page slide when the floating navigation pill is used.
+  static Route<dynamic> _routeFor(RouteSettings settings) {
+    final Widget page = switch (settings.name) {
+      AppRoutes.home => const HomeScreen(),
+      AppRoutes.onboarding => const OnboardingScreen(),
+      AppRoutes.login => const LoginScreen(),
+      AppRoutes.dashboard => const TripDashboardScreen(),
+      AppRoutes.createTrip => const CreateTripScreen(),
+      AppRoutes.inviteMembers => const InviteMembersScreen(),
+      AppRoutes.activityFeed => const ActivityFeedScreen(),
+      AppRoutes.profile => const ProfileScreen(),
+      AppRoutes.detailedItinerary => const DemoDetailedItineraryWrapper(),
+      AppRoutes.documentVault => const DemoDocumentVaultWrapper(),
+      AppRoutes.expenseSplitting => const DemoExpenseSplittingWrapper(),
+      AppRoutes.groupVoting => const DemoGroupVotingWrapper(),
+      AppRoutes.momoSummary => const DemoMomoSummaryWrapper(),
+      AppRoutes.pollResults => const DemoPollResultsWrapper(),
+      AppRoutes.settlementConfirmation =>
+        const DemoSettlementConfirmationWrapper(),
+      _ => const HomeScreen(),
+    };
+
+    return PageRouteBuilder<void>(
+      settings: settings,
+      pageBuilder: (context, animation, secondaryAnimation) => page,
+      transitionDuration: Duration.zero,
+      reverseTransitionDuration: Duration.zero,
     );
   }
 }

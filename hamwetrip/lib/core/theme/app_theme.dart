@@ -21,8 +21,8 @@ abstract final class AppTheme {
       fontFamily: 'Inter',
       textTheme: const TextTheme(
         headlineLarge: TextStyle(
-          color: AppColors.forest,
-          fontSize: 28,
+          color: AppColors.charcoal,
+          fontSize: 27,
           fontWeight: FontWeight.w700,
           letterSpacing: -0.3,
         ),
@@ -52,7 +52,7 @@ abstract final class AppTheme {
         elevation: 0,
         color: Colors.white,
         margin: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
     );
   }

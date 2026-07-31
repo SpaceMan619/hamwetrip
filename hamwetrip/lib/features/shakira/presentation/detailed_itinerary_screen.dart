@@ -29,6 +29,7 @@ class DetailedItineraryScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
+        automaticallyImplyLeading: false,
         title: const Text('Detailed Itinerary'),
         actions: [
           IconButton(
@@ -52,7 +53,7 @@ class DetailedItineraryScreen extends StatelessWidget {
               ),
             )
           : ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 132),
               itemCount: days.length,
               itemBuilder: (context, dayIndex) {
                 final day = days[dayIndex];
@@ -68,7 +69,10 @@ class DetailedItineraryScreen extends StatelessWidget {
                         color: AppColors.paleMint,
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Row(
+                      child: Wrap(
+                        spacing: 12,
+                        runSpacing: 4,
+                        crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
                           Text(
                             day.dayTitle,
@@ -78,7 +82,6 @@ class DetailedItineraryScreen extends StatelessWidget {
                               color: AppColors.ink,
                             ),
                           ),
-                          const SizedBox(width: 12),
                           Text(
                             day.date,
                             style: const TextStyle(

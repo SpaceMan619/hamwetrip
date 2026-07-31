@@ -37,6 +37,7 @@ class MomoSummaryScreen extends StatelessWidget {
           backgroundColor: Colors.white,
           surfaceTintColor: Colors.transparent,
           elevation: 0,
+          automaticallyImplyLeading: false,
           title: const Text('MoMo Summary'),
           bottom: const TabBar(
             indicatorColor: AppColors.forest,

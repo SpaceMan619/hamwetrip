@@ -106,7 +106,8 @@ class ItineraryItemCard extends StatelessWidget {
                           ),
                         ),
                         const Spacer(),
-                        // Keep the text badge on the right
+                        // Keep the text badge on the right, with sync status
+                        // in the row so it never floats over card content.
                         Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 8,
@@ -124,6 +125,14 @@ class ItineraryItemCard extends StatelessWidget {
                               fontWeight: FontWeight.w700,
                             ),
                           ),
+                        ),
+                        const SizedBox(width: 6),
+                        Icon(
+                          isSynced
+                              ? Icons.cloud_done_outlined
+                              : Icons.sync_problem_outlined,
+                          size: 16,
+                          color: isSynced ? AppColors.mint : AppColors.sunset,
                         ),
                       ],
                     ),
@@ -181,19 +190,6 @@ class ItineraryItemCard extends StatelessWidget {
                   ],
                 ),
               ),
-            ),
-          ),
-
-          // NEW: Clear "Sync Status" icon in the top right corner
-          Positioned(
-            top: 0,
-            right: 0,
-            child: Icon(
-              isSynced
-                  ? Icons.cloud_done_outlined
-                  : Icons.sync_problem_outlined,
-              size: 18,
-              color: isSynced ? AppColors.mint : AppColors.sunset,
             ),
           ),
         ],
