@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../core/preferences/app_preferences.dart';
 import '../core/theme/app_theme.dart';
 import '../features/home/presentation/home_screen.dart';
 import '../features/rajveer/presentation/rajveer_screens.dart';
@@ -14,16 +16,23 @@ import '../features/shakira/presentation/demo/demo_momo_summary_wrapper.dart';
 import '../features/shakira/presentation/demo/demo_poll_results_wrapper.dart';
 import '../features/shakira/presentation/demo/demo_settlement_confirmation_wrapper.dart';
 
-class HamweTripApp extends StatelessWidget {
+class HamweTripApp extends ConsumerWidget {
   const HamweTripApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Read rather than watched: the first route is decided once, at launch.
+    // Watching would rebuild the whole MaterialApp when the flag is set at the
+    // end of onboarding, throwing away the navigation stack underneath it.
+    final hasSeenOnboarding = ref
+        .read(appPreferencesProvider)
+        .hasSeenOnboarding;
+
     return MaterialApp(
       title: 'HamweTrip',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
-      initialRoute: AppRoutes.home,
+      initialRoute: hasSeenOnboarding ? AppRoutes.home : AppRoutes.onboarding,
       onGenerateRoute: _routeFor,
     );
   }

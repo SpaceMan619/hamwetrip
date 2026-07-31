@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hamwetrip/app/hamwe_trip_app.dart';
+import 'package:hamwetrip/core/preferences/app_preferences.dart';
 import 'package:hamwetrip/core/providers/repository_providers.dart';
 import 'package:hamwetrip/core/widgets/hamwe_bottom_navigation.dart';
 import 'package:hamwetrip/data/mock/mock_backend.dart';
 import 'package:hamwetrip/features/rajveer/presentation/rajveer_screens.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+late AppPreferences testPreferences;
 
 /// Wraps [child] in a ProviderScope backed by the seeded in-memory mocks.
 ///
@@ -16,6 +20,10 @@ Widget wrapped(Widget child) {
   return ProviderScope(
     overrides: [
       useMockRepositoriesProvider.overrideWithValue(true),
+      // The real provider throws unless overridden, deliberately, so that a
+      // missing override cannot reach production as preferences that silently
+      // never persist. Tests supply an in-memory instance instead.
+      appPreferencesProvider.overrideWithValue(testPreferences),
       mockBackendProvider.overrideWith((ref) {
         final backend = MockBackend.seeded(latency: Duration.zero);
         ref.onDispose(backend.dispose);
@@ -27,6 +35,13 @@ Widget wrapped(Widget child) {
 }
 
 void main() {
+  setUp(() async {
+    // Onboarding is treated as already seen, so the app opens on the home
+    // screen rather than the onboarding pages.
+    SharedPreferences.setMockInitialValues({'hasSeenOnboarding': true});
+    testPreferences = AppPreferences(await SharedPreferences.getInstance());
+  });
+
   testWidgets('shows the HamweTrip home screen', (tester) async {
     await tester.pumpWidget(wrapped(const HamweTripApp()));
     // Settle rather than a single pump: the greeting starts at its

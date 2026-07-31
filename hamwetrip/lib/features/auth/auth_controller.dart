@@ -49,6 +49,21 @@ class AuthController extends BaseController<AuthUser?> {
     });
   }
 
+  /// The app's second sign-in method. Behaves like the other two from the
+  /// screen's point of view: submitting state while it runs, then either data
+  /// or a readable error.
+  Future<bool> signInWithGoogle() {
+    return submit(() async {
+      try {
+        setData(await _repository.signInWithGoogle());
+        return true;
+      } on AppError catch (error) {
+        setError(error);
+        return false;
+      }
+    });
+  }
+
   Future<bool> sendPasswordReset({required String email}) {
     return submit(() async {
       try {

@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../app/app_routes.dart';
+import '../../../core/preferences/app_preferences.dart';
 import '../../../core/state/view_state.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/util/date_format.dart';
@@ -157,15 +158,26 @@ class ScreenExplorer extends ConsumerWidget {
   }
 }
 
-class OnboardingScreen extends StatefulWidget {
+class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
 
   @override
-  State<OnboardingScreen> createState() => _OnboardingScreenState();
+  ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen> {
+class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   var _page = 0;
+
+  /// Records that onboarding is done, then moves on.
+  ///
+  /// Both exits run through here, skipping included: somebody who chose to skip
+  /// has still seen the pages and should not meet them again on every launch.
+  /// The flag is what `HamweTripApp` reads to pick its first route.
+  Future<void> _finish() async {
+    await ref.read(appPreferencesProvider).setHasSeenOnboarding(true);
+    if (!mounted) return;
+    Navigator.of(context).pushReplacementNamed(AppRoutes.login);
+  }
 
   static const _pages = [
     (
@@ -198,9 +210,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () => Navigator.of(
-                    context,
-                  ).pushReplacementNamed(AppRoutes.login),
+                  onPressed: _finish,
                   child: const Text('Skip'),
                 ),
               ),
@@ -242,11 +252,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               SizedBox(
                 width: double.infinity,
                 child: FilledButton(
-                  onPressed: () => _page == 2
-                      ? Navigator.of(
-                          context,
-                        ).pushReplacementNamed(AppRoutes.login)
-                      : setState(() => _page++),
+                  onPressed: () =>
+                      _page == 2 ? _finish() : setState(() => _page++),
                   style: FilledButton.styleFrom(
                     backgroundColor: AppColors.forest,
                     padding: const EdgeInsets.symmetric(vertical: 17),
@@ -297,6 +304,28 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             displayName: _nameController.text.trim(),
           )
         : await controller.signIn(email: email, password: password);
+
+    if (!mounted) return;
+    if (ok) {
+      if (_isSignUp) {
+        // Registration sends a verification link. Saying so here is the only
+        // point the person is looking for confirmation; nothing blocks them
+        // from using the app in the meantime.
+        showInfoSnackBar(
+          context,
+          'Account created. Check $email to verify your address.',
+        );
+      }
+      Navigator.of(context).pushReplacementNamed(AppRoutes.home);
+      return;
+    }
+    final view = ref.read(authControllerProvider).view;
+    if (view.error case final error?) showAppErrorSnackBar(context, error);
+  }
+
+  Future<void> _signInWithGoogle() async {
+    final controller = ref.read(authControllerProvider.notifier);
+    final ok = await controller.signInWithGoogle();
 
     if (!mounted) return;
     if (ok) {
@@ -412,6 +441,42 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ),
                           )
                         : Text(_isSignUp ? 'Create account' : 'Sign in'),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Row(
+                  children: [
+                    const Expanded(child: Divider(color: AppColors.line)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Text(
+                        'or',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.muted,
+                        ),
+                      ),
+                    ),
+                    const Expanded(child: Divider(color: AppColors.line)),
+                  ],
+                ),
+                const SizedBox(height: 18),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: isSubmitting ? null : _signInWithGoogle,
+                    icon: const Icon(
+                      Icons.account_circle_outlined,
+                      color: AppColors.forest,
+                    ),
+                    label: const Text('Continue with Google'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.forest,
+                      side: const BorderSide(color: AppColors.line),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -711,13 +776,17 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
       endDate: _dates?.end,
     );
 
-    if (!mounted) return;
     if (trip != null) {
+      // Remember the trip just created, so relaunching the app comes back to
+      // it rather than to whichever trip happens to sort first.
+      await ref.read(appPreferencesProvider).setLastOpenedTripId(trip.id);
+      if (!mounted) return;
       Navigator.of(
         context,
       ).pushReplacementNamed(AppRoutes.dashboard, arguments: trip.id);
       return;
     }
+    if (!mounted) return;
     final view = ref.read(createTripControllerProvider).view;
     if (view.error case final error?) showAppErrorSnackBar(context, error);
   }
@@ -1167,6 +1236,11 @@ class ProfileScreen extends ConsumerWidget {
     WidgetRef ref,
     bool enabled,
   ) async {
+    // Mirrored on the device as well as in the profile document. The local copy
+    // is what lets the switch show the right position on the very next launch,
+    // including offline, instead of flicking once Firestore answers.
+    await ref.read(appPreferencesProvider).setNotificationsEnabled(enabled);
+
     final ok = await ref
         .read(profileActionsControllerProvider.notifier)
         .setNotificationsEnabled(enabled);
@@ -1179,6 +1253,13 @@ class ProfileScreen extends ConsumerWidget {
     final ok = await ref
         .read(profileActionsControllerProvider.notifier)
         .signOut();
+    if (ok) {
+      // Forget the device settings that belonged to the person signing out.
+      // Whoever uses this phone next may not be a member of that trip.
+      // hasSeenOnboarding deliberately survives, since onboarding explains the
+      // app rather than the account.
+      await ref.read(appPreferencesProvider).clearForSignOut();
+    }
     if (!context.mounted) return;
     if (ok) {
       Navigator.of(
@@ -1245,7 +1326,11 @@ class ProfileScreen extends ConsumerWidget {
                 : () => _editDisplayName(context, ref, profile.displayName),
           ),
           _NotificationsTile(
-            enabled: profile?.notificationsEnabled ?? true,
+            // The device's copy is the fallback while the profile loads, so the
+            // switch never starts in the wrong position and then jump.
+            enabled:
+                profile?.notificationsEnabled ??
+                ref.read(appPreferencesProvider).notificationsEnabled,
             onChanged: profile == null
                 ? null
                 : (value) => _toggleNotifications(context, ref, value),

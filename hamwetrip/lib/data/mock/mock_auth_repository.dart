@@ -116,6 +116,40 @@ class MockAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<AuthUser> signInWithGoogle() async {
+    await _backend.guard('signInWithGoogle');
+
+    // There is no account chooser to show in memory, so this stands in for
+    // "the person picked a Google account". A fixed address keeps repeated
+    // runs landing on the same seeded user.
+    const email = 'google.user@example.com';
+
+    AppUser? match;
+    for (final user in _backend.users.values) {
+      if (user.email.toLowerCase() == email) {
+        match = user;
+        break;
+      }
+    }
+
+    match ??= () {
+      final uid = _backend.nextId('u');
+      final created = AppUser(
+        uid: uid,
+        displayName: 'Google User',
+        email: email,
+        createdAt: DateTime.now().toUtc(),
+      );
+      _backend.users[uid] = created;
+      return created;
+    }();
+
+    _backend.signedInUid = match.uid;
+    _backend.emitChange();
+    return _toAuthUser(match.uid)!;
+  }
+
+  @override
   Future<void> signOut() async {
     await _backend.guard('signOut');
     _backend.signedInUid = null;
