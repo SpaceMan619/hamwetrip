@@ -36,11 +36,19 @@ void main() {
 
     expect(find.widgetWithText(FilledButton, 'Vote'), findsOneWidget);
     await tester.tap(find.widgetWithText(FilledButton, 'Vote'));
-    // Allow the async submitVote to complete and the UI to rebuild.
-    await tester.pump(const Duration(milliseconds: 200));
+    await tester.pumpAndSettle();
+
+    // The success message is shown on the tab the vote was cast from.
+    expect(find.textContaining('Vote recorded successfully'), findsOneWidget);
+
+    // Voting moves the poll off the Active tab: the wrapper files a poll under
+    // closedPolls as soon as hasVoted is true, and the screen renders the two
+    // lists as separate tabs. TabBarView only builds the visible page, so the
+    // "Voted" pill is not in the tree until the Closed tab is shown.
+    await tester.tap(find.text('Closed'));
+    await tester.pumpAndSettle();
 
     expect(find.text('Voted'), findsOneWidget);
-    expect(find.textContaining('Vote recorded successfully'), findsOneWidget);
   });
 
   testWidgets('multiple options remain selected before submitting', (
