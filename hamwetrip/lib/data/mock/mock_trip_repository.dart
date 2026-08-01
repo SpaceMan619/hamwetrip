@@ -39,6 +39,9 @@ class MockTripRepository implements TripRepository {
           .tripIdsFor(uid)
           .map((tripId) => _backend.trips[tripId])
           .whereType<Trip>()
+          // Mirrors the Firebase implementation: archiving is how a trip is
+          // "deleted" — see FirebaseTripRepository._loadTripsFor.
+          .where((trip) => trip.status != TripStatus.archived)
           .toList()
         ..sort(_byRecency);
     });

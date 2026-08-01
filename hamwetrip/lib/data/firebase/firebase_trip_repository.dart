@@ -110,6 +110,12 @@ class FirebaseTripRepository implements TripRepository {
         tripSnaps
             .where((snap) => snap.exists)
             .map((snap) => Trip.fromMap(snap.id, snap.data()!))
+            // Archiving is how a trip is "deleted" — see updateTrip's
+            // organizer-only status change and the firestore.rules comment on
+            // why trips/{tripId} can never be hard-deleted. Filtered here
+            // rather than left to the UI, so nothing that lists trips has to
+            // remember to exclude them.
+            .where((trip) => trip.status != TripStatus.archived)
             .toList()
           ..sort(_byRecency);
     return trips;

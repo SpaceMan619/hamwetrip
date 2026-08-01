@@ -7,12 +7,14 @@ class ExpenseCard extends StatelessWidget {
   final Expense expense;
   final bool isSynced;
   final VoidCallback? onTap;
+  final VoidCallback? onDelete;
 
   const ExpenseCard({
     super.key,
     required this.expense,
     this.isSynced = true,
     this.onTap,
+    this.onDelete,
   });
 
   @override
@@ -136,6 +138,16 @@ class ExpenseCard extends StatelessWidget {
                         ],
                       ),
                     ),
+                    if (onDelete != null)
+                      IconButton(
+                        onPressed: onDelete,
+                        icon: const Icon(Icons.delete_outline, size: 20),
+                        color: AppColors.muted,
+                        tooltip: 'Delete expense',
+                        constraints: const BoxConstraints(),
+                        padding: const EdgeInsets.only(left: 8),
+                        visualDensity: VisualDensity.compact,
+                      ),
                   ],
                 ),
               ],

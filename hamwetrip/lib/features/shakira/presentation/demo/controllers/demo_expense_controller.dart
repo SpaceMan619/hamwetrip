@@ -207,15 +207,21 @@ class DemoExpenseController extends ChangeNotifier {
     }
   }
 
-  Future<void> deleteExpense(String expenseId) async {
+  /// Returns whether the delete succeeded, so a caller can tell that apart
+  /// from a stale [error] left over from some earlier action rather than
+  /// this one.
+  Future<bool> deleteExpense(String expenseId) async {
     try {
       await _repository.deleteExpense(tripId: tripId, expenseId: expenseId);
+      return true;
     } on AppError catch (e) {
       _error = e;
       notifyListeners();
+      return false;
     } catch (e) {
       _error = UnknownError(cause: e);
       notifyListeners();
+      return false;
     }
   }
 
