@@ -13,6 +13,7 @@ class DemoMomoSummaryWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => TripScoped(
+    destination: HamweDestination.ledger,
     builder: (tripId) =>
         _MomoSummaryView(key: ValueKey(tripId), tripId: tripId),
   );
@@ -51,9 +52,12 @@ class _DemoMomoSummaryWrapperState extends ConsumerState<_MomoSummaryView> {
   Widget build(BuildContext context) {
     // Loading state
     if (_controller.isLoading) {
-      return const Scaffold(
+      return Scaffold(
         backgroundColor: AppColors.warmSand,
-        body: Center(child: CircularProgressIndicator()),
+        body: const Center(child: CircularProgressIndicator()),
+        bottomNavigationBar: const HamweBottomNavigation(
+          selected: HamweDestination.ledger,
+        ),
       );
     }
 
@@ -78,6 +82,9 @@ class _DemoMomoSummaryWrapperState extends ConsumerState<_MomoSummaryView> {
               ),
             ],
           ),
+        ),
+        bottomNavigationBar: const HamweBottomNavigation(
+          selected: HamweDestination.ledger,
         ),
       );
     }

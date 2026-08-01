@@ -19,6 +19,7 @@ class DemoExpenseSplittingWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => TripScoped(
+    destination: HamweDestination.ledger,
     builder: (tripId) =>
         _ExpenseSplittingView(key: ValueKey(tripId), tripId: tripId),
   );
@@ -106,9 +107,12 @@ class _DemoExpenseSplittingWrapperState
   Widget build(BuildContext context) {
     // Loading state
     if (_controller.isLoading) {
-      return const Scaffold(
+      return Scaffold(
         backgroundColor: AppColors.warmSand,
-        body: Center(child: CircularProgressIndicator()),
+        body: const Center(child: CircularProgressIndicator()),
+        bottomNavigationBar: const HamweBottomNavigation(
+          selected: HamweDestination.ledger,
+        ),
       );
     }
 
@@ -133,6 +137,9 @@ class _DemoExpenseSplittingWrapperState
               ),
             ],
           ),
+        ),
+        bottomNavigationBar: const HamweBottomNavigation(
+          selected: HamweDestination.ledger,
         ),
       );
     }

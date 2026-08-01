@@ -14,6 +14,7 @@ class DemoDocumentVaultWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => TripScoped(
+    destination: HamweDestination.vault,
     builder: (tripId) =>
         _DocumentVaultView(key: ValueKey(tripId), tripId: tripId),
   );
@@ -138,9 +139,12 @@ class _DemoDocumentVaultWrapperState extends ConsumerState<_DocumentVaultView> {
   Widget build(BuildContext context) {
     // Loading state
     if (_controller.isLoading) {
-      return const Scaffold(
+      return Scaffold(
         backgroundColor: AppColors.warmSand,
-        body: Center(child: CircularProgressIndicator()),
+        body: const Center(child: CircularProgressIndicator()),
+        bottomNavigationBar: const HamweBottomNavigation(
+          selected: HamweDestination.vault,
+        ),
       );
     }
 
@@ -165,6 +169,9 @@ class _DemoDocumentVaultWrapperState extends ConsumerState<_DocumentVaultView> {
               ),
             ],
           ),
+        ),
+        bottomNavigationBar: const HamweBottomNavigation(
+          selected: HamweDestination.vault,
         ),
       );
     }

@@ -16,6 +16,7 @@ class DemoGroupVotingWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => TripScoped(
+    destination: HamweDestination.trips,
     builder: (tripId) =>
         _GroupVotingView(key: ValueKey(tripId), tripId: tripId),
   );
@@ -86,9 +87,12 @@ class _DemoGroupVotingWrapperState extends ConsumerState<_GroupVotingView> {
   Widget build(BuildContext context) {
     // Loading state
     if (_controller.isLoading) {
-      return const Scaffold(
+      return Scaffold(
         backgroundColor: AppColors.warmSand,
-        body: Center(child: CircularProgressIndicator()),
+        body: const Center(child: CircularProgressIndicator()),
+        bottomNavigationBar: const HamweBottomNavigation(
+          selected: HamweDestination.trips,
+        ),
       );
     }
 
@@ -113,6 +117,9 @@ class _DemoGroupVotingWrapperState extends ConsumerState<_GroupVotingView> {
               ),
             ],
           ),
+        ),
+        bottomNavigationBar: const HamweBottomNavigation(
+          selected: HamweDestination.trips,
         ),
       );
     }
