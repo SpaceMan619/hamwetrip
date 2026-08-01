@@ -4,7 +4,7 @@ final List<TripDocument> mockDocuments = [
   TripDocument(
     id: 'doc_1',
     title: 'Rajveer_Passport.pdf',
-    category: 'Identity',
+    category: 'IDs',
     type: DocType.pdf,
     uploadedBy: 'Rajveer Malik',
     uploadedByInitials: 'RM',
@@ -14,7 +14,7 @@ final List<TripDocument> mockDocuments = [
   TripDocument(
     id: 'doc_2',
     title: 'Shakira_Passport_Copy.jpg',
-    category: 'Identity',
+    category: 'IDs',
     type: DocType.image,
     uploadedBy: 'Shakira',
     uploadedByInitials: 'SK',
@@ -24,7 +24,7 @@ final List<TripDocument> mockDocuments = [
   TripDocument(
     id: 'doc_3',
     title: 'Nyungwe_Lodge_Booking.pdf',
-    category: 'Booking',
+    category: 'Bookings',
     type: DocType.pdf,
     uploadedBy: 'Rajveer Malik',
     uploadedByInitials: 'RM',
@@ -34,7 +34,7 @@ final List<TripDocument> mockDocuments = [
   TripDocument(
     id: 'doc_4',
     title: 'Park_Entry_Permit_Group.pdf',
-    category: 'Booking',
+    category: 'Bookings',
     type: DocType.pdf,
     uploadedBy: 'Kamanzi',
     uploadedByInitials: 'KZ',
@@ -44,7 +44,7 @@ final List<TripDocument> mockDocuments = [
   TripDocument(
     id: 'doc_5',
     title: 'Travel_Insurance_KZ.docx',
-    category: 'Insurance',
+    category: 'Other',
     type: DocType.document,
     uploadedBy: 'Kamanzi',
     uploadedByInitials: 'KZ',
@@ -54,7 +54,7 @@ final List<TripDocument> mockDocuments = [
   TripDocument(
     id: 'doc_6',
     title: 'Van_Rental_Agreement.pdf',
-    category: 'Booking',
+    category: 'Bookings',
     type: DocType.pdf,
     uploadedBy: 'Aime',
     uploadedByInitials: 'AJ',

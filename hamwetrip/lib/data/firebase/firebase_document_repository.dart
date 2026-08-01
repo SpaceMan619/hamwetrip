@@ -49,6 +49,7 @@ class FirebaseDocumentRepository implements DocumentRepository {
     required String uploadedBy,
     required String uploadedByInitials,
     required String fileSize,
+    String? localPath,
   }) async {
     _requireUid();
     try {
@@ -62,6 +63,7 @@ class FirebaseDocumentRepository implements DocumentRepository {
         uploadedByInitials: uploadedByInitials,
         fileSize: fileSize,
         date: DateTime.now(),
+        localPath: localPath,
       );
       final data = doc.toMap()..['createdAt'] = FieldValue.serverTimestamp();
       await ref.set(data);

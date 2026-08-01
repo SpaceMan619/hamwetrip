@@ -1,17 +1,24 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../data/models/document.dart';
 
 class DocumentCard extends StatelessWidget {
   final TripDocument document;
-  final bool isSynced; // Added for the top-right icon
+
+  /// Whether the file itself is on this device. Unlike the expense and
+  /// itinerary cards, where the badge means "written to Firestore", a document
+  /// is only useful offline if its bytes are here — so that is what the badge
+  /// reports, and what decides whether a thumbnail can be drawn.
+  final bool isAvailableOffline;
   final VoidCallback? onTap;
   final VoidCallback? onMore;
 
   const DocumentCard({
     super.key,
     required this.document,
-    this.isSynced = true, // Defaults to synced
+    this.isAvailableOffline = true,
     this.onTap,
     this.onMore,
   });
@@ -38,6 +45,28 @@ class DocumentCard extends StatelessWidget {
     }
   }
 
+  /// The top band of the card: the picture itself when the document is an
+  /// image this device holds, and the type icon otherwise.
+  Widget _preview() {
+    final path = document.localPath;
+    if (isAvailableOffline && document.type == DocType.image && path != null) {
+      return Image.file(
+        File(path),
+        fit: BoxFit.cover,
+        width: double.infinity,
+        // Falls back to the icon rather than Flutter's grey error box if the
+        // file turns out not to be a decodable image.
+        errorBuilder: (context, error, stack) => _iconPreview(),
+      );
+    }
+    return _iconPreview();
+  }
+
+  Widget _iconPreview() => Container(
+    color: AppColors.warmSand,
+    child: Center(child: Icon(_fileIcon, size: 42, color: _iconColor)),
+  );
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -60,15 +89,7 @@ class DocumentCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Expanded(
-                    flex: 3,
-                    child: Container(
-                      color: AppColors.warmSand,
-                      child: Center(
-                        child: Icon(_fileIcon, size: 42, color: _iconColor),
-                      ),
-                    ),
-                  ),
+                  Expanded(flex: 3, child: _preview()),
                   Expanded(
                     flex: 4,
                     child: Padding(
@@ -160,11 +181,11 @@ class DocumentCard extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                isSynced
-                    ? Icons.cloud_done_outlined
-                    : Icons.sync_problem_outlined,
+                isAvailableOffline
+                    ? Icons.offline_pin_outlined
+                    : Icons.cloud_off_outlined,
                 size: 14, // Slightly smaller to fit the document grid nicely
-                color: isSynced ? AppColors.forest : AppColors.sunset,
+                color: isAvailableOffline ? AppColors.forest : AppColors.sunset,
               ),
             ),
           ),
