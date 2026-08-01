@@ -1,6 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../app/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/providers/repository_providers.dart';
 import '../../../../core/state/view_state.dart';
@@ -53,6 +54,22 @@ class _DemoDocumentVaultWrapperState extends ConsumerState<_DocumentVaultView> {
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  /// Leaves the vault.
+  ///
+  /// A plain `pop` is not enough. Arriving here by tapping Vault in the bottom
+  /// bar clears the stack — see [HamweBottomNavigation] — so there is usually
+  /// nothing underneath to pop to, and the arrow would do nothing. When that
+  /// is the case it goes up to Home instead, which is where "back" means to go
+  /// from a tab.
+  void _leaveVault() {
+    final navigator = Navigator.of(context);
+    if (navigator.canPop()) {
+      navigator.pop();
+    } else {
+      navigator.pushNamedAndRemoveUntil(AppRoutes.home, (route) => false);
+    }
   }
 
   void _notify(String message, {bool good = false}) {
@@ -257,6 +274,7 @@ class _DemoDocumentVaultWrapperState extends ConsumerState<_DocumentVaultView> {
       categories: _controller.categories,
       cachedCount: _controller.cachedCount,
       hasFile: _controller.hasFile,
+      onBack: _leaveVault,
       isUploading: _controller.isUploading,
       isOffline: false,
       onCategoryChanged: (category) => _controller.setCategory(category),
