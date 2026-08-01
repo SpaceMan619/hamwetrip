@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:open_filex/open_filex.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/widgets/hamwe_bottom_navigation.dart';
 import '../../../data/local/document_file_store.dart';
 import '../../../data/models/document.dart';
 
@@ -49,6 +50,18 @@ class DocumentPreviewScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
+        // Spelled out rather than left to `automaticallyImplyLeading`. Every
+        // other screen here turns that off and keeps the bottom bar, so the
+        // default arrow is not what someone is looking for on this one.
+        leading: IconButton(
+          tooltip: 'Back to the vault',
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            size: 20,
+            color: AppColors.ink,
+          ),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: Text(document.title, overflow: TextOverflow.ellipsis),
         actions: [
           if (hasFile)
@@ -66,6 +79,12 @@ class DocumentPreviewScreen extends StatelessWidget {
           ),
           _Details(document: document),
         ],
+      ),
+      // Kept, unlike the other pushed detail screens. A document is opened
+      // from a tab and read on the spot; losing the bar makes the screen feel
+      // like somewhere you fell into rather than somewhere you navigated to.
+      bottomNavigationBar: const HamweBottomNavigation(
+        selected: HamweDestination.vault,
       ),
     );
   }
