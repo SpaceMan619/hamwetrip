@@ -29,6 +29,10 @@ class DocumentVaultScreen extends StatelessWidget {
   /// card's thumbnail and its sync badge.
   final bool Function(TripDocument) hasFile;
 
+  /// Leaves the vault. Null hides the arrow entirely, for a caller that has
+  /// nowhere sensible to send someone.
+  final VoidCallback? onBack;
+
   const DocumentVaultScreen({
     super.key,
     required this.documents,
@@ -41,6 +45,7 @@ class DocumentVaultScreen extends StatelessWidget {
     required this.onSearch,
     required this.cachedCount,
     required this.hasFile,
+    this.onBack,
     this.isUploading = false,
     this.isOffline = true,
     this.bottomNavigation,
@@ -60,6 +65,17 @@ class DocumentVaultScreen extends StatelessWidget {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         automaticallyImplyLeading: false,
+        leading: onBack == null
+            ? null
+            : IconButton(
+                tooltip: 'Back',
+                icon: const Icon(
+                  Icons.arrow_back_ios_new,
+                  size: 20,
+                  color: AppColors.ink,
+                ),
+                onPressed: onBack,
+              ),
         title: const Text('Documents'),
         actions: [
           IconButton(
