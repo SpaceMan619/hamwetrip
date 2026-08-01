@@ -14,41 +14,6 @@ import '../../../../core/widgets/hamwe_bottom_navigation.dart';
 import '../../../../core/widgets/trip_scoped.dart';
 import '../../../home/home_providers.dart';
 
-/// What kind of file the traveller says they are adding, which decides where
-/// the system picker opens.
-enum _PickSource {
-  /// The system document browser, filtered to the formats a trip actually
-  /// produces. On Android this opens the file browser rather than Recents.
-  document(FileType.custom),
-
-  /// The gallery.
-  image(FileType.image),
-
-  /// Everything, for the file the other two do not cover.
-  any(FileType.any);
-
-  const _PickSource(this.fileType);
-
-  final FileType fileType;
-}
-
-/// The formats the "PDF or document" picker offers.
-///
-/// Android maps these to MIME types; any it does not recognise makes the whole
-/// filter fall back to "all files", so an unusual format is never locked out —
-/// it just loses the filtering.
-const _documentExtensions = <String>[
-  'pdf',
-  'doc',
-  'docx',
-  'xls',
-  'xlsx',
-  'ppt',
-  'pptx',
-  'txt',
-  'csv',
-];
-
 /// Wires up document data from Firestore to the pure UI screen.
 class DemoDocumentVaultWrapper extends StatelessWidget {
   const DemoDocumentVaultWrapper({super.key});
@@ -101,91 +66,14 @@ class _DemoDocumentVaultWrapperState extends ConsumerState<_DocumentVaultView> {
     );
   }
 
-  /// Asks what kind of file is coming before opening the picker.
-  ///
-  /// Worth the extra tap. Asking Android for "any file" opens the document
-  /// picker on its Recents view, which lists photos and hides everything else
-  /// behind a menu — so a PDF sitting in Downloads looks unreachable. Naming
-  /// the kind up front lets the picker open where that kind actually lives.
-  Future<void> _chooseSourceAndUpload() async {
-    final source = await showModalBottomSheet<_PickSource>(
-      context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (ctx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: 8),
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: AppColors.line,
-                borderRadius: BorderRadius.circular(99),
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.all(16),
-              child: Text(
-                'Add to vault',
-                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
-              ),
-            ),
-            const Divider(height: 1),
-            ListTile(
-              leading: const Icon(
-                Icons.picture_as_pdf_outlined,
-                color: AppColors.forest,
-              ),
-              title: const Text('PDF or document'),
-              subtitle: const Text('Bookings, permits, insurance'),
-              onTap: () => Navigator.pop(ctx, _PickSource.document),
-            ),
-            ListTile(
-              leading: const Icon(
-                Icons.photo_library_outlined,
-                color: AppColors.forest,
-              ),
-              title: const Text('Photo'),
-              subtitle: const Text('A picture of a passport or a receipt'),
-              onTap: () => Navigator.pop(ctx, _PickSource.image),
-            ),
-            ListTile(
-              leading: const Icon(
-                Icons.folder_outlined,
-                color: AppColors.forest,
-              ),
-              title: const Text('Browse all files'),
-              onTap: () => Navigator.pop(ctx, _PickSource.any),
-            ),
-            const SizedBox(height: 16),
-          ],
-        ),
-      ),
-    );
-
-    if (source == null || !mounted) return;
-    await _pickAndUpload(source);
-  }
-
   /// Picks a file from the device, asks what to call it, then stores it.
   ///
   /// Nothing is written until the form is completed, so backing out of either
   /// step leaves the vault untouched.
-  Future<void> _pickAndUpload(_PickSource source) async {
+  Future<void> _pickAndUpload() async {
     final FilePickerResult? picked;
     try {
-      picked = await FilePicker.pickFiles(
-        dialogTitle: 'Add to vault',
-        type: source.fileType,
-        // Only FileType.custom may carry extensions; the others throw.
-        allowedExtensions: source == _PickSource.document
-            ? _documentExtensions
-            : null,
-      );
+      picked = await FilePicker.pickFiles(dialogTitle: 'Add to vault');
     } catch (_) {
       // Thrown when the picker cannot start at all — permission refused, or no
       // document provider on the device.
@@ -377,7 +265,7 @@ class _DemoDocumentVaultWrapperState extends ConsumerState<_DocumentVaultView> {
       ),
       onViewDocument: _openDocument,
       onDocumentOptions: _showDocumentOptions,
-      onUploadDocument: _chooseSourceAndUpload,
+      onUploadDocument: _pickAndUpload,
       onSearch: () {
         showDialog(
           context: context,
