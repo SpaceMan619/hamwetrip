@@ -46,6 +46,84 @@ Future<NewExpenseInput?> showAddExpenseForm(BuildContext context) {
   );
 }
 
+/// Asks for a single line of text, returning null if the person backs out or
+/// leaves it empty.
+///
+/// The dialog owns its [TextEditingController] rather than the caller. That
+/// matters: `showDialog`'s future completes the moment the route is popped, but
+/// the dialog stays mounted through its exit animation. Disposing a controller
+/// straight after the await leaves a live TextField holding a dead controller,
+/// and the failed teardown trips a framework assertion. Owning it here means it
+/// is disposed when the route is genuinely gone.
+Future<String?> showSingleFieldPrompt(
+  BuildContext context, {
+  required String title,
+  required String label,
+  required String initialValue,
+  String confirmLabel = 'Save',
+}) {
+  return showDialog<String>(
+    context: context,
+    builder: (context) => _SingleFieldDialog(
+      title: title,
+      label: label,
+      initialValue: initialValue,
+      confirmLabel: confirmLabel,
+    ),
+  );
+}
+
+class _SingleFieldDialog extends StatefulWidget {
+  const _SingleFieldDialog({
+    required this.title,
+    required this.label,
+    required this.initialValue,
+    required this.confirmLabel,
+  });
+
+  final String title;
+  final String label;
+  final String initialValue;
+  final String confirmLabel;
+
+  @override
+  State<_SingleFieldDialog> createState() => _SingleFieldDialogState();
+}
+
+class _SingleFieldDialogState extends State<_SingleFieldDialog> {
+  late final _controller = TextEditingController(text: widget.initialValue);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(widget.title),
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        decoration: InputDecoration(labelText: widget.label),
+        onSubmitted: (value) => Navigator.of(context).pop(value.trim()),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.of(context).pop(_controller.text.trim()),
+          style: FilledButton.styleFrom(backgroundColor: AppColors.forest),
+          child: Text(widget.confirmLabel),
+        ),
+      ],
+    );
+  }
+}
+
 /// What a completed itinerary form produced.
 class NewItineraryItemInput {
   const NewItineraryItemInput({

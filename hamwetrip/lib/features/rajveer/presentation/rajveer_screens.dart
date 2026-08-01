@@ -10,6 +10,7 @@ import '../../../core/state/view_state.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/util/date_format.dart';
 import '../../../core/util/error_feedback.dart';
+import '../../../core/widgets/create_forms.dart';
 import '../../../core/widgets/hamwe_bottom_navigation.dart';
 import '../../../domain/models/activity_event.dart';
 import '../../../domain/models/invite.dart';
@@ -537,26 +538,12 @@ class _TripDashboardBody extends ConsumerWidget {
     WidgetRef ref,
     String currentName,
   ) async {
-    final nameController = TextEditingController(text: currentName);
-    final newName = await showDialog<String>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Rename trip'),
-        content: TextField(controller: nameController, autofocus: true),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () =>
-                Navigator.of(dialogContext).pop(nameController.text.trim()),
-            child: const Text('Save'),
-          ),
-        ],
-      ),
+    final newName = await showSingleFieldPrompt(
+      context,
+      title: 'Rename trip',
+      label: 'Trip name',
+      initialValue: currentName,
     );
-    nameController.dispose();
     if (newName == null || newName.isEmpty || newName == currentName) return;
     if (!context.mounted) return;
 
@@ -1200,26 +1187,12 @@ class ProfileScreen extends ConsumerWidget {
     WidgetRef ref,
     String currentName,
   ) async {
-    final nameController = TextEditingController(text: currentName);
-    final newName = await showDialog<String>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Edit name'),
-        content: TextField(controller: nameController, autofocus: true),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () =>
-                Navigator.of(dialogContext).pop(nameController.text.trim()),
-            child: const Text('Save'),
-          ),
-        ],
-      ),
+    final newName = await showSingleFieldPrompt(
+      context,
+      title: 'Edit name',
+      label: 'Your name',
+      initialValue: currentName,
     );
-    nameController.dispose();
     if (newName == null || newName.isEmpty || newName == currentName) return;
     if (!context.mounted) return;
 
