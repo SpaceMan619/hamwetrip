@@ -534,7 +534,11 @@ class _TripDashboardBody extends ConsumerWidget {
 
   final String tripId;
 
-  Future<void> _editTripDetails(BuildContext context, WidgetRef ref, Trip trip) async {
+  Future<void> _editTripDetails(
+    BuildContext context,
+    WidgetRef ref,
+    Trip trip,
+  ) async {
     final input = await showEditTripForm(
       context,
       initialName: trip.name,
@@ -565,7 +569,11 @@ class _TripDashboardBody extends ConsumerWidget {
   /// archives the trip instead, which reads as "deleted" to the caller
   /// because [myTripsControllerProvider] filters archived trips out of the
   /// list.
-  Future<void> _deleteTrip(BuildContext context, WidgetRef ref, String tripName) async {
+  Future<void> _deleteTrip(
+    BuildContext context,
+    WidgetRef ref,
+    String tripName,
+  ) async {
     final confirmed = await showConfirmDialog(
       context,
       title: 'Delete trip?',

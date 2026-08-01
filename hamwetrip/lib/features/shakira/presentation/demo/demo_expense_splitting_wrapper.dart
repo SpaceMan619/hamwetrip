@@ -108,7 +108,8 @@ class _DemoExpenseSplittingWrapperState
     final confirmed = await showConfirmDialog(
       context,
       title: 'Delete expense?',
-      message: '"${expense.description}" will be removed for everyone on '
+      message:
+          '"${expense.description}" will be removed for everyone on '
           "this trip. This can't be undone.",
     );
     if (!confirmed || !mounted) return;

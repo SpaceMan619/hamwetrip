@@ -265,7 +265,9 @@ Future<bool> showConfirmDialog(
         ),
         FilledButton(
           onPressed: () => Navigator.of(context).pop(true),
-          style: FilledButton.styleFrom(backgroundColor: const Color(0xFF9A2424)),
+          style: FilledButton.styleFrom(
+            backgroundColor: const Color(0xFF9A2424),
+          ),
           child: Text(confirmLabel),
         ),
       ],
