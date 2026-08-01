@@ -43,11 +43,19 @@ class ItineraryItem {
 
 @immutable
 class ItineraryDay {
+  /// The Firestore document id of the day.
+  ///
+  /// Carried on the model because adding an activity appends to this day's
+  /// `items` array, so the screen has to be able to say which day it means.
+  /// Empty for a day built from a map without one.
+  final String id;
+
   final String dayTitle;
   final String date;
   final List<ItineraryItem> items;
 
   const ItineraryDay({
+    this.id = '',
     required this.dayTitle,
     required this.date,
     required this.items,
@@ -59,13 +67,18 @@ class ItineraryDay {
     'items': items.map((i) => i.toMap()).toList(),
   };
 
-  factory ItineraryDay.fromMap(Map<String, Object?> map) => ItineraryDay(
-    dayTitle: map['dayTitle'] as String? ?? '',
-    date: map['date'] as String? ?? '',
-    items: (map['items'] as List<dynamic>? ?? [])
-        .map(
-          (i) => ItineraryItem.fromMap('', Map<String, Object?>.from(i as Map)),
-        )
-        .toList(),
-  );
+  factory ItineraryDay.fromMap(Map<String, Object?> map, {String id = ''}) =>
+      ItineraryDay(
+        id: id,
+        dayTitle: map['dayTitle'] as String? ?? '',
+        date: map['date'] as String? ?? '',
+        items: (map['items'] as List<dynamic>? ?? [])
+            .map(
+              (i) => ItineraryItem.fromMap(
+                '',
+                Map<String, Object?>.from(i as Map),
+              ),
+            )
+            .toList(),
+      );
 }

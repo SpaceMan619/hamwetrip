@@ -5,8 +5,11 @@ import '../../../../core/providers/repository_providers.dart';
 import '../../../../app/app_routes.dart';
 import '../group_voting_screen.dart';
 import 'controllers/demo_voting_controller.dart';
+import '../../../../core/state/view_state.dart';
+import '../../../../core/widgets/create_forms.dart';
 import '../../../../core/widgets/hamwe_bottom_navigation.dart';
 import '../../../../core/widgets/trip_scoped.dart';
+import '../../../trips/trip_providers.dart';
 
 class DemoGroupVotingWrapper extends StatelessWidget {
   const DemoGroupVotingWrapper({super.key});
@@ -46,6 +49,37 @@ class _DemoGroupVotingWrapperState extends ConsumerState<_GroupVotingView> {
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  Future<void> _createPoll() async {
+    final input = await showCreatePollForm(context);
+    if (input == null || !mounted) return;
+
+    // The roster gives the denominator the poll card shows as "x of y voted".
+    final membersState = ref.read(tripMembersControllerProvider(widget.tripId));
+    final memberCount = switch (membersState.view) {
+      ViewData(:final data) => data.length,
+      _ => 0,
+    };
+
+    final created = await _controller.createPoll(
+      question: input.question,
+      optionLabels: input.options,
+      totalMembers: memberCount,
+    );
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          created
+              ? 'Poll created'
+              : _controller.error?.message ?? 'Could not create the poll',
+        ),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: created ? AppColors.forest : null,
+      ),
+    );
   }
 
   @override
@@ -156,14 +190,7 @@ class _DemoGroupVotingWrapperState extends ConsumerState<_GroupVotingView> {
           ),
         );
       },
-      onCreatePoll: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Create poll form coming soon'),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      },
+      onCreatePoll: _createPoll,
       onViewResults: (poll) {
         Navigator.of(context).pushNamed(AppRoutes.pollResults, arguments: poll);
       },

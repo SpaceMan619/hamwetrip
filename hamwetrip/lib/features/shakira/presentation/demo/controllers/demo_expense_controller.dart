@@ -171,6 +171,42 @@ class DemoExpenseController extends ChangeNotifier {
     }
   }
 
+  /// Records an expense and lets the watch stream bring it back, for the same
+  /// reason [DemoVotingController.createPoll] does: one path into the list.
+  ///
+  /// Returns false and records the error if the write is refused.
+  Future<bool> createExpense({
+    required String description,
+    required double amount,
+    required String category,
+    required String categoryEmoji,
+    required String paidByInitials,
+    required String paidByName,
+    required List<String> splitAmongInitials,
+  }) async {
+    try {
+      await _repository.createExpense(
+        tripId: tripId,
+        description: description.trim(),
+        amount: amount,
+        paidByInitials: paidByInitials,
+        paidByName: paidByName,
+        categoryEmoji: categoryEmoji,
+        category: category,
+        splitAmongInitials: splitAmongInitials,
+      );
+      return true;
+    } on AppError catch (e) {
+      _error = e;
+      notifyListeners();
+      return false;
+    } catch (e) {
+      _error = UnknownError(cause: e);
+      notifyListeners();
+      return false;
+    }
+  }
+
   Future<void> deleteExpense(String expenseId) async {
     try {
       await _repository.deleteExpense(tripId: tripId, expenseId: expenseId);

@@ -58,6 +58,47 @@ class DemoItineraryController extends ChangeNotifier {
     _loadItinerary();
   }
 
+  /// Adds an activity to [dayId], letting the watch stream bring it back.
+  ///
+  /// A day has to exist first: the repository appends to that day's `items`
+  /// array rather than creating a document of its own, which is why the form
+  /// asks which day rather than offering a free date.
+  Future<bool> createItem({
+    required String dayId,
+    required String time,
+    required String title,
+    required String location,
+    required String description,
+    required String emoji,
+    required String type,
+  }) async {
+    try {
+      await _repository.createItem(
+        tripId: tripId,
+        dayId: dayId,
+        item: ItineraryItem(
+          // Replaced by the repository, which mints the stored id.
+          id: '',
+          time: time.trim(),
+          title: title.trim(),
+          location: location.trim(),
+          description: description.trim(),
+          emoji: emoji,
+          type: type,
+        ),
+      );
+      return true;
+    } on AppError catch (e) {
+      _error = e;
+      notifyListeners();
+      return false;
+    } catch (e) {
+      _error = UnknownError(cause: e);
+      notifyListeners();
+      return false;
+    }
+  }
+
   Future<void> toggleItemCompletion(String itemId) async {
     try {
       if (_completedItemIds.contains(itemId)) {

@@ -34,8 +34,9 @@ class FirebaseItineraryRepository implements ItineraryRepository {
         .orderBy('date')
         .snapshots()
         .map(
-          (snap) =>
-              snap.docs.map((d) => ItineraryDay.fromMap(d.data())).toList(),
+          (snap) => snap.docs
+              .map((d) => ItineraryDay.fromMap(d.data(), id: d.id))
+              .toList(),
         )
         .mapFirebaseErrors();
   }
@@ -51,7 +52,7 @@ class FirebaseItineraryRepository implements ItineraryRepository {
       // field inside the items array.
       final daysSnap = await _daysOf(tripId).get();
       for (final dayDoc in daysSnap.docs) {
-        final day = ItineraryDay.fromMap(dayDoc.data());
+        final day = ItineraryDay.fromMap(dayDoc.data(), id: dayDoc.id);
         final itemIndex = day.items.indexWhere((i) => i.id == itemId);
         if (itemIndex != -1) {
           final items = day.items.map((i) => i.toMap()).toList();
@@ -80,7 +81,7 @@ class FirebaseItineraryRepository implements ItineraryRepository {
       if (!daySnap.exists) {
         throw const NotFoundError(message: 'That day was not found.');
       }
-      final day = ItineraryDay.fromMap(daySnap.data()!);
+      final day = ItineraryDay.fromMap(daySnap.data()!, id: daySnap.id);
       final newId = _firestore.collection('trips').doc().id;
       final newItem = ItineraryItem(
         id: newId,

@@ -6,8 +6,12 @@ import '../../../../app/app_routes.dart';
 import '../../../../data/models/settlement_args.dart';
 import '../expense_splitting_screen.dart';
 import 'controllers/demo_expense_controller.dart';
+import '../../../../core/state/view_state.dart';
+import '../../../../core/widgets/create_forms.dart';
 import '../../../../core/widgets/hamwe_bottom_navigation.dart';
 import '../../../../core/widgets/trip_scoped.dart';
+import '../../../home/home_providers.dart';
+import '../../../trips/trip_providers.dart';
 
 /// Wires up expense data from Firestore to the pure UI screen.
 class DemoExpenseSplittingWrapper extends StatelessWidget {
@@ -51,6 +55,51 @@ class _DemoExpenseSplittingWrapperState
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  Future<void> _addExpense() async {
+    final input = await showAddExpenseForm(context);
+    if (input == null || !mounted) return;
+
+    // Split across whoever is actually in the trip, taken from the roster
+    // rather than assumed, so the figures match the membership.
+    final membersState = ref.read(tripMembersControllerProvider(widget.tripId));
+    final splitAmong = switch (membersState.view) {
+      ViewData(:final data) =>
+        data.map((member) => member.initials).toList(growable: false),
+      _ => const <String>[],
+    };
+
+    final profileState = ref.read(currentUserProfileProvider);
+    final profile = switch (profileState.view) {
+      ViewData(:final data) => data,
+      _ => null,
+    };
+    final paidByName = profile?.displayName ?? 'You';
+    final paidByInitials = profile?.initials ?? _currentUserId;
+
+    final created = await _controller.createExpense(
+      description: input.description,
+      amount: input.amount,
+      category: input.category,
+      categoryEmoji: input.categoryEmoji,
+      paidByInitials: paidByInitials,
+      paidByName: paidByName,
+      splitAmongInitials: splitAmong.isEmpty ? [paidByInitials] : splitAmong,
+    );
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          created
+              ? 'Expense added'
+              : _controller.error?.message ?? 'Could not add the expense',
+        ),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: created ? AppColors.forest : null,
+      ),
+    );
   }
 
   @override
@@ -109,15 +158,7 @@ class _DemoExpenseSplittingWrapperState
       bottomNavigation: const HamweBottomNavigation(
         selected: HamweDestination.ledger,
       ),
-      onAddExpense: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Add expense form coming soon'),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: AppColors.forest,
-          ),
-        );
-      },
+      onAddExpense: _addExpense,
       onExpenseTap: (expense) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

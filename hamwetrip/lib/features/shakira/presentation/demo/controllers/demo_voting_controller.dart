@@ -197,6 +197,46 @@ class DemoVotingController extends ChangeNotifier {
     }
   }
 
+  /// Creates a poll and lets the watch stream bring it back.
+  ///
+  /// Nothing is added to `_states` here on purpose: the repository write is
+  /// picked up by the stream `_loadPolls` is already listening to, which keeps
+  /// one path into the list rather than two that can disagree.
+  ///
+  /// Returns false and records the error if the write is refused.
+  Future<bool> createPoll({
+    required String question,
+    required List<String> optionLabels,
+    required int totalMembers,
+    String category = 'General',
+    String categoryEmoji = '🗳️',
+  }) async {
+    try {
+      await _repository.createPoll(
+        tripId: tripId,
+        question: question.trim(),
+        category: category,
+        categoryEmoji: categoryEmoji,
+        options: [
+          for (var i = 0; i < optionLabels.length; i++)
+            PollOption(id: 'o${i + 1}', label: optionLabels[i].trim()),
+        ],
+        totalMembers: totalMembers,
+        isActive: true,
+        createdBy: voterInitials,
+      );
+      return true;
+    } on AppError catch (e) {
+      _error = e;
+      notifyListeners();
+      return false;
+    } catch (e) {
+      _error = UnknownError(cause: e);
+      notifyListeners();
+      return false;
+    }
+  }
+
   Future<void> closePoll(String pollId) async {
     try {
       await _repository.closePoll(tripId: tripId, pollId: pollId);

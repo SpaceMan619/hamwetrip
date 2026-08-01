@@ -5,6 +5,7 @@ import '../../../../core/providers/repository_providers.dart';
 import '../detailed_itinerary_screen.dart';
 import 'controllers/demo_itinerary_controller.dart';
 import '../../../../core/widgets/hamwe_bottom_navigation.dart';
+import '../../../../core/widgets/create_forms.dart';
 import '../../../../core/widgets/trip_scoped.dart';
 
 /// Wires up itinerary data from Firestore to the pure UI screen.
@@ -46,6 +47,50 @@ class _DemoDetailedItineraryWrapperState
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  Future<void> _addItem() async {
+    final days = _controller.days
+        .where((day) => day.id.isNotEmpty)
+        .map((day) => (id: day.id, label: day.dayTitle))
+        .toList(growable: false);
+
+    if (days.isEmpty) {
+      // An activity is appended to a day, so there is nothing to add it to yet.
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('This trip has no itinerary days yet.'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+    final input = await showAddItineraryItemForm(context, days);
+    if (input == null || !mounted) return;
+
+    final created = await _controller.createItem(
+      dayId: input.dayId,
+      time: input.time,
+      title: input.title,
+      location: input.location,
+      description: input.description,
+      emoji: input.emoji,
+      type: input.type,
+    );
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          created
+              ? 'Added to the itinerary'
+              : _controller.error?.message ?? 'Could not add that',
+        ),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: created ? AppColors.forest : null,
+      ),
+    );
   }
 
   @override
@@ -107,14 +152,7 @@ class _DemoDetailedItineraryWrapperState
           ),
         );
       },
-      onAddItem: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Add itinerary item form coming soon'),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      },
+      onAddItem: _addItem,
       onEditCalendar: () {
         _controller.clearSearch();
         ScaffoldMessenger.of(context).showSnackBar(
