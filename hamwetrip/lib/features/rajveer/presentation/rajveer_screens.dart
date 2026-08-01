@@ -14,6 +14,7 @@ import '../../../core/widgets/create_forms.dart';
 import '../../../core/widgets/hamwe_bottom_navigation.dart';
 import '../../../domain/models/activity_event.dart';
 import '../../../domain/models/invite.dart';
+import '../../../domain/models/trip.dart';
 import '../../activity/activity_providers.dart';
 import '../../auth/auth_controller.dart';
 import '../../home/home_providers.dart';
@@ -533,24 +534,58 @@ class _TripDashboardBody extends ConsumerWidget {
 
   final String tripId;
 
-  Future<void> _renameTrip(
-    BuildContext context,
-    WidgetRef ref,
-    String currentName,
-  ) async {
-    final newName = await showSingleFieldPrompt(
+  Future<void> _editTripDetails(BuildContext context, WidgetRef ref, Trip trip) async {
+    final input = await showEditTripForm(
       context,
-      title: 'Rename trip',
-      label: 'Trip name',
-      initialValue: currentName,
+      initialName: trip.name,
+      initialDestination: trip.destination,
+      initialStartDate: trip.startDate,
+      initialEndDate: trip.endDate,
     );
-    if (newName == null || newName.isEmpty || newName == currentName) return;
+    if (input == null) return;
     if (!context.mounted) return;
 
     final ok = await ref
         .read(tripDetailsControllerProvider.notifier)
-        .updateTrip(tripId: tripId, name: newName);
+        .updateTrip(
+          tripId: tripId,
+          name: input.name,
+          destination: input.destination,
+          startDate: input.startDate,
+          endDate: input.endDate,
+        );
     if (!context.mounted || ok) return;
+    final view = ref.read(tripDetailsControllerProvider).view;
+    if (view.error case final error?) showAppErrorSnackBar(context, error);
+  }
+
+  /// Trips can't be hard-deleted — see firestore.rules' `allow delete: if
+  /// false` on `trips/{tripId}` — deleting one would orphan every
+  /// subcollection beneath it with no Cloud Functions to clean them up. This
+  /// archives the trip instead, which reads as "deleted" to the caller
+  /// because [myTripsControllerProvider] filters archived trips out of the
+  /// list.
+  Future<void> _deleteTrip(BuildContext context, WidgetRef ref, String tripName) async {
+    final confirmed = await showConfirmDialog(
+      context,
+      title: 'Delete trip?',
+      message:
+          '"$tripName" will disappear from your trip list for everyone. '
+          "This can't be undone from the app.",
+    );
+    if (!confirmed) return;
+    if (!context.mounted) return;
+
+    final ok = await ref
+        .read(tripDetailsControllerProvider.notifier)
+        .updateTrip(tripId: tripId, status: TripStatus.archived);
+    if (!context.mounted) return;
+    if (ok) {
+      Navigator.of(
+        context,
+      ).pushNamedAndRemoveUntil(AppRoutes.home, (route) => false);
+      return;
+    }
     final view = ref.read(tripDetailsControllerProvider).view;
     if (view.error case final error?) showAppErrorSnackBar(context, error);
   }
@@ -652,8 +687,16 @@ class _TripDashboardBody extends ConsumerWidget {
             _ActionTile(
               icon: Icons.edit_calendar_outlined,
               title: 'Edit trip details',
-              note: 'Rename this trip',
-              onTap: () => _renameTrip(context, ref, trip.name),
+              note: 'Name, destination and dates',
+              onTap: () => _editTripDetails(context, ref, trip),
+            ),
+            const SizedBox(height: 12),
+            _ActionTile(
+              icon: Icons.delete_outline,
+              iconColor: const Color(0xFF9A2424),
+              title: 'Delete trip',
+              note: 'Remove this trip for everyone',
+              onTap: () => _deleteTrip(context, ref, trip.name),
             ),
           ],
           const SizedBox(height: 26),
@@ -1520,11 +1563,13 @@ class _ActionTile extends StatelessWidget {
     required this.title,
     required this.note,
     required this.onTap,
+    this.iconColor = AppColors.forest,
   });
   final IconData icon;
   final String title;
   final String note;
   final VoidCallback onTap;
+  final Color iconColor;
 
   @override
   Widget build(BuildContext context) => Card(
@@ -1538,7 +1583,7 @@ class _ActionTile extends StatelessWidget {
           color: AppColors.paleMint,
           borderRadius: BorderRadius.circular(14),
         ),
-        child: Icon(icon, color: AppColors.forest),
+        child: Icon(icon, color: iconColor),
       ),
       title: Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
       subtitle: Text(note),

@@ -90,6 +90,190 @@ class _SingleFieldDialog extends StatefulWidget {
   State<_SingleFieldDialog> createState() => _SingleFieldDialogState();
 }
 
+/// What a completed edit-trip form produced.
+class EditTripInput {
+  const EditTripInput({
+    required this.name,
+    required this.destination,
+    required this.startDate,
+    required this.endDate,
+  });
+
+  final String name;
+  final String destination;
+  final DateTime? startDate;
+  final DateTime? endDate;
+}
+
+/// Asks for a trip's name, destination and dates, pre-filled with its current
+/// values. Owns its own controllers for the same reason [showSingleFieldPrompt]
+/// does.
+Future<EditTripInput?> showEditTripForm(
+  BuildContext context, {
+  required String initialName,
+  required String initialDestination,
+  DateTime? initialStartDate,
+  DateTime? initialEndDate,
+}) {
+  return showDialog<EditTripInput>(
+    context: context,
+    builder: (context) => _EditTripDialog(
+      initialName: initialName,
+      initialDestination: initialDestination,
+      initialStartDate: initialStartDate,
+      initialEndDate: initialEndDate,
+    ),
+  );
+}
+
+class _EditTripDialog extends StatefulWidget {
+  const _EditTripDialog({
+    required this.initialName,
+    required this.initialDestination,
+    required this.initialStartDate,
+    required this.initialEndDate,
+  });
+
+  final String initialName;
+  final String initialDestination;
+  final DateTime? initialStartDate;
+  final DateTime? initialEndDate;
+
+  @override
+  State<_EditTripDialog> createState() => _EditTripDialogState();
+}
+
+class _EditTripDialogState extends State<_EditTripDialog> {
+  final _formKey = GlobalKey<FormState>();
+  late final _name = TextEditingController(text: widget.initialName);
+  late final _destination = TextEditingController(
+    text: widget.initialDestination,
+  );
+  late DateTimeRange? _dates =
+      widget.initialStartDate != null && widget.initialEndDate != null
+      ? DateTimeRange(
+          start: widget.initialStartDate!,
+          end: widget.initialEndDate!,
+        )
+      : null;
+
+  @override
+  void dispose() {
+    _name.dispose();
+    _destination.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    if (!_formKey.currentState!.validate()) return;
+    Navigator.of(context).pop(
+      EditTripInput(
+        name: _name.text.trim(),
+        destination: _destination.text.trim(),
+        startDate: _dates?.start,
+        endDate: _dates?.end,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Edit trip details'),
+      content: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextFormField(
+                controller: _name,
+                autofocus: true,
+                decoration: const InputDecoration(labelText: 'Trip name'),
+                validator: (value) => value == null || value.trim().isEmpty
+                    ? 'Give your trip a name.'
+                    : null,
+              ),
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: _destination,
+                decoration: const InputDecoration(labelText: 'Destination'),
+                validator: (value) => value == null || value.trim().isEmpty
+                    ? 'Where are you heading?'
+                    : null,
+              ),
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                icon: const Icon(Icons.calendar_month_outlined),
+                label: Text(
+                  _dates == null
+                      ? 'Choose travel dates'
+                      : '${_dates!.start.day}/${_dates!.start.month} - '
+                            '${_dates!.end.day}/${_dates!.end.month}',
+                ),
+                onPressed: () async {
+                  final dates = await showDateRangePicker(
+                    context: context,
+                    // A trip being edited may already be under way or past,
+                    // so the lower bound can't be "now" the way trip creation
+                    // uses — that would reject the trip's own existing dates.
+                    firstDate: DateTime(DateTime.now().year - 1),
+                    lastDate: DateTime(DateTime.now().year + 3),
+                    initialDateRange: _dates,
+                  );
+                  if (dates != null) setState(() => _dates = dates);
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: _submit,
+          style: FilledButton.styleFrom(backgroundColor: AppColors.forest),
+          child: const Text('Save'),
+        ),
+      ],
+    );
+  }
+}
+
+/// Asks whether to go through with a destructive action, e.g. deleting a trip
+/// or an expense. Returns true only if the person tapped the destructive
+/// action explicitly — dismissing the dialog any other way is a decline.
+Future<bool> showConfirmDialog(
+  BuildContext context, {
+  required String title,
+  required String message,
+  String confirmLabel = 'Delete',
+}) async {
+  final result = await showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(title),
+      content: Text(message),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(false),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.of(context).pop(true),
+          style: FilledButton.styleFrom(backgroundColor: const Color(0xFF9A2424)),
+          child: Text(confirmLabel),
+        ),
+      ],
+    ),
+  );
+  return result ?? false;
+}
+
 class _SingleFieldDialogState extends State<_SingleFieldDialog> {
   late final _controller = TextEditingController(text: widget.initialValue);
 
