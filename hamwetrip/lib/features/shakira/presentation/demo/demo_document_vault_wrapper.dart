@@ -1,12 +1,18 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/providers/repository_providers.dart';
+import '../../../../core/state/view_state.dart';
+import '../../../../data/local/document_file_store.dart';
 import '../../../../data/models/document.dart';
+import '../document_preview_screen.dart';
 import '../document_vault_screen.dart';
 import 'controllers/demo_document_controller.dart';
+import '../../../../core/widgets/create_forms.dart';
 import '../../../../core/widgets/hamwe_bottom_navigation.dart';
 import '../../../../core/widgets/trip_scoped.dart';
+import '../../../home/home_providers.dart';
 
 /// Wires up document data from Firestore to the pure UI screen.
 class DemoDocumentVaultWrapper extends StatelessWidget {
@@ -49,6 +55,103 @@ class _DemoDocumentVaultWrapperState extends ConsumerState<_DocumentVaultView> {
     super.dispose();
   }
 
+  void _notify(String message, {bool good = false}) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: good ? AppColors.forest : null,
+      ),
+    );
+  }
+
+  /// Picks a file from the device, asks what to call it, then stores it.
+  ///
+  /// Nothing is written until the form is completed, so backing out of either
+  /// step leaves the vault untouched.
+  Future<void> _pickAndUpload() async {
+    final FilePickerResult? picked;
+    try {
+      picked = await FilePicker.pickFiles(dialogTitle: 'Add to vault');
+    } catch (_) {
+      // Thrown when the picker cannot start at all — permission refused, or no
+      // document provider on the device.
+      _notify("We couldn't open the file picker on this device.");
+      return;
+    }
+    if (picked == null || picked.files.isEmpty) return; // Cancelled.
+
+    final file = picked.files.first;
+    final sourcePath = file.path;
+    if (sourcePath == null) {
+      // A picked file with no path — a cloud provider entry the platform never
+      // materialised. There is nothing on disk for us to copy.
+      _notify("That file couldn't be read from where it is stored.");
+      return;
+    }
+    if (!mounted) return;
+
+    final input = await showUploadDocumentForm(
+      context,
+      fileName: file.name,
+      fileSizeLabel: formatFileSize(file.size),
+    );
+    if (input == null || !mounted) return;
+
+    final profile = switch (ref.read(currentUserProfileProvider).view) {
+      ViewData(:final data) => data,
+      _ => null,
+    };
+
+    final uploaded = await _controller.uploadDocument(
+      sourcePath: sourcePath,
+      fileName: file.name,
+      title: input.title,
+      category: input.category,
+      uploadedBy: profile?.displayName ?? 'You',
+      uploadedByInitials: profile?.initials ?? '?',
+    );
+
+    _notify(
+      uploaded
+          ? '${input.title} added to the vault'
+          : _controller.error?.message ?? "Couldn't add that document",
+      good: uploaded,
+    );
+  }
+
+  Future<void> _openDocument(TripDocument doc) async {
+    if (!_controller.hasFile(doc)) {
+      _notify(
+        '${doc.title} was added on another device, so the file '
+        "isn't stored here.",
+      );
+      return;
+    }
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => DocumentPreviewScreen(document: doc)),
+    );
+  }
+
+  Future<void> _deleteDocument(TripDocument doc) async {
+    final confirmed = await showConfirmDialog(
+      context,
+      title: 'Delete document?',
+      message:
+          '"${doc.title}" will be removed from the vault and deleted from '
+          "this device. This can't be undone.",
+    );
+    if (!confirmed) return;
+
+    final deleted = await _controller.deleteDocument(doc);
+    _notify(
+      deleted
+          ? '${doc.title} deleted'
+          : _controller.error?.message ?? "Couldn't delete that document",
+    );
+  }
+
   void _showDocumentOptions(TripDocument doc) {
     showModalBottomSheet(
       context: context,
@@ -89,29 +192,7 @@ class _DemoDocumentVaultWrapperState extends ConsumerState<_DocumentVaultView> {
               title: const Text('View Document'),
               onTap: () {
                 Navigator.pop(ctx);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Opening ${doc.title}...'),
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(
-                Icons.share_outlined,
-                color: AppColors.forest,
-              ),
-              title: const Text('Share'),
-              onTap: () {
-                Navigator.pop(ctx);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Share link copied'),
-                    behavior: SnackBarBehavior.floating,
-                    backgroundColor: AppColors.forest,
-                  ),
-                );
+                _openDocument(doc);
               },
             ),
             ListTile(
@@ -119,13 +200,7 @@ class _DemoDocumentVaultWrapperState extends ConsumerState<_DocumentVaultView> {
               title: const Text('Delete', style: TextStyle(color: Colors.red)),
               onTap: () {
                 Navigator.pop(ctx);
-                _controller.deleteDocument(doc.id);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('${doc.title} deleted'),
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                );
+                _deleteDocument(doc);
               },
             ),
             const SizedBox(height: 16),
@@ -180,31 +255,17 @@ class _DemoDocumentVaultWrapperState extends ConsumerState<_DocumentVaultView> {
       documents: _controller.documents,
       selectedCategory: _controller.currentCategory,
       categories: _controller.categories,
+      cachedCount: _controller.cachedCount,
+      hasFile: _controller.hasFile,
+      isUploading: _controller.isUploading,
       isOffline: false,
       onCategoryChanged: (category) => _controller.setCategory(category),
       bottomNavigation: const HamweBottomNavigation(
         selected: HamweDestination.vault,
       ),
-      onViewDocument: (doc) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Viewing ${doc.title} (${doc.fileSize})'),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: AppColors.forest,
-          ),
-        );
-      },
-      onDocumentOptions: (doc) => _showDocumentOptions(doc),
-      onUploadDocument: () {
-        _controller.simulateUpload();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Document uploaded successfully!'),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: AppColors.forest,
-          ),
-        );
-      },
+      onViewDocument: _openDocument,
+      onDocumentOptions: _showDocumentOptions,
+      onUploadDocument: _pickAndUpload,
       onSearch: () {
         showDialog(
           context: context,

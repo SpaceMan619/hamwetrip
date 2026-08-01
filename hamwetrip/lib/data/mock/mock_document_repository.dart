@@ -32,6 +32,7 @@ class MockDocumentRepository implements DocumentRepository {
     required String uploadedBy,
     required String uploadedByInitials,
     required String fileSize,
+    String? localPath,
   }) async {
     final doc = TripDocument(
       id: 'doc_${DateTime.now().millisecondsSinceEpoch}',
@@ -42,6 +43,7 @@ class MockDocumentRepository implements DocumentRepository {
       uploadedByInitials: uploadedByInitials,
       fileSize: fileSize,
       date: DateTime.now(),
+      localPath: localPath,
     );
     _docs = [..._docs, doc];
     _notify();

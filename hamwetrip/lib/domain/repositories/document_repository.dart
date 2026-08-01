@@ -6,6 +6,11 @@ abstract interface class DocumentRepository {
   Stream<List<TripDocument>> watchDocuments(String tripId);
 
   /// Uploads a new document metadata record.
+  ///
+  /// [localPath] is where the file itself was copied on the uploading device —
+  /// see `DocumentFileStore`. It is recorded so that device can reopen the file
+  /// offline; another member reading the same record simply finds no file
+  /// there and is offered the metadata alone.
   Future<TripDocument> uploadDocument({
     required String tripId,
     required String title,
@@ -14,6 +19,7 @@ abstract interface class DocumentRepository {
     required String uploadedBy,
     required String uploadedByInitials,
     required String fileSize,
+    String? localPath,
   });
 
   /// Deletes a document.

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../data/models/document.dart';
 import '../theme/app_colors.dart';
 
 /// What a completed poll form produced.
@@ -345,6 +346,135 @@ Future<NewItineraryItemInput?> showAddItineraryItemForm(
     context: context,
     builder: (context) => _AddItineraryItemDialog(days: days),
   );
+}
+
+/// What a completed document form produced. The file has already been picked
+/// by the time this dialog opens; it only names and files it.
+class NewDocumentInput {
+  const NewDocumentInput({required this.title, required this.category});
+
+  final String title;
+  final String category;
+}
+
+/// Asks what to call a just-picked document and where to file it.
+///
+/// [fileName] pre-fills the title, since the name it already has is usually
+/// the name its owner wants.
+Future<NewDocumentInput?> showUploadDocumentForm(
+  BuildContext context, {
+  required String fileName,
+  required String fileSizeLabel,
+}) {
+  return showDialog<NewDocumentInput>(
+    context: context,
+    builder: (context) =>
+        _UploadDocumentDialog(fileName: fileName, fileSizeLabel: fileSizeLabel),
+  );
+}
+
+class _UploadDocumentDialog extends StatefulWidget {
+  const _UploadDocumentDialog({
+    required this.fileName,
+    required this.fileSizeLabel,
+  });
+
+  final String fileName;
+  final String fileSizeLabel;
+
+  @override
+  State<_UploadDocumentDialog> createState() => _UploadDocumentDialogState();
+}
+
+class _UploadDocumentDialogState extends State<_UploadDocumentDialog> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _title = TextEditingController(
+    text: widget.fileName,
+  );
+
+  String _category = documentCategories.first;
+
+  @override
+  void dispose() {
+    _title.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    if (!_formKey.currentState!.validate()) return;
+    Navigator.of(
+      context,
+    ).pop(NewDocumentInput(title: _title.text.trim(), category: _category));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Add to vault'),
+      content: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(
+                    Icons.attach_file,
+                    size: 16,
+                    color: AppColors.muted,
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      '${widget.fileName} • ${widget.fileSizeLabel}',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: AppColors.muted,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              TextFormField(
+                controller: _title,
+                autofocus: true,
+                decoration: const InputDecoration(labelText: 'Name'),
+                validator: (value) => (value == null || value.trim().isEmpty)
+                    ? 'Give this document a name.'
+                    : null,
+              ),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<String>(
+                initialValue: _category,
+                decoration: const InputDecoration(labelText: 'Category'),
+                items: [
+                  for (final category in documentCategories)
+                    DropdownMenuItem(value: category, child: Text(category)),
+                ],
+                onChanged: (value) =>
+                    setState(() => _category = value ?? _category),
+              ),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: _submit,
+          style: FilledButton.styleFrom(backgroundColor: AppColors.forest),
+          child: const Text('Save'),
+        ),
+      ],
+    );
+  }
 }
 
 class _CreatePollDialog extends StatefulWidget {
