@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/providers/repository_providers.dart';
 import '../../../../app/app_routes.dart';
+import '../../../../data/models/expense.dart';
 import '../../../../data/models/settlement_args.dart';
 import '../expense_splitting_screen.dart';
 import 'controllers/demo_expense_controller.dart';
@@ -103,6 +104,31 @@ class _DemoExpenseSplittingWrapperState
     );
   }
 
+  Future<void> _deleteExpense(Expense expense) async {
+    final confirmed = await showConfirmDialog(
+      context,
+      title: 'Delete expense?',
+      message: '"${expense.description}" will be removed for everyone on '
+          "this trip. This can't be undone.",
+    );
+    if (!confirmed || !mounted) return;
+
+    final deleted = await _controller.deleteExpense(expense.id);
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          deleted
+              ? 'Expense deleted'
+              : _controller.error?.message ?? 'Could not delete the expense',
+        ),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: deleted ? AppColors.forest : null,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Loading state
@@ -166,6 +192,7 @@ class _DemoExpenseSplittingWrapperState
         selected: HamweDestination.ledger,
       ),
       onAddExpense: _addExpense,
+      onDeleteExpense: _deleteExpense,
       onExpenseTap: (expense) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

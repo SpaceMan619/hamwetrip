@@ -13,6 +13,7 @@ class ExpenseSplittingScreen extends StatelessWidget {
   final double youAreOwed;
   final VoidCallback onAddExpense;
   final void Function(Expense) onExpenseTap;
+  final void Function(Expense) onDeleteExpense;
   final void Function(Balance) onSettleUp;
   final VoidCallback onRemindEveryone;
   final VoidCallback onOpenMomoSummary;
@@ -27,6 +28,7 @@ class ExpenseSplittingScreen extends StatelessWidget {
     required this.youAreOwed,
     required this.onAddExpense,
     required this.onExpenseTap,
+    required this.onDeleteExpense,
     required this.onSettleUp,
     required this.onRemindEveryone,
     required this.onOpenMomoSummary,
@@ -101,7 +103,11 @@ class ExpenseSplittingScreen extends StatelessWidget {
               child: TabBarView(
                 children: [
                   // SAFE INJECTION: Pass data directly via constructor
-                  _ExpensesTab(expenses: expenses, onExpenseTap: onExpenseTap),
+                  _ExpensesTab(
+                    expenses: expenses,
+                    onExpenseTap: onExpenseTap,
+                    onDeleteExpense: onDeleteExpense,
+                  ),
                   _AddExpenseTab(onSubmit: onAddExpense),
                   _SettlementsTab(
                     balances: balances,
@@ -179,8 +185,13 @@ class _SummaryBox extends StatelessWidget {
 class _ExpensesTab extends StatelessWidget {
   final List<Expense> expenses;
   final void Function(Expense) onExpenseTap;
+  final void Function(Expense) onDeleteExpense;
 
-  const _ExpensesTab({required this.expenses, required this.onExpenseTap});
+  const _ExpensesTab({
+    required this.expenses,
+    required this.onExpenseTap,
+    required this.onDeleteExpense,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -200,6 +211,7 @@ class _ExpensesTab extends StatelessWidget {
         return ExpenseCard(
           expense: expense,
           onTap: () => onExpenseTap(expense),
+          onDelete: () => onDeleteExpense(expense),
         );
       },
     );
